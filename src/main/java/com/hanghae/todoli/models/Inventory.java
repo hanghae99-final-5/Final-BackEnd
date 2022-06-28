@@ -1,8 +1,11 @@
 package com.hanghae.todoli.models;
 
+import lombok.Getter;
+
 import javax.persistence.*;
 
 @Entity
+@Getter
 public class Inventory {
 
     @Id
