@@ -8,7 +8,7 @@ import javax.persistence.*;
 @Getter
 @Entity
 @NoArgsConstructor
-public class Todo {
+public class Todo extends Timestamped{
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -35,5 +35,7 @@ public class Todo {
     @Column
     private Boolean complitionState;
 
-
+    @ManyToOne
+    @JoinColumn(name = "MEMBER_ID")
+    private Member writer;
 }
