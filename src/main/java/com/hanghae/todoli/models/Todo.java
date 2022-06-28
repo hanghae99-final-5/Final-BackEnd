@@ -35,13 +35,5 @@ public class Todo {
     @Column
     private Boolean complitionState;
 
-    public Todo(String proofImg, String content, String startDate, String endDate, int difficulty, Boolean confirmState, Boolean complitionState) {
-        this.proofImg = proofImg;
-        this.content = content;
-        this.startDate = startDate;
-        this.endDate = endDate;
-        this.difficulty = difficulty;
-        this.confirmState = confirmState;
-        this.complitionState = complitionState;
-    }
+
 }
