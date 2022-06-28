@@ -1,16 +1,20 @@
 package com.hanghae.todoli.security.jwt;
 
 import com.hanghae.todoli.models.Member;
+import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import java.util.Collection;
 
-@RequiredArgsConstructor
 public class UserDetailsImpl implements UserDetails {
 
     private final Member member;
+
+    public UserDetailsImpl(Member member) {
+        this.member = member;
+    }
 
     public Member getMember() {
         return member;
