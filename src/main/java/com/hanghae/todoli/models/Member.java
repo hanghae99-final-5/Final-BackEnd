@@ -1,12 +1,16 @@
 package com.hanghae.todoli.models;
 
 import com.fasterxml.jackson.annotation.JsonManagedReference;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
 import java.util.ArrayList;
 import java.util.List;
 
 @Entity
+@NoArgsConstructor
+@Getter
 public class Member {
 
     @Id
@@ -36,4 +40,10 @@ public class Member {
 
     @OneToMany
     private List<Todo> todos = new ArrayList<>();
+
+    public Member(String username, String nickname, String pw) {
+        this.username = username;
+        this.nickname = nickname;
+        this.password = pw;
+    }
 }
