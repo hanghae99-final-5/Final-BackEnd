@@ -1,8 +1,6 @@
 package com.hanghae.todoli.security.jwt;
 
 import com.hanghae.todoli.models.Member;
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
@@ -10,14 +8,14 @@ import java.util.Collection;
 
 public class UserDetailsImpl implements UserDetails {
 
-    private final Member member;
+    private final Member Member;
 
-    public UserDetailsImpl(Member member) {
-        this.member = member;
+    public UserDetailsImpl(Member Member) {
+        this.Member = Member;
     }
 
     public Member getMember() {
-        return member;
+        return Member;
     }
 
     @Override
@@ -27,12 +25,12 @@ public class UserDetailsImpl implements UserDetails {
 
     @Override
     public String getPassword() {
-        return member.getPassword();
+        return Member.getPassword();
     }
 
     @Override
     public String getUsername() {
-        return member.getUsername();
+        return Member.getUsername();
     }
 
     @Override
