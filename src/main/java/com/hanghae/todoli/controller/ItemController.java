@@ -2,6 +2,7 @@ package com.hanghae.todoli.controller;
 
 import com.hanghae.todoli.dto.EquipItemDto;
 import com.hanghae.todoli.dto.ExistItemListDto;
+import com.hanghae.todoli.dto.ItemRequestDto;
 import com.hanghae.todoli.dto.ItemResponseDto;
 import com.hanghae.todoli.security.jwt.UserDetailsImpl;
 import com.hanghae.todoli.service.ItemService;
@@ -46,6 +47,10 @@ public class ItemController {
         return itemService.equipItem(itemId, userDetails);
     }
 
-    //아이템 등록
-
+    //아이템 등록(h2에서만 사용)
+    @PostMapping("/api/items")
+    public String inputItem(@RequestBody ItemRequestDto itemRequestDto){
+        itemService.inputItem(itemRequestDto);
+        return "등록을 성공하였습니다.";
+    }
 }

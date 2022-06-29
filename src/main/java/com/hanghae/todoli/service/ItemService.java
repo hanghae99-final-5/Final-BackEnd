@@ -2,6 +2,7 @@ package com.hanghae.todoli.service;
 
 import com.hanghae.todoli.dto.EquipItemDto;
 import com.hanghae.todoli.dto.ExistItemListDto;
+import com.hanghae.todoli.dto.ItemRequestDto;
 import com.hanghae.todoli.dto.ItemResponseDto;
 import com.hanghae.todoli.models.*;
 import com.hanghae.todoli.models.Character;
@@ -34,6 +35,29 @@ public class ItemService {
     public List<ExistItemListDto> getExistItemList(UserDetailsImpl userDetails) {
         Character c = userDetails.getMember().getCharacter();
         return existItemList(c);
+    }
+    //가지고 있는 아이템의 정보들을 리턴(가지고 있는 아이템 조회에서 쓰인다.)
+    private List<ExistItemListDto> existItemList(Character c) {
+        List<ExistItemListDto> existItemList = new ArrayList<>();
+        List<Inventory> inventory = c.getInventory();
+        for(Inventory i : inventory){
+
+            Item item = i.getItem();
+
+            Long itemId = item.getId();
+            String name = item.getName();
+            String viewImg = item.getViewImg();
+            Category category = item.getCategory();
+
+            ExistItemListDto existItemListDto = ExistItemListDto.builder()
+                    .itemId(itemId)
+                    .name(name)
+                    .viewImg(viewImg)
+                    .category(category)
+                    .build();
+            existItemList.add(existItemListDto);
+        }
+        return existItemList;
     }
 
 
@@ -70,29 +94,6 @@ public class ItemService {
     }
 
 
-    //가지고 있는 아이템의 정보들을 리턴(가지고 있는 아이템 조회에서 쓰인다.)
-    private List<ExistItemListDto> existItemList(Character c) {
-        List<ExistItemListDto> existItemList = new ArrayList<>();
-        List<Inventory> inventory = c.getInventory();
-        for(Inventory i : inventory){
-
-            Item item = i.getItem();
-
-            Long itemId = item.getId();
-            String name = item.getName();
-            String viewImg = item.getViewImg();
-            Category category = item.getCategory();
-
-            ExistItemListDto existItemListDto = ExistItemListDto.builder()
-                    .itemId(itemId)
-                    .name(name)
-                    .viewImg(viewImg)
-                    .category(category)
-                    .build();
-            existItemList.add(existItemListDto);
-        }
-        return existItemList;
-    }
 
 
     //아이템 구매
@@ -109,23 +110,18 @@ public class ItemService {
             if(character.getMoney() >= buyItem.getPrice()){
                 character.minMoney(buyItem.getPrice());     //charRepository에 저장해야하나???
                 characterRepository.save(character);
-            }
-            else
+            }else{
                 throw new IllegalArgumentException("잔액이 부족합니다.");
+            }
 
             Inventory inventory = new Inventory(buyItem, character);
             inventoryRepository.save(inventory);
-        }
-        else
+
+        }else{
             throw new IllegalArgumentException("이미 구매하신 물품입니다.");
+        }
 
-    }
 
-    private Item findItem(Long itemId) {
-        Item buyItem = itemRepository.findById(itemId).orElseThrow(
-                () -> new IllegalArgumentException("아이템이 존재하지 않습니다.")
-        );
-        return buyItem;
     }
 
 
@@ -141,8 +137,6 @@ public class ItemService {
 
         EquipItem equipItem = character.getEquipItem();
         Category category = item.getCategory();
-        EquipItemDto equipItemDto = getEquipItemDto(item);
-
         switch(category){
             case HAT:
                 equipItem.updateHat(itemId);
@@ -154,7 +148,16 @@ public class ItemService {
                 equipItem.updateCloth(itemId);
         }
         equipItemRepository.save(equipItem);          //save 안해줘도 되나?
-        return equipItemDto;
+
+        return getEquipItemDto(item);
+    }
+    
+    //아이템 찾기
+    private Item findItem(Long itemId) {
+        Item buyItem = itemRepository.findById(itemId).orElseThrow(
+                () -> new IllegalArgumentException("아이템이 존재하지 않습니다.")
+        );
+        return buyItem;
     }
 
     //장착하는 아이템에 대한 정보를 가져온다.
@@ -165,5 +168,27 @@ public class ItemService {
                 .category(item.getCategory())
                 .build();
         return equipItemDto;
+    }
+
+
+    // 아이템 등록
+    @Transactional
+    public void inputItem(ItemRequestDto requestDto) {
+        String name = requestDto.getName();
+        Category category = requestDto.getCategory();
+        String equipImg = requestDto.getEquipImg();
+        String viewImg = requestDto.getViewImg();
+        int price = requestDto.getPrice();
+
+        ItemRequestDto itemRequestDto = ItemRequestDto.builder()
+                .name(name)
+                .category(category)
+                .equipImg(equipImg)
+                .viewImg(viewImg)
+                .price(price)
+                .build();
+
+        Item item = new Item(itemRequestDto);
+        itemRepository.save(item);
     }
 }
