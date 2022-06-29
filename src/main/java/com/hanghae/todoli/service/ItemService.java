@@ -6,15 +6,15 @@ import com.hanghae.todoli.dto.ItemRequestDto;
 import com.hanghae.todoli.dto.ItemResponseDto;
 import com.hanghae.todoli.models.*;
 import com.hanghae.todoli.models.Character;
-import com.hanghae.todoli.repository.CharacterRepository;
-import com.hanghae.todoli.repository.EquipItemRepository;
-import com.hanghae.todoli.repository.InventoryRepository;
-import com.hanghae.todoli.repository.ItemRepository;
+import com.hanghae.todoli.repository.*;
 import com.hanghae.todoli.security.jwt.UserDetailsImpl;
 import lombok.RequiredArgsConstructor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import javax.crypto.spec.PSource;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -29,13 +29,21 @@ public class ItemService {
 
     private final CharacterRepository characterRepository;
     private final EquipItemRepository equipItemRepository;
+    private final MemberRepository memberRepository;
+
+    private final Logger logger = LoggerFactory.getLogger("!!!!!ItemService 의 로그!!!!!");
 
     //가지고있는 아이템들 조회
     @Transactional
     public List<ExistItemListDto> getExistItemList(UserDetailsImpl userDetails) {
-        Character c = userDetails.getMember().getCharacter();
+        Long memberId = userDetails.getMember().getId();
+        Member member = memberRepository.findById(memberId).orElseThrow(
+                () -> new IllegalArgumentException("아이디가 존재하지 않습니다.")
+        );
+        Character c = member.getCharacter();
         return existItemList(c);
     }
+
     //가지고 있는 아이템의 정보들을 리턴(가지고 있는 아이템 조회에서 쓰인다.)
     private List<ExistItemListDto> existItemList(Character c) {
         List<ExistItemListDto> existItemList = new ArrayList<>();
@@ -60,16 +68,20 @@ public class ItemService {
         return existItemList;
     }
 
-
     //상점 아이템 목록 조회
     @Transactional
     public ItemResponseDto getShopItemList(UserDetailsImpl userDetails) {
-
         List<ExistItemListDto.ExistInventoriesDto> existItemIdList = new ArrayList<>();
         List<ExistItemListDto.ItemListDto> AllItemList = new ArrayList<>();
 
         //1. 가지고 있는 ItemId 조회
-        List<Inventory> inventory = userDetails.getMember().getCharacter().getInventory();
+        Long memberId = userDetails.getMember().getId();
+        Member member = memberRepository.findById(memberId).orElseThrow(
+                () -> new IllegalArgumentException("아이디가 존재하지 않습니다.")
+        );
+
+        List<Inventory> inventory = member.getCharacter().getInventory();
+
         for(Inventory i : inventory){
             Long itemId = i.getItem().getId();
             ExistItemListDto.ExistInventoriesDto  existInventoriesDto = ExistItemListDto.ExistInventoriesDto.builder()
@@ -100,7 +112,13 @@ public class ItemService {
     @Transactional
     public void buyItem(Long itemId, UserDetailsImpl userDetails) {
         Item buyItem = findItem(itemId);
-        Character character = userDetails.getMember().getCharacter();
+
+        Long memberId = userDetails.getMember().getId();
+        Member member = memberRepository.findById(memberId).orElseThrow(
+                () -> new IllegalArgumentException("아이디가 존재하지 않습니다.")
+        );
+
+        Character character = member.getCharacter();
 
         //구매했다면
         Inventory exist = inventoryRepository.findByCharacterAndItem(character, buyItem).orElse(null);
@@ -124,11 +142,14 @@ public class ItemService {
 
     }
 
-
     //아이템 장착
     @Transactional
     public EquipItemDto equipItem(Long itemId, UserDetailsImpl userDetails) {
-        Character character = userDetails.getMember().getCharacter();
+        Long memberId = userDetails.getMember().getId();
+        Member member = memberRepository.findById(memberId).orElseThrow(
+                () -> new IllegalArgumentException("아이디가 존재하지 않습니다.")
+        );
+        Character character = member.getCharacter();
         Item item = findItem(itemId);
 
         Optional<Inventory> found = inventoryRepository.findByCharacterAndItem(character, item);
@@ -137,17 +158,32 @@ public class ItemService {
 
         EquipItem equipItem = character.getEquipItem();
         Category category = item.getCategory();
+
+        logger.warn(String.valueOf(equipItem.getAccessoryId()));
+        logger.warn(String.valueOf(equipItem.getClothId()));
+        logger.warn(String.valueOf(equipItem.getHairId()));
+        logger.warn(String.valueOf(equipItem.getHatId()));
+
         switch(category){
             case HAT:
                 equipItem.updateHat(itemId);
-            case ACCESSORY:
-                equipItem.updateAccessory(itemId);
+                break;
             case HAIR:
                 equipItem.updateHair(itemId);
+                break;
+            case ACCESSORY:
+                equipItem.updateAccessory(itemId);
+                break;
             case CLOTH:
                 equipItem.updateCloth(itemId);
+                break;
         }
         equipItemRepository.save(equipItem);          //save 안해줘도 되나?
+
+        logger.warn(String.valueOf(equipItem.getAccessoryId()));
+        logger.warn(String.valueOf(equipItem.getClothId()));
+        logger.warn(String.valueOf(equipItem.getHairId()));
+        logger.warn(String.valueOf(equipItem.getHatId()));
 
         return getEquipItemDto(item);
     }

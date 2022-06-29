@@ -2,11 +2,13 @@ package com.hanghae.todoli.models;
 
 import com.hanghae.todoli.dto.ItemRequestDto;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
 
 @Entity
 @Getter
+@NoArgsConstructor
 public class Item {
 
     @Id
@@ -16,6 +18,7 @@ public class Item {
     @Column
     private String name;
 
+    @Enumerated(EnumType.STRING)
     @Column
     private Category category;
 

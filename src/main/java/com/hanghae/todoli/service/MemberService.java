@@ -11,11 +11,13 @@ import com.hanghae.todoli.repository.MemberRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
+@Transactional(readOnly = true)
 public class MemberService {
 
     private final PasswordEncoder passwordEncoder;
@@ -24,6 +26,7 @@ public class MemberService {
     private final EquipItemRepository equipItemRepository;
 
     //회원가입
+    @Transactional
     public void signup(SignupRequestDto signupRequestDto) {
         String username = signupRequestDto.getUsername();
         String nickname = signupRequestDto.getNickname();
@@ -43,6 +46,7 @@ public class MemberService {
     }
 
 
+    @Transactional
     public Member login(LoginRequestDto loginRequestDto) {
         String username = loginRequestDto.getUsername();
         Member Member = memberRepository.findByUsername(username).orElseThrow(
@@ -55,6 +59,7 @@ public class MemberService {
         return Member;
     }
 
+    @Transactional
     //아이디 중복확인
     private void idCheck(String username) {
         Optional<Member> found = memberRepository.findByUsername(username);

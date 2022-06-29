@@ -26,9 +26,6 @@ public class Member {
     private String password;
 
     @Column
-    private Long googleId;
-
-    @Column
     private Boolean matchingState;
 
     @OneToOne(fetch = FetchType.LAZY)
