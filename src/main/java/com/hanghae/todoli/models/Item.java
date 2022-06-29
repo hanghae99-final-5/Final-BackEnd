@@ -1,8 +1,12 @@
 package com.hanghae.todoli.models;
 
+import lombok.Getter;
+import org.hibernate.annotations.GeneratorType;
+
 import javax.persistence.*;
 
 @Entity
+@Getter
 public class Item {
 
     @Id
