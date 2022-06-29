@@ -26,6 +26,8 @@ public class EquipItem {
     @Column
     private Long clothId;
 
+
+
 //    public EquipItem(Character character) {
 //        this.id = character.getId();
 //    }

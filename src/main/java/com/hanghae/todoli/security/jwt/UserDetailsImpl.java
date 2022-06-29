@@ -15,10 +15,6 @@ public class UserDetailsImpl implements UserDetails {
         this.Member = Member;
     }
 
-    public UserDetailsImpl(Member member) {
-        this.member = member;
-    }
-
     public Member getMember() {
         return Member;
     }

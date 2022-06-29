@@ -10,4 +10,7 @@ public interface MatchingRepository extends JpaRepository<Matching, Long> {
     //내 아이디로 매칭 상대 아이디 찾기
     @Query("select m from Matching m where m.requesterId = :requesterId")
     Long getRespondentId(@Param("requesterId")Long requesterId);
+
+    @Query("select m from Matching m where m.requesterId = :memberId or m.respondentId = :memberId")
+    Matching getMatching(@Param("memberId")Long memberId);
 }
