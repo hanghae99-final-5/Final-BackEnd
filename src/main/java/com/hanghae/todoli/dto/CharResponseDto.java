@@ -19,7 +19,7 @@ public class CharResponseDto {
     private int money;
     private String charImg;
 
-    private List<EquipItemListDto> listDto;
+    private List<EquipItemListDto> listDto;  //List<EquipItemListDto> listDto
 
     //상대방 캐릭터 상태
     @Data
