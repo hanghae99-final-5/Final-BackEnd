@@ -44,8 +44,9 @@ public class Character {
     private EquipItem equipItem;
 
 
-    public void minMoney(int price){
+    public void minMoney(int price) {
         this.money -= price;
+    }
 
     public Character(EquipItem equipItem) {
         this.equipItem = equipItem;
