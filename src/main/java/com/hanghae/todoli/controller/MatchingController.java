@@ -44,6 +44,9 @@ public class MatchingController {
     //매칭 수락기능
     @PostMapping("/api/users/acceptance/{senderId}")
     public void acceptMatching(@PathVariable Long senderId, @AuthenticationPrincipal UserDetailsImpl userDetails) {
+        if (userDetails.getMember().getMatchingState()) {
+            throw new IllegalArgumentException("이미 매칭되었습니다.");
+        }
         matchingService.acceptMatching(senderId, userDetails);
     }
 

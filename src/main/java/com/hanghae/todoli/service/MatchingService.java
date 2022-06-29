@@ -7,6 +7,7 @@ import com.hanghae.todoli.repository.*;
 import com.hanghae.todoli.security.jwt.UserDetailsImpl;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -15,6 +16,7 @@ import java.util.List;
 
 @Service
 @RequiredArgsConstructor
+@Transactional(readOnly = true)
 public class MatchingService {
 
     private final MemberRepository memberRepository;
@@ -52,6 +54,7 @@ public class MatchingService {
     }
 
     //상대방 초대
+    @Transactional
     public void inviteMatching(Long memberId, UserDetailsImpl userDetails) {
         Alarm alarm = new Alarm();
         //상대방 찾기
@@ -74,8 +77,14 @@ public class MatchingService {
     }
 
     //매칭 취소
+    @Transactional
     public void cancelMatching(Long memberId, UserDetailsImpl userDetails) {
-        Member member = userDetails.getMember();
+        Long id = userDetails.getMember().getId();
+        Member member = memberRepository.findById(id).orElseThrow(
+                () -> new IllegalArgumentException("로그인한 상태가 없습니다.")
+        );
+//        Member member = userDetails.getMember();
+
         //상대방 찾기
         Member targetMember = memberRepository.findById(memberId).orElseThrow(
                 () -> new IllegalArgumentException("상대방이 존재하지 않습니다.")
@@ -92,8 +101,13 @@ public class MatchingService {
     }
 
     //매칭 수락
-   public void acceptMatching(Long senderId, UserDetailsImpl userDetails) {
-        Member member = userDetails.getMember();
+    @Transactional
+    public void acceptMatching(Long senderId, UserDetailsImpl userDetails) {
+        Long id = userDetails.getMember().getId();
+        Member member = memberRepository.findById(id).orElseThrow(
+                () -> new IllegalArgumentException("로그인한 상태가 없습니다.")
+        );
+//        Member member = userDetails.getMember();
         Member sender = memberRepository.findById(senderId).orElseThrow(
                 () -> new IllegalArgumentException("상대방이 없습니다.")
         );
@@ -103,7 +117,7 @@ public class MatchingService {
         sender.changeMatchingState(sender);
 
         //매칭에 매칭 정보 저장
-        Matching matching = new Matching(senderId,member.getId());
+        Matching matching = new Matching(senderId, member.getId());
         matchingRepository.save(matching);
     }
 

@@ -49,6 +49,6 @@ public class Member {
     }
 
     public void changeMatchingState(Member member) {
-        this.matchingState = (member.getMatchingState()) ? false : true;
+        this.matchingState = !member.getMatchingState();
     }
 }
