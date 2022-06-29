@@ -17,5 +17,5 @@ public class MatchingResponseDto {
     private String nickname;
     private Boolean matchingState;
     private String charImg;
-    private List<ItemListDto> equipItems;
+    private List<EquipItemDto> equipItems;
 }

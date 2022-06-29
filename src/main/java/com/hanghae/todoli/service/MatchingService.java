@@ -1,6 +1,6 @@
 package com.hanghae.todoli.service;
 
-import com.hanghae.todoli.dto.ItemListDto;
+import com.hanghae.todoli.dto.EquipItemDto;
 import com.hanghae.todoli.dto.MatchingResponseDto;
 import com.hanghae.todoli.models.*;
 import com.hanghae.todoli.repository.*;
@@ -13,6 +13,7 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -25,7 +26,7 @@ public class MatchingService {
     private final MatchingRepository matchingRepository;
     private final TodoRepository todoRepository;
 
-    List<ItemListDto> itemList = new ArrayList<>();
+    List<EquipItemDto> itemList = new ArrayList<>();
 
     //상대방 찾기
     public MatchingResponseDto searchMember(String username) {
@@ -89,7 +90,9 @@ public class MatchingService {
         Member targetMember = memberRepository.findById(memberId).orElseThrow(
                 () -> new IllegalArgumentException("상대방이 존재하지 않습니다.")
         );
-        Matching matching = matchingRepository.getMatching(member.getId());
+        Matching matching = matchingRepository.getMatching(member.getId()).orElseThrow(
+                () -> new IllegalArgumentException("매칭상태가 없습니다.")
+        );
         //매칭 정보 삭제
         matchingRepository.delete(matching);
         //멤버의 매칭 상태 변경
@@ -123,12 +126,13 @@ public class MatchingService {
 
     //아이템 리스트dto에 추가
     public void addItem(Long id) {
-        ItemListDto itemListDto = new ItemListDto();
+        EquipItemDto equipItemDto = new EquipItemDto();
         if (id != null) {
             Item item = itemRepository.findById(id).orElse(null);
-            itemListDto.setItemId(id);
-            itemListDto.setEquipImg(item.getEquipImg());
-            itemList.add(itemListDto);
+            equipItemDto.setItemId(id);
+            equipItemDto.setEquipImg(item.getEquipImg());
+            equipItemDto.setCategory(item.getCategory());
+            itemList.add(equipItemDto);
         }
     }
 }

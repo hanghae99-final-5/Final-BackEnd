@@ -1,7 +1,8 @@
 package com.hanghae.todoli.service;
 
 import com.hanghae.todoli.dto.CharResponseDto;
-import com.hanghae.todoli.dto.EquipItemListDto;
+import com.hanghae.todoli.dto.EquipItemDto
+        ;
 import com.hanghae.todoli.models.*;
 import com.hanghae.todoli.models.Character;
 import com.hanghae.todoli.repository.ItemRepository;
@@ -32,7 +33,8 @@ public class CharacterService {
         Character c = m.getCharacter();
 
         //캐릭터가 장착한 아이템에서 필요한 정보 가져오기
-        List<EquipItemListDto> itemList = getListDtos(c);
+        List<EquipItemDto
+                > itemList = getListDtos(c);
 
         return CharResponseDto.builder()
                 .matchingState(m.getMatchingState())
@@ -64,7 +66,8 @@ public class CharacterService {
         );
 
         Character c = partner.getCharacter();
-        List<EquipItemListDto> memberItems = getListDtos(c);
+        List<EquipItemDto
+                > memberItems = getListDtos(c);
 
         return CharResponseDto.PartnerDto.builder()
                 .memberId(partner.getId())
@@ -81,28 +84,34 @@ public class CharacterService {
 
 
     //캐릭터가 장착한 아이템에서 필요한 정보 가져오기
-    private List<EquipItemListDto> getListDtos(Character c) {
+    private List<EquipItemDto
+            > getListDtos(Character c) {
         Long hairId = c.getEquipItem().getHairId();
         Long accessoryId = c.getEquipItem().getAccessoryId();
         Long clothId = c.getEquipItem().getClothId();
         Long hatId = c.getEquipItem().getHatId();
 
-        List<EquipItemListDto>itemList = new ArrayList<>();
+        List<EquipItemDto
+                >itemList = new ArrayList<>();
 
         if(hairId !=null){
-            EquipItemListDto hair = addItem(hairId);
+            EquipItemDto
+                    hair = addItem(hairId);
             itemList.add(hair);
         }
         if(accessoryId !=null){
-            EquipItemListDto accessory = addItem(accessoryId);
+            EquipItemDto
+                    accessory = addItem(accessoryId);
             itemList.add(accessory);
         }
         if(clothId !=null){
-            EquipItemListDto cloth = addItem(clothId);
+            EquipItemDto
+                    cloth = addItem(clothId);
             itemList.add(cloth);
         }
         if(hatId !=null){
-            EquipItemListDto hat = addItem(hatId);
+            EquipItemDto
+                    hat = addItem(hatId);
             itemList.add(hat);
         }
 
@@ -110,8 +119,12 @@ public class CharacterService {
     }
 
     //장착된 아이템에서 원하는 정보만 가져오기
-    public EquipItemListDto addItem(Long itemId) {
-        EquipItemListDto itemListDto = new EquipItemListDto();
+    public EquipItemDto
+    addItem(Long itemId) {
+        EquipItemDto
+                itemListDto = new EquipItemDto(
+
+        );
         if (itemId != null) {
             Item item = itemRepository.findById(itemId).orElse(null);
             itemListDto.setItemId(itemId);
