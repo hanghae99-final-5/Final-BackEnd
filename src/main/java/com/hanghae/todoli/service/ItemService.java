@@ -129,7 +129,7 @@ public class ItemService {
     }
 
 
-    //아이템 장착                equipItem에 접근해서 patch.(switch문)
+    //아이템 장착
     @Transactional
     public EquipItemDto equipItem(Long itemId, UserDetailsImpl userDetails) {
         Character character = userDetails.getMember().getCharacter();
@@ -166,6 +166,4 @@ public class ItemService {
                 .build();
         return equipItemDto;
     }
-
-
 }
