@@ -37,4 +37,7 @@ public class Character {
 
     @OneToMany
     private List<Inventory> inventory = new ArrayList<>();
+
+    @OneToOne(fetch = FetchType.LAZY)
+    private EquipItem equipItem;
 }
