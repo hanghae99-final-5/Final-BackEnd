@@ -52,6 +52,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
                 // api 요청 접근허용
                 .antMatchers("/api/**").permitAll()
+                .antMatchers("/h2-console/**").permitAll()
                 // 그 외 모든 요청은 인증과정 필요
                 .anyRequest().authenticated()
                 .and()
