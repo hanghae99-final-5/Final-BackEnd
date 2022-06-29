@@ -1,10 +1,13 @@
 package com.hanghae.todoli.models;
 
+import lombok.Getter;
+
 import javax.persistence.*;
 import java.util.ArrayList;
 import java.util.List;
 
 @Entity
+@Getter
 public class Character {
 
     @Id
@@ -34,4 +37,8 @@ public class Character {
 
     @OneToMany
     private List<Inventory> inventory = new ArrayList<>();
+
+    public void minMoney(int price){
+        this.money -= price;
+    }
 }
