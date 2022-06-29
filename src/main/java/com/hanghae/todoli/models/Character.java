@@ -43,6 +43,10 @@ public class Character {
     @OneToOne(fetch = FetchType.LAZY)
     private EquipItem equipItem;
 
+
+    public void minMoney(int price){
+        this.money -= price;
+
     public Character(EquipItem equipItem) {
         this.equipItem = equipItem;
         this.charImg = "charImg";
@@ -52,5 +56,6 @@ public class Character {
         this.exp = 0;
         this.level = 1;
         this.money = 100;
+
     }
 }
