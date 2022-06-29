@@ -38,6 +38,9 @@ public class Character {
     @OneToMany
     private List<Inventory> inventory = new ArrayList<>();
 
+    @OneToOne(fetch = FetchType.LAZY)
+    private EquipItem equipItem;
+
     public void minMoney(int price){
         this.money -= price;
     }

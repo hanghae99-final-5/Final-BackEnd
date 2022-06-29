@@ -6,6 +6,7 @@ import com.hanghae.todoli.dto.ItemResponseDto;
 import com.hanghae.todoli.models.*;
 import com.hanghae.todoli.models.Character;
 import com.hanghae.todoli.repository.CharacterRepository;
+import com.hanghae.todoli.repository.EquipItemRepository;
 import com.hanghae.todoli.repository.InventoryRepository;
 import com.hanghae.todoli.repository.ItemRepository;
 import com.hanghae.todoli.security.jwt.UserDetailsImpl;
@@ -26,6 +27,7 @@ public class ItemService {
     private final InventoryRepository inventoryRepository;
 
     private final CharacterRepository characterRepository;
+    private final EquipItemRepository equipItemRepository;
 
     //가지고있는 아이템들 조회
     @Transactional
@@ -104,7 +106,7 @@ public class ItemService {
 
         if(exist == null){
             //계산
-            if(character.getMoney() > buyItem.getPrice()){
+            if(character.getMoney() >= buyItem.getPrice()){
                 character.minMoney(buyItem.getPrice());     //charRepository에 저장해야하나???
                 characterRepository.save(character);
             }
@@ -127,21 +129,43 @@ public class ItemService {
     }
 
 
-    //아이템 장착                어느 유저가 어떤 아이템을 꼈는지, 또 그 아이템을 샀는지   equipItem에 접근해서 patch.
+    //아이템 장착                equipItem에 접근해서 patch.(switch문)
     @Transactional
     public EquipItemDto equipItem(Long itemId, UserDetailsImpl userDetails) {
-        Item item = itemRepository.findById(itemId).orElseThrow(
-                ()-> new IllegalArgumentException("아이템이 존재하지 않습니다.")
-        );
+        Character character = userDetails.getMember().getCharacter();
+        Item item = findItem(itemId);
 
+        Optional<Inventory> found = inventoryRepository.findByCharacterAndItem(character, item);
+        if(found.isEmpty())
+            throw new IllegalArgumentException("아이템을 먼저 구매해 주세요.");
 
-         EquipItemDto equipItemDto = EquipItemDto.builder()
-                 .itemId(item.getId())
-                 .equipImg()
-                 .category()
-                 .build();
+        EquipItem equipItem = character.getEquipItem();
+        Category category = item.getCategory();
+        EquipItemDto equipItemDto = getEquipItemDto(item);
 
+        switch(category){
+            case HAT:
+                equipItem.updateHat(itemId);
+            case ACCESSORY:
+                equipItem.updateAccessory(itemId);
+            case HAIR:
+                equipItem.updateHair(itemId);
+            case CLOTH:
+                equipItem.updateCloth(itemId);
+        }
+        equipItemRepository.save(equipItem);          //save 안해줘도 되나?
         return equipItemDto;
     }
+
+    //장착하는 아이템에 대한 정보를 가져온다.
+    private EquipItemDto getEquipItemDto(Item item) {
+        EquipItemDto equipItemDto = EquipItemDto.builder()
+                .itemId(item.getId())
+                .equipImg(item.getEquipImg())
+                .category(item.getCategory())
+                .build();
+        return equipItemDto;
+    }
+
 
 }
