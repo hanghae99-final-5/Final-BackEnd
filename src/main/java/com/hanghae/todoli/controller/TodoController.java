@@ -14,13 +14,28 @@ import org.springframework.web.bind.annotation.*;
 @RequiredArgsConstructor
 public class TodoController {
 
+    /**
+     * 투두 등록
+     *  - 매칭 아이디가 null이면 투두 작성 불가 -> '파트너를 매칭하세요!' 메시지 return
+     *  - 로그인 중인 회원 정보 가져와서 작성자 정보에 입력
+     *  - 작성자 정보 중 매칭 번호 저장
+     *
+     * 투두 조회
+     *  - 투두 작성자
+     *  - 작성자와 매칭중인 사용자만 볼 수 있도록
+     *      - 매칭 번호가 작성자의 매칭 번호와 일치 하는지 확인
+     *
+     * 투두 완료 처리
+     *  -
+     *
+     */
+
     private final TodoService todoService;
 
     // 투두 등록
     @PostMapping("/todos")
     public void todoRegister(@RequestBody TodoRequestDto requestDto,
                              @AuthenticationPrincipal UserDetailsImpl userDetails) {
-
         todoService.registerTodo(requestDto, userDetails);
     }
 }

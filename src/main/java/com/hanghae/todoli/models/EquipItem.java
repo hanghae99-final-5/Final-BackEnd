@@ -25,4 +25,19 @@ public class EquipItem {
 
     @Column
     private Long clothId;
+
+
+    public void updateHat(Long hatId){
+        this.hatId = hatId;
+    }
+    public void updateAccessory(Long accessoryId){
+        this.accessoryId = accessoryId;
+    }
+    public void updateHair(Long hairId){
+        this.hairId = hairId;
+    }
+    public void updateCloth(Long clothId){
+        this.clothId = clothId;
+    }
+
 }
