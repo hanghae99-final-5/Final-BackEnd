@@ -1,8 +1,13 @@
 package com.hanghae.todoli.models;
 
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+
 import javax.persistence.*;
 
 @Entity
+@Getter
+@NoArgsConstructor
 public class EquipItem {
 
     @Id
@@ -20,6 +25,7 @@ public class EquipItem {
 
     @Column
     private Long clothId;
+
 
     public void updateHat(Long hatId){
         this.hatId = hatId;

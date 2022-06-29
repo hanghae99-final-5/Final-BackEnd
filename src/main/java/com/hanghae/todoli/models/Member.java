@@ -1,6 +1,5 @@
 package com.hanghae.todoli.models;
 
-import com.fasterxml.jackson.annotation.JsonManagedReference;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -41,9 +40,11 @@ public class Member {
     @OneToMany
     private List<Todo> todos = new ArrayList<>();
 
-    public Member(String username, String nickname, String pw) {
+    public Member(String username, String nickname, String password, Boolean matchingState, Character character) {
+        this.character = character;
         this.username = username;
         this.nickname = nickname;
-        this.password = pw;
+        this.password = password;
+        this.matchingState = matchingState;
     }
 }
