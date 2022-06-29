@@ -23,8 +23,8 @@ public class MatchingController {
     }
 
     //매칭 초대기능
-    @PostMapping("/api/users/{memberId}")
-    public void inviteMatching(@PathVariable Long memberId,@AuthenticationPrincipal UserDetailsImpl userDetails) {
+    @PostMapping("/api/users/invitation/{memberId}")
+    public void inviteMatching(@PathVariable Long memberId, @AuthenticationPrincipal UserDetailsImpl userDetails) {
         if (userDetails.getMember().getMatchingState()) {
             throw new IllegalArgumentException("이미 매칭중입니다.");
         }
@@ -33,12 +33,18 @@ public class MatchingController {
     }
 
     //매칭 취소기능
-    @PatchMapping("/api/users/{memberId}")
-    public void cancelMatching(@PathVariable Long memberId,@AuthenticationPrincipal UserDetailsImpl userDetails) {
+    @PatchMapping("/api/users/cancel/{memberId}")
+    public void cancelMatching(@PathVariable Long memberId, @AuthenticationPrincipal UserDetailsImpl userDetails) {
         if (!userDetails.getMember().getMatchingState()) {
             throw new IllegalArgumentException("매칭해야 합니다.");
         }
         matchingService.cancelMatching(memberId, userDetails);
+    }
+
+    //매칭 수락기능
+    @PostMapping("/api/users/acceptance/{senderId}")
+    public void acceptMatching(@PathVariable Long senderId, @AuthenticationPrincipal UserDetailsImpl userDetails) {
+        matchingService.acceptMatching(senderId, userDetails);
     }
 
     //자신의 매칭 상태 체크

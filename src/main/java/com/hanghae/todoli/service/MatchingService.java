@@ -25,7 +25,7 @@ public class MatchingService {
 
     List<ItemListDto> itemList = new ArrayList<>();
 
-    //매칭된 상대방 찾기
+    //상대방 찾기
     public MatchingResponseDto searchMember(String username) {
         Member member = memberRepository.findByUsername(username).orElseThrow(
                 () -> new IllegalArgumentException("유저가 존재하지 않습니다.")
@@ -64,25 +64,13 @@ public class MatchingService {
 
         //현재 날짜 출력
         Date now = new Date();
-        SimpleDateFormat date = new SimpleDateFormat("yyyy/MM/dd");
+        SimpleDateFormat date = new SimpleDateFormat("yyyyMMdd");
         alarm.setAlarmDate(date.format(now));
         alarm.setMember(targetMember);
         alarm.setSenderId(userDetails.getMember().getId());
         alarm.setMessage(userDetails.getMember().getNickname() + "님과 함께하시겠습니까?");
 
         alarmRepository.save(alarm);
-    }
-
-
-    //아이템 리스트dto에 추가
-    public void addItem(Long id) {
-        ItemListDto itemListDto = new ItemListDto();
-        if (id != null) {
-            Item item = itemRepository.findById(id).orElse(null);
-            itemListDto.setItemId(id);
-            itemListDto.setEquipImg(item.getEquipImg());
-            itemList.add(itemListDto);
-        }
     }
 
     //매칭 취소
@@ -101,5 +89,32 @@ public class MatchingService {
         //멤버의 투두리스트 삭제
         todoRepository.deleteAllByWriterId(member.getId());
         todoRepository.deleteAllByWriterId(targetMember.getId());
+    }
+
+    //매칭 수락
+   public void acceptMatching(Long senderId, UserDetailsImpl userDetails) {
+        Member member = userDetails.getMember();
+        Member sender = memberRepository.findById(senderId).orElseThrow(
+                () -> new IllegalArgumentException("상대방이 없습니다.")
+        );
+
+        //멤버의 매칭 상태 변경
+        member.changeMatchingState(member);
+        sender.changeMatchingState(sender);
+
+        //매칭에 매칭 정보 저장
+        Matching matching = new Matching(senderId,member.getId());
+        matchingRepository.save(matching);
+    }
+
+    //아이템 리스트dto에 추가
+    public void addItem(Long id) {
+        ItemListDto itemListDto = new ItemListDto();
+        if (id != null) {
+            Item item = itemRepository.findById(id).orElse(null);
+            itemListDto.setItemId(id);
+            itemListDto.setEquipImg(item.getEquipImg());
+            itemList.add(itemListDto);
+        }
     }
 }
