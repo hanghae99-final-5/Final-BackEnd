@@ -1,9 +1,16 @@
 package com.hanghae.todoli.models;
 
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+
 import javax.persistence.*;
 
+@Getter
+@Setter
 @Entity
-public class Todo {
+@NoArgsConstructor
+public class Todo extends Timestamped{
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -29,4 +36,8 @@ public class Todo {
 
     @Column
     private Boolean complitionState;
+
+    @ManyToOne
+    @JoinColumn(name = "MEMBER_ID")
+    private Member writer;
 }

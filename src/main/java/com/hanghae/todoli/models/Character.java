@@ -1,6 +1,7 @@
 package com.hanghae.todoli.models;
 
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
 import java.util.ArrayList;
@@ -8,6 +9,7 @@ import java.util.List;
 
 @Entity
 @Getter
+@NoArgsConstructor
 public class Character {
 
     @Id
@@ -40,4 +42,15 @@ public class Character {
 
     @OneToOne(fetch = FetchType.LAZY)
     private EquipItem equipItem;
+
+    public Character(EquipItem equipItem) {
+        this.equipItem = equipItem;
+        this.charImg = "charImg";
+        this.maxHp = 100;
+        this.hp = 100;
+        this.maxExp = 100;
+        this.exp = 0;
+        this.level = 1;
+        this.money = 100;
+    }
 }
