@@ -1,6 +1,7 @@
 package com.hanghae.todoli.security.jwt;
 
 import com.hanghae.todoli.models.Member;
+
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
@@ -12,6 +13,10 @@ public class UserDetailsImpl implements UserDetails {
 
     public UserDetailsImpl(Member Member) {
         this.Member = Member;
+    }
+
+    public UserDetailsImpl(Member member) {
+        this.member = member;
     }
 
     public Member getMember() {

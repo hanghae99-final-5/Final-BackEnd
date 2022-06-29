@@ -20,22 +20,22 @@ public class Character {
     private String charImg;
 
     @Column
-    private int maxHp;
+    private int maxHp = 100;
 
     @Column
-    private int hp;
+    private int hp = 100;
 
     @Column
-    private int maxExp;
+    private int maxExp = 100;
 
     @Column
-    private int exp;
+    private int exp = 0;
 
     @Column
-    private int level;
+    private int level = 1;
 
     @Column
-    private int money;
+    private int money = 10;
 
     @OneToMany
     private List<Inventory> inventory = new ArrayList<>();

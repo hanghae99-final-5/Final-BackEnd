@@ -7,6 +7,7 @@ import com.hanghae.todoli.googleLogin.OAuthService;
 import com.hanghae.todoli.googleLogin.SocialLoginType;
 import com.hanghae.todoli.models.Member;
 import com.hanghae.todoli.security.jwt.JwtTokenProvider;
+import com.hanghae.todoli.security.jwt.UserDetailsImpl;
 import com.hanghae.todoli.service.MemberService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -36,8 +37,8 @@ public class MemberController {
     //로그인
     @PostMapping("/api/users/login")
     public void login(HttpServletResponse response, @RequestBody LoginRequestDto loginRequestDto) {
-        Member Member = memberService.login(loginRequestDto);
-        String token = jwtTokenProvider.createToken(Member.getUsername());
+        Member member = memberService.login(loginRequestDto);
+        String token = jwtTokenProvider.createToken(member.getUsername());
         response.addHeader("Authorization", token);
         System.out.println(token);
     }
