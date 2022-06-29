@@ -87,17 +87,25 @@ public class CharacterService {
         Long clothId = c.getEquipItem().getClothId();
         Long hatId = c.getEquipItem().getHatId();
 
-        //장착된 아이템에서 원하는 정보만 가져오기
-        EquipItemListDto accessory = addItem(accessoryId);
-        EquipItemListDto cloth = addItem(clothId);
-        EquipItemListDto hair = addItem(hairId);
-        EquipItemListDto hat = addItem(hatId);
-
         List<EquipItemListDto>itemList = new ArrayList<>();
-        itemList.add(accessory);
-        itemList.add(cloth);
-        itemList.add(hair);
-        itemList.add(hat);
+
+        if(hairId !=null){
+            EquipItemListDto hair = addItem(hairId);
+            itemList.add(hair);
+        }
+        if(accessoryId !=null){
+            EquipItemListDto accessory = addItem(accessoryId);
+            itemList.add(accessory);
+        }
+        if(clothId !=null){
+            EquipItemListDto cloth = addItem(clothId);
+            itemList.add(cloth);
+        }
+        if(hatId !=null){
+            EquipItemListDto hat = addItem(hatId);
+            itemList.add(hat);
+        }
+
         return itemList;
     }
 
@@ -112,5 +120,4 @@ public class CharacterService {
         }
         return itemListDto;
     }
-
 }
