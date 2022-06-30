@@ -25,7 +25,7 @@ public class ItemController {
     }
 
     //상점 아이템 목록 조회
-    @GetMapping("/api/Items")
+    @GetMapping("/api/items")
     public ItemResponseDto getShopItemList(@AuthenticationPrincipal UserDetailsImpl userDetails){
         return itemService.getShopItemList(userDetails);
     }
