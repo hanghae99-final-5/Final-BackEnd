@@ -50,7 +50,10 @@ public class TodoController {
     }
 
     // 투두 조회
-    @GetMapping("/todos/{}")
+    @GetMapping("/mytodos")
+    public TodoResponseDto getMyTodos(@AuthenticationPrincipal UserDetailsImpl userDetails){
+        return todoService.getMyTodos(userDetails);
+    }
 
     //투두 인증해주기
     @PatchMapping("/todos/confirm/{todoId}")
@@ -59,7 +62,7 @@ public class TodoController {
     }
 
     //투두 완료(경험치, 돈 획득)
-    @PatchMapping("/todos/complition/{todoId}")
+    @PatchMapping("/todos/completion/{todoId}")
     public TodoCompletionDto completionTodo(@PathVariable Long todoId, @AuthenticationPrincipal UserDetailsImpl userDetails) {
         return todoService.completionTodo(todoId, userDetails);
     }

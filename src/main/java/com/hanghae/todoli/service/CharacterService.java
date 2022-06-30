@@ -1,8 +1,7 @@
 package com.hanghae.todoli.service;
 
 import com.hanghae.todoli.dto.CharResponseDto;
-import com.hanghae.todoli.dto.EquipItemDto
-        ;
+import com.hanghae.todoli.dto.EquipItemDto;
 import com.hanghae.todoli.models.*;
 import com.hanghae.todoli.models.Character;
 import com.hanghae.todoli.repository.ItemRepository;
