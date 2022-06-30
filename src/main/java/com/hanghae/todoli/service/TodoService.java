@@ -1,8 +1,8 @@
 package com.hanghae.todoli.service;
 
-import com.hanghae.todoli.dto.TodoRegisterDto;
 import com.hanghae.todoli.dto.TodoCompletionDto;
 import com.hanghae.todoli.dto.TodoConfirmDto;
+import com.hanghae.todoli.dto.TodoRegisterDto;
 import com.hanghae.todoli.models.Alarm;
 import com.hanghae.todoli.models.Character;
 import com.hanghae.todoli.models.Member;
@@ -19,20 +19,46 @@ import org.springframework.stereotype.Service;
 import javax.transaction.Transactional;
 import java.text.SimpleDateFormat;
 import java.util.Date;
-import java.util.Optional;
-
 
 @Slf4j
 @Service
 @RequiredArgsConstructor
 public class TodoService {
 
+    /**
+     * 투두 등록
+     * - 로그인 중인 회원 정보 가져와서 작성자 정보에 입력
+     * - 매칭 아이디가 false면 투두 작성 불가 -> '파트너를 매칭하세요!' 메시지 return
+     * - 작성자 정보 중 매칭 상태 저장
+     * <p>
+     * 투두 조회
+     * - 투두 작성자
+     * - 작성자와 매칭중인 사용자만 볼 수 있도록
+     * - 매칭 번호가 작성자의 매칭 번호와 일치 하는지 확인
+     * - 작성자 정보 중 매칭 상태 포함 return
+     * <p>
+     * 투두 완료 처리
+     * -
+     * <p>
+     * 사진 등록 및 재등록
+     * - 사진 등록시 인증일 = 종료일 + 3 으로 설정
+     * <p>
+     * 투두 삭제
+     * - 투두 작성자와 로그인 유저가 일치
+     * - 일치 -> 삭제
+     * - 불일치 -> '투두 작성자가 아닙니다!'
+     */
+
     private final TodoRepository todoRepository;
     private final AlarmRepository alarmRepository;
     private final MemberRepository memberRepository;
+
     private final CharacterRepository characterRepository;
 
     // 투두 등록
+    //TODO
+    //  작성자 정보 중 매칭 상태 저장
+
     @Transactional
     public void registerTodo(TodoRegisterDto registerDto, UserDetailsImpl userDetails) {
 
@@ -60,9 +86,9 @@ public class TodoService {
                 () -> new IllegalArgumentException("todo가 존재하지 않습니다.")
         );
         todo.setConfirmState(true);
-        //todoRepository.save(todo);      // 테스트 해봐야 함.
+        //todoRepository.save(todo);    // 테스트 필요
 
-        Alarm alarm = new Alarm();
+       Alarm alarm = new Alarm();
         Date now = new Date();
         SimpleDateFormat date = new SimpleDateFormat("yyyyMMdd");
         alarm.setAlarmDate(date.format(now));
@@ -93,7 +119,7 @@ public class TodoService {
         // 투두 완료
         if(!todo.getCompletionState())
             todo.completionState();
-        //todoRepository.save(todo); // 테스트 해봐야함
+        //todoRepository.save(todo);    // 테스트 필요
 
 
         Character character = member.getCharacter();
