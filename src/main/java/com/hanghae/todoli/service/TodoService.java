@@ -1,12 +1,13 @@
 package com.hanghae.todoli.service;
 
-import com.hanghae.todoli.dto.TodoRegisterDto;
-import com.hanghae.todoli.dto.TodoCompletionDto;
-import com.hanghae.todoli.dto.TodoConfirmDto;
-import com.hanghae.todoli.models.Alarm;
-import com.hanghae.todoli.models.Character;
+import com.hanghae.todoli.dto.*;
+import com.hanghae.todoli.models.Matching;
 import com.hanghae.todoli.models.Member;
 import com.hanghae.todoli.models.Todo;
+import com.hanghae.todoli.repository.MatchingRepository;
+import com.hanghae.todoli.models.Alarm;
+import com.hanghae.todoli.models.Character;
+
 import com.hanghae.todoli.repository.AlarmRepository;
 import com.hanghae.todoli.repository.CharacterRepository;
 import com.hanghae.todoli.repository.MemberRepository;
@@ -17,6 +18,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
+import java.util.ArrayList;
+import java.util.List;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Optional;
@@ -28,8 +31,11 @@ import java.util.Optional;
 public class TodoService {
 
     private final TodoRepository todoRepository;
-    private final AlarmRepository alarmRepository;
     private final MemberRepository memberRepository;
+
+    private final MatchingRepository matchingRepository;
+    private final AlarmRepository alarmRepository;
+
     private final CharacterRepository characterRepository;
 
     // 투두 등록
@@ -91,7 +97,7 @@ public class TodoService {
         );
 
         // 투두 완료
-        if(!todo.getCompletionState())
+        if (!todo.getCompletionState())
             todo.completionState();
         //todoRepository.save(todo); // 테스트 해봐야함
 
@@ -101,8 +107,8 @@ public class TodoService {
         int maxExp = character.getMaxExp();
 
         //난이도별 보상, 레벨업
-       int difficulty = todo.getDifficulty();
-        switch (difficulty){
+        int difficulty = todo.getDifficulty();
+        switch (difficulty) {
             case 1:
                 character.setMoneyAndExp(10, 5);
                 //characterRepository.save(character); // 테스트 해보기
@@ -153,5 +159,40 @@ public class TodoService {
         }
 
         todoRepository.deleteById(id);
+    }
+
+    //상대방 투두 조회
+    public TodoResponseDto getPairTodos(Long memberId, UserDetailsImpl userDetails) {
+        Long id = userDetails.getMember().getId();
+        Matching matching = matchingRepository.getMatching(id).orElseThrow(
+                () -> new IllegalArgumentException("매칭되어있지 않습니다.")
+        );
+        Long partnerId = id.equals(matching.getRequesterId()) ? matching.getRespondentId() : matching.getRequesterId();
+        if (!memberId.equals(partnerId)) {
+            throw new IllegalArgumentException("매칭되어있는 상대가 아닙니다.");
+        }
+        Member member = memberRepository.findById(id).orElse(null);
+        Boolean matchingState = member.getMatchingState();
+
+        List<MatchingStateResponseDto> matchingStateDto = new ArrayList<>();
+        MatchingStateResponseDto matchingStateResponseDto = new MatchingStateResponseDto(matchingState);
+        matchingStateDto.add(matchingStateResponseDto);
+
+        List<TodoInfoDto> todoInfoDtoList = new ArrayList<>();
+        List<Todo> todos = todoRepository.findAllByWriterId(memberId);
+        for (Todo todo : todos) {
+            TodoInfoDto todoInfoDto = TodoInfoDto.builder()
+                    .todoId(todo.getId())
+                    .content(todo.getContent())
+                    .proofImg(todo.getProofImg())
+                    .startDate(todo.getStartDate())
+                    .endDate(todo.getEndDate())
+                    .difficulty(todo.getDifficulty())
+                    .confirmState(todo.getConfirmState())
+                    .completionState(todo.getCompletionState())
+                    .build();
+            todoInfoDtoList.add(todoInfoDto);
+        }
+        return new TodoResponseDto(matchingStateDto, todoInfoDtoList);
     }
 }
