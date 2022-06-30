@@ -49,4 +49,10 @@ public class TodoController {
                            @AuthenticationPrincipal UserDetailsImpl userDetails) {
         todoService.deleteTodo(id, userDetails);
     }
+
+    //상대방 투두 조회
+    @GetMapping("/todos/pair/{memberId}")
+    public void getPairTodos(@PathVariable Long memberId, @AuthenticationPrincipal UserDetailsImpl userDetails) {
+        todoService.getPairTodos(memberId,userDetails);
+    }
 }

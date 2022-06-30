@@ -29,13 +29,16 @@ public class Todo extends Timestamped{
     private String endDate;
 
     @Column
+    private String confirmDate;
+
+    @Column
     private int difficulty;
 
     @Column
     private Boolean confirmState;
 
     @Column
-    private Boolean complitionState;
+    private Boolean completionState;
 
     @ManyToOne
     @JoinColumn(name = "MEMBER_ID")

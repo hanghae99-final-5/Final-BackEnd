@@ -1,8 +1,11 @@
 package com.hanghae.todoli.service;
 
 import com.hanghae.todoli.dto.TodoRequestDto;
+import com.hanghae.todoli.models.Matching;
 import com.hanghae.todoli.models.Member;
 import com.hanghae.todoli.models.Todo;
+import com.hanghae.todoli.repository.MatchingRepository;
+import com.hanghae.todoli.repository.MemberRepository;
 import com.hanghae.todoli.repository.TodoRepository;
 import com.hanghae.todoli.security.jwt.UserDetailsImpl;
 import lombok.RequiredArgsConstructor;
@@ -10,6 +13,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
+import java.util.List;
 import java.util.Optional;
 
 @Slf4j
@@ -18,6 +22,9 @@ import java.util.Optional;
 public class TodoService {
 
     private final TodoRepository todoRepository;
+    private final MemberRepository memberRepository;
+
+    private final MatchingRepository matchingRepository;
 
     // 투두 등록
     @Transactional
@@ -51,5 +58,20 @@ public class TodoService {
         }
 
         todoRepository.deleteById(id);
+    }
+
+    public void getPairTodos(Long memberId, UserDetailsImpl userDetails) {
+        Long id = userDetails.getMember().getId();
+        Matching matching = matchingRepository.getMatching(id).orElseThrow(
+                () -> new IllegalArgumentException("매칭되어있지 않습니다.")
+        );
+        Long partnerId = id.equals(matching.getRequesterId()) ? matching.getRespondentId() : matching.getRequesterId();
+        if (!memberId.equals(partnerId)) {
+            throw new IllegalArgumentException("매칭되어있는 상대가 아닙니다.");
+        }
+        Member member = memberRepository.findById(id).orElse(null);
+        Boolean matchingState = member.getMatchingState();
+        List<Todo> todos = todoRepository.findAllByWriterId(memberId);
+
     }
 }
