@@ -1,5 +1,7 @@
 package com.hanghae.todoli.controller;
 
+
+import com.hanghae.todoli.dto.TodoRegisterDto;
 import com.hanghae.todoli.dto.TodoCompletionDto;
 import com.hanghae.todoli.dto.TodoConfirmDto;
 import com.hanghae.todoli.dto.TodoRequestDto;
@@ -31,6 +33,9 @@ public class TodoController {
      * 투두 완료 처리
      * -
      * <p>
+     * 사진 등록 및 재등록
+     * - 사진 등록시 인증일 = 종료일 + 3 으로 설정
+     * <p>
      * 투두 삭제
      * - 투두 작성자와 로그인 유저가 일치
      * - 일치 -> 삭제
@@ -41,10 +46,14 @@ public class TodoController {
 
     // 투두 등록
     @PostMapping("/todos")
-    public void todoRegister(@RequestBody TodoRequestDto requestDto,
+    public void todoRegister(@RequestBody TodoRegisterDto registerDto,
                              @AuthenticationPrincipal UserDetailsImpl userDetails) {
-        todoService.registerTodo(requestDto, userDetails);
+        todoService.registerTodo(registerDto, userDetails);
     }
+
+
+    // 투두 조회
+//    @GetMapping("")
 
     //투두 인증해주기
     @PatchMapping("/api/todos/confirm/{todoId}")

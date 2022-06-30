@@ -1,5 +1,6 @@
 package com.hanghae.todoli.service;
 
+import com.hanghae.todoli.dto.TodoRegisterDto;
 import com.hanghae.todoli.dto.TodoCompletionDto;
 import com.hanghae.todoli.dto.TodoConfirmDto;
 import com.hanghae.todoli.dto.TodoRequestDto;
@@ -34,7 +35,7 @@ public class TodoService {
 
     // 투두 등록
     @Transactional
-    public void registerTodo(TodoRequestDto requestDto, UserDetailsImpl userDetails) {
+    public void registerTodo(TodoRegisterDto registerDto, UserDetailsImpl userDetails) {
 
         // 작성자 정보
         final Member member = userDetails.getMember();
@@ -44,10 +45,10 @@ public class TodoService {
 
         // 투두 데이터
         todo.setWriter(member);
-        todo.setContent(requestDto.getContent());
-        todo.setStartDate(requestDto.getStartDate());
-        todo.setEndDate(requestDto.getEndDate());
-        todo.setDifficulty(requestDto.getDifficulty());
+        todo.setContent(registerDto.getContent());
+        todo.setStartDate(registerDto.getStartDate());
+        todo.setEndDate(registerDto.getEndDate());
+        todo.setDifficulty(registerDto.getDifficulty());
 
         todoRepository.save(todo);
     }

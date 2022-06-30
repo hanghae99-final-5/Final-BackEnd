@@ -5,12 +5,10 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-import javax.persistence.Column;
-
 @Getter
 @Setter
 @NoArgsConstructor
-public class TodoRequestDto {
+public class TodoRegisterDto {
 
     private String content;
 
@@ -22,7 +20,7 @@ public class TodoRequestDto {
 
     // 투두 등록 Dto
     @Builder
-    public TodoRequestDto(String content, String startDate, String endDate, int difficulty) {
+    public TodoRegisterDto(String content, String startDate, String endDate, int difficulty) {
         this.content = content;
         this.startDate = startDate;
         this.endDate = endDate;
