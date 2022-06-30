@@ -44,4 +44,8 @@ public class Member {
         this.password = password;
         this.matchingState = matchingState;
     }
+
+    public void changeMatchingState(Member member) {
+        this.matchingState = !member.getMatchingState();
+    }
 }

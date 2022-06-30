@@ -21,22 +21,22 @@ public class Character {
     private String charImg;
 
     @Column
-    private int maxHp = 100;
+    private int maxHp;
 
     @Column
-    private int hp = 100;
+    private int hp;
 
     @Column
-    private int maxExp = 100;
+    private int maxExp;
 
     @Column
-    private int exp = 0;
+    private int exp;
 
     @Column
-    private int level = 1;
+    private int level;
 
     @Column
-    private int money = 10;
+    private int money;
 
     @JsonManagedReference
     @OneToMany(mappedBy = "character", orphanRemoval = true)

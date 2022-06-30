@@ -39,4 +39,5 @@ public class EquipItem {
     public void updateCloth(Long clothId){
         this.clothId = clothId;
     }
+
 }
