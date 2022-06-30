@@ -35,9 +35,13 @@ public class Todo extends Timestamped{
     private Boolean confirmState;
 
     @Column
-    private Boolean complitionState;
+    private Boolean completionState;
 
     @ManyToOne
     @JoinColumn(name = "MEMBER_ID")
     private Member writer;
+
+    public void completionState(){
+        this.completionState = true;
+    }
 }
