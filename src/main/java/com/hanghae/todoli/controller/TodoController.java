@@ -1,15 +1,13 @@
 package com.hanghae.todoli.controller;
 
 
-import com.hanghae.todoli.dto.TodoRegisterDto;
 import com.hanghae.todoli.dto.TodoCompletionDto;
 import com.hanghae.todoli.dto.TodoConfirmDto;
-import com.hanghae.todoli.dto.TodoRequestDto;
+import com.hanghae.todoli.dto.TodoRegisterDto;
 import com.hanghae.todoli.security.jwt.UserDetailsImpl;
 import com.hanghae.todoli.service.TodoService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.catalina.User;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
