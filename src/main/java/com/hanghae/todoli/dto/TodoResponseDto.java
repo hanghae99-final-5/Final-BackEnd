@@ -10,6 +10,5 @@ import java.util.List;
 public class TodoResponseDto {
 
     List<MatchingStateResponseDto> member;
-
     List<TodoInfoDto> todos;
 }

@@ -20,8 +20,8 @@ public class TodoController {
 
     /**
      * 투두 등록
-     * - 매칭 아이디가 null이면 투두 작성 불가 -> '파트너를 매칭하세요!' 메시지 return
      * - 로그인 중인 회원 정보 가져와서 작성자 정보에 입력
+     * - 매칭 아이디가 false면 투두 작성 불가 -> '파트너를 매칭하세요!' 메시지 return
      * - 작성자 정보 중 매칭 번호 저장
      * <p>
      * 투두 조회
@@ -45,35 +45,29 @@ public class TodoController {
 
     // 투두 등록
     @PostMapping("/todos")
-    public void todoRegister(@RequestBody TodoRegisterDto registerDto,
-                             @AuthenticationPrincipal UserDetailsImpl userDetails) {
+    public void todoRegister(@RequestBody TodoRegisterDto registerDto, @AuthenticationPrincipal UserDetailsImpl userDetails) {
         todoService.registerTodo(registerDto, userDetails);
     }
 
-
     // 투두 조회
-//    @GetMapping("")
+    @GetMapping("/todos/{}")
 
     //투두 인증해주기
-    @PatchMapping("/api/todos/confirm/{todoId}")
-    public TodoConfirmDto confirmTodo(@PathVariable Long todoId,
-                                      @AuthenticationPrincipal UserDetailsImpl userDetails) {
+    @PatchMapping("/todos/confirm/{todoId}")
+    public TodoConfirmDto confirmTodo(@PathVariable Long todoId, @AuthenticationPrincipal UserDetailsImpl userDetails) {
         return todoService.confirmTodo(todoId, userDetails);
     }
 
     //투두 완료(경험치, 돈 획득)
-    @PatchMapping("/api/todos/complition/{todoId}")
-    public TodoCompletionDto completionTodo(@PathVariable Long todoId,
-                                            @AuthenticationPrincipal UserDetailsImpl userDetails) {
+    @PatchMapping("/todos/complition/{todoId}")
+    public TodoCompletionDto completionTodo(@PathVariable Long todoId, @AuthenticationPrincipal UserDetailsImpl userDetails) {
         return todoService.completionTodo(todoId, userDetails);
     }
 
     // 투두 삭제
     @DeleteMapping("/todos/{id}")
-    public void todoDelete(@PathVariable Long id,
-                           @AuthenticationPrincipal UserDetailsImpl userDetails) {
+    public void todoDelete(@PathVariable Long id, @AuthenticationPrincipal UserDetailsImpl userDetails) {
         todoService.deleteTodo(id, userDetails);
-
     }
 
     //상대방 투두 조회
