@@ -23,6 +23,6 @@ public class Alarm{
     @Column
     private Long senderId;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     private Member member;
 }
