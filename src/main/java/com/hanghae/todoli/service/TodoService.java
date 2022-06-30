@@ -10,6 +10,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
+import java.util.Optional;
 
 @Slf4j
 @Service
@@ -38,4 +39,17 @@ public class TodoService {
         todoRepository.save(todo);
     }
 
+    // 투두 삭제
+    @Transactional
+    public void deleteTodo(Long id, UserDetailsImpl userDetails) {
+        // 로그인 유저와 작성자가 일치?
+        // 불일치시 메시지
+        Todo todo = todoRepository.findById(id).orElseThrow(() -> new IllegalArgumentException("Todo가 존재하지 않습니다!"));
+
+        if (!todo.getWriter().equals(userDetails.getMember())) {
+            throw new IllegalArgumentException("Todo 작성자가 아닙니다!");
+        }
+
+        todoRepository.deleteById(id);
+    }
 }
