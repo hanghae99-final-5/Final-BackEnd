@@ -1,10 +1,15 @@
 package com.hanghae.todoli.controller;
 
+
 import com.hanghae.todoli.dto.TodoRegisterDto;
+import com.hanghae.todoli.dto.TodoCompletionDto;
+import com.hanghae.todoli.dto.TodoConfirmDto;
+import com.hanghae.todoli.dto.TodoRequestDto;
 import com.hanghae.todoli.security.jwt.UserDetailsImpl;
 import com.hanghae.todoli.service.TodoService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.catalina.User;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
@@ -46,13 +51,28 @@ public class TodoController {
         todoService.registerTodo(registerDto, userDetails);
     }
 
+
     // 투두 조회
 //    @GetMapping("")
+
+    //투두 인증해주기
+    @PatchMapping("/api/todos/confirm/{todoId}")
+    public TodoConfirmDto confirmTodo(@PathVariable Long todoId,
+                                      @AuthenticationPrincipal UserDetailsImpl userDetails){
+        return todoService.confirmTodo(todoId, userDetails);
+    }
+
+    //투두 완료(경험치, 돈 획득)
+    @PatchMapping("/api/todos/complition/{todoId}")
+    public TodoCompletionDto completionTodo(@PathVariable Long todoId,
+                                            @AuthenticationPrincipal UserDetailsImpl userDetails){
+        return todoService.completionTodo(todoId, userDetails);
 
     // 투두 삭제
     @DeleteMapping("/todos/{id}")
     public void todoDelete(@PathVariable Long id,
                            @AuthenticationPrincipal UserDetailsImpl userDetails) {
         todoService.deleteTodo(id, userDetails);
+
     }
 }

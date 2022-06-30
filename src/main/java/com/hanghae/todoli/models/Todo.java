@@ -40,4 +40,8 @@ public class Todo extends Timestamped{
     @ManyToOne
     @JoinColumn(name = "MEMBER_ID")
     private Member writer;
+
+    public void completionState(){
+        this.completionState = true;
+    }
 }

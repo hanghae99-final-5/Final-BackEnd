@@ -59,6 +59,24 @@ public class Character {
         this.exp = 0;
         this.level = 1;
         this.money = 10000;
-
     }
+
+    public void setMoneyAndExp(int money, int exp){
+        this.money += money;
+        this.exp += exp;
+    }
+
+    public void levelUp(){
+        this.level++;
+        //this.exp = 0;
+    }
+
+    public void addExp(int exp){
+        this.exp += exp;
+    }
+
+    public void zeroExp(){
+        this.exp = 0;
+    }
+
 }
