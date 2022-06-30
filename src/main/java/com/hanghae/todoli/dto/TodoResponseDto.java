@@ -8,6 +8,7 @@ import java.util.List;
 @Getter
 @AllArgsConstructor
 public class TodoResponseDto {
+
     List<MatchingStateResponseDto> member;
-//    List<TodoInfoDto> todos;
+    List<TodoInfoDto> todos;
 }

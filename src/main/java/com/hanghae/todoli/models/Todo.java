@@ -29,6 +29,9 @@ public class Todo extends Timestamped{
     private String endDate;
 
     @Column
+    private String confirmDate;
+
+    @Column
     private int difficulty;
 
     @Column

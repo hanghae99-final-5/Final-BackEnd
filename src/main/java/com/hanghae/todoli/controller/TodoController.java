@@ -4,6 +4,7 @@ package com.hanghae.todoli.controller;
 import com.hanghae.todoli.dto.TodoCompletionDto;
 import com.hanghae.todoli.dto.TodoConfirmDto;
 import com.hanghae.todoli.dto.TodoRegisterDto;
+import com.hanghae.todoli.dto.TodoResponseDto;
 import com.hanghae.todoli.security.jwt.UserDetailsImpl;
 import com.hanghae.todoli.service.TodoService;
 import lombok.RequiredArgsConstructor;
@@ -67,5 +68,11 @@ public class TodoController {
     @DeleteMapping("/todos/{id}")
     public void todoDelete(@PathVariable Long id, @AuthenticationPrincipal UserDetailsImpl userDetails) {
         todoService.deleteTodo(id, userDetails);
+    }
+
+    //상대방 투두 조회
+    @GetMapping("/todos/pair/{memberId}")
+    public TodoResponseDto getPairTodos(@PathVariable Long memberId, @AuthenticationPrincipal UserDetailsImpl userDetails) {
+        return todoService.getPairTodos(memberId,userDetails);
     }
 }
