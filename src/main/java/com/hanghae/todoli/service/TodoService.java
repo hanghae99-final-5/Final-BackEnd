@@ -1,12 +1,19 @@
 package com.hanghae.todoli.service;
 
-import com.hanghae.todoli.dto.TodoRegisterDto;
+
+import com.hanghae.todoli.dto.*;
+import com.hanghae.todoli.models.Matching;
 import com.hanghae.todoli.dto.TodoCompletionDto;
 import com.hanghae.todoli.dto.TodoConfirmDto;
+import com.hanghae.todoli.dto.TodoRegisterDto;
 import com.hanghae.todoli.models.Alarm;
 import com.hanghae.todoli.models.Character;
 import com.hanghae.todoli.models.Member;
 import com.hanghae.todoli.models.Todo;
+import com.hanghae.todoli.repository.MatchingRepository;
+import com.hanghae.todoli.models.Alarm;
+import com.hanghae.todoli.models.Character;
+
 import com.hanghae.todoli.repository.AlarmRepository;
 import com.hanghae.todoli.repository.CharacterRepository;
 import com.hanghae.todoli.repository.MemberRepository;
@@ -17,22 +24,54 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
+import java.util.ArrayList;
+import java.util.List;
 import java.text.SimpleDateFormat;
 import java.util.Date;
-import java.util.Optional;
-
 
 @Slf4j
 @Service
 @RequiredArgsConstructor
 public class TodoService {
 
+    /**
+     * 투두 등록
+     * - 로그인 중인 회원 정보 가져와서 작성자 정보에 입력
+     * - 매칭 아이디가 false면 투두 작성 불가 -> '파트너를 매칭하세요!' 메시지 return
+     * - 작성자 정보 중 매칭 상태 저장
+     * <p>
+     * 투두 조회
+     * - 투두 작성자
+     * - 작성자와 매칭중인 사용자만 볼 수 있도록
+     * - 매칭 번호가 작성자의 매칭 번호와 일치 하는지 확인
+     * - 작성자 정보 중 매칭 상태 포함 return
+     * <p>
+     * 투두 완료 처리
+     * -
+     * <p>
+     * 사진 등록 및 재등록
+     * - 사진 등록시 인증일 = 종료일 + 3 으로 설정
+     * <p>
+     * 투두 삭제
+     * - 투두 작성자와 로그인 유저가 일치
+     * - 일치 -> 삭제
+     * - 불일치 -> '투두 작성자가 아닙니다!'
+     */
+
     private final TodoRepository todoRepository;
-    private final AlarmRepository alarmRepository;
+    
     private final MemberRepository memberRepository;
+
+    private final MatchingRepository matchingRepository;
+    
+    private final AlarmRepository alarmRepository;
+
     private final CharacterRepository characterRepository;
 
     // 투두 등록
+    //TODO
+    //  작성자 정보 중 매칭 상태 저장
+
     @Transactional
     public void registerTodo(TodoRegisterDto registerDto, UserDetailsImpl userDetails) {
 
@@ -60,9 +99,9 @@ public class TodoService {
                 () -> new IllegalArgumentException("todo가 존재하지 않습니다.")
         );
         todo.setConfirmState(true);
-        //todoRepository.save(todo);      // 테스트 해봐야 함.
+        //todoRepository.save(todo);    // 테스트 필요
 
-        Alarm alarm = new Alarm();
+       Alarm alarm = new Alarm();
         Date now = new Date();
         SimpleDateFormat date = new SimpleDateFormat("yyyyMMdd");
         alarm.setAlarmDate(date.format(now));
@@ -91,9 +130,9 @@ public class TodoService {
         );
 
         // 투두 완료
-        if(!todo.getCompletionState())
+        if (!todo.getCompletionState())
             todo.completionState();
-        //todoRepository.save(todo); // 테스트 해봐야함
+        //todoRepository.save(todo);    // 테스트 필요
 
 
         Character character = member.getCharacter();
@@ -101,26 +140,24 @@ public class TodoService {
         int maxExp = character.getMaxExp();
 
         //난이도별 보상, 레벨업
-       int difficulty = todo.getDifficulty();
-        switch (difficulty){
+        int difficulty = todo.getDifficulty();
+        switch (difficulty) {
             case 1:
                 character.setMoneyAndExp(10, 5);
                 //characterRepository.save(character); // 테스트 해보기
-                calcLevelAndExp(character, exp, maxExp);
                 break;
             case 2:
                 character.setMoneyAndExp(20, 10);
-                calcLevelAndExp(character, exp, maxExp);
                 break;
             case 3:
                 character.setMoneyAndExp(30, 15);
-                calcLevelAndExp(character, exp, maxExp);
                 break;
             case 4:
                 character.setMoneyAndExp(40, 20);
-                calcLevelAndExp(character, exp, maxExp);
                 break;
         }
+
+        calcLevelAndExp(character, exp, maxExp);
 
         return TodoCompletionDto.builder()
                 .todoId(todo.getId())
@@ -153,5 +190,40 @@ public class TodoService {
         }
 
         todoRepository.deleteById(id);
+    }
+
+    //상대방 투두 조회
+    public TodoResponseDto getPairTodos(Long memberId, UserDetailsImpl userDetails) {
+        Long id = userDetails.getMember().getId();
+        Matching matching = matchingRepository.getMatching(id).orElseThrow(
+                () -> new IllegalArgumentException("매칭되어있지 않습니다.")
+        );
+        Long partnerId = id.equals(matching.getRequesterId()) ? matching.getRespondentId() : matching.getRequesterId();
+        if (!memberId.equals(partnerId)) {
+            throw new IllegalArgumentException("매칭되어있는 상대가 아닙니다.");
+        }
+        Member member = memberRepository.findById(id).orElse(null);
+        Boolean matchingState = member.getMatchingState();
+
+        List<MatchingStateResponseDto> matchingStateDto = new ArrayList<>();
+        MatchingStateResponseDto matchingStateResponseDto = new MatchingStateResponseDto(matchingState);
+        matchingStateDto.add(matchingStateResponseDto);
+
+        List<TodoInfoDto> todoInfoDtoList = new ArrayList<>();
+        List<Todo> todos = todoRepository.findAllByWriterId(memberId);
+        for (Todo todo : todos) {
+            TodoInfoDto todoInfoDto = TodoInfoDto.builder()
+                    .todoId(todo.getId())
+                    .content(todo.getContent())
+                    .proofImg(todo.getProofImg())
+                    .startDate(todo.getStartDate())
+                    .endDate(todo.getEndDate())
+                    .difficulty(todo.getDifficulty())
+                    .confirmState(todo.getConfirmState())
+                    .completionState(todo.getCompletionState())
+                    .build();
+            todoInfoDtoList.add(todoInfoDto);
+        }
+        return new TodoResponseDto(matchingStateDto, todoInfoDtoList);
     }
 }
