@@ -1,5 +1,6 @@
 package com.hanghae.todoli.models;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -37,7 +38,8 @@ public class Character {
     @Column
     private int money;
 
-    @OneToMany
+    @JsonManagedReference
+    @OneToMany(mappedBy = "character", orphanRemoval = true)
     private List<Inventory> inventory = new ArrayList<>();
 
     @OneToOne(fetch = FetchType.LAZY)
@@ -56,7 +58,7 @@ public class Character {
         this.maxExp = 100;
         this.exp = 0;
         this.level = 1;
-        this.money = 100;
+        this.money = 10000;
 
     }
 }

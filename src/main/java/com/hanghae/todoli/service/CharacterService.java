@@ -27,9 +27,13 @@ public class CharacterService {
 
 
     //캐릭터 상태 조회
-    @Transactional
+    //@Transactional
     public CharResponseDto getCharState(UserDetailsImpl userDetails) {
-        Member m = userDetails.getMember();
+        Long memberId = userDetails.getMember().getId();
+        Member m = memberRepository.findById(memberId).orElseThrow(
+                () -> new IllegalArgumentException("X")
+        );
+        //Member m = userDetails.getMember();
         Character c = m.getCharacter();
 
         //캐릭터가 장착한 아이템에서 필요한 정보 가져오기
@@ -51,7 +55,7 @@ public class CharacterService {
 
 
     //상대방 캐릭터 상태 조회
-    @Transactional
+    //@Transactional
     public CharResponseDto.PartnerDto getPartnerState(UserDetailsImpl userDetails) {
         Long userId = userDetails.getMember().getId();
         Matching matching = matchingRepository.getMatching(userId).orElseThrow(
