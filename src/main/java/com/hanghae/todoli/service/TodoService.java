@@ -3,7 +3,6 @@ package com.hanghae.todoli.service;
 import com.hanghae.todoli.dto.TodoRegisterDto;
 import com.hanghae.todoli.dto.TodoCompletionDto;
 import com.hanghae.todoli.dto.TodoConfirmDto;
-import com.hanghae.todoli.dto.TodoRequestDto;
 import com.hanghae.todoli.models.Alarm;
 import com.hanghae.todoli.models.Character;
 import com.hanghae.todoli.models.Member;
@@ -131,15 +130,16 @@ public class TodoService {
 
     private void calcLevelAndExp(Character character, int exp, int maxExp) {
         int tmp = 0;
-        if(exp >= maxExp){
+        if (exp >= maxExp) {
             character.levelUp();    // 레벨 올리고 exp 0 만들어준다.
-            if(exp != maxExp){
+            if (exp != maxExp) {
                 tmp = exp - 100;
                 character.zeroExp();
                 character.addExp(tmp);
             }
             character.zeroExp();
         }
+    }
 
     // 투두 삭제
     @Transactional
@@ -153,6 +153,5 @@ public class TodoService {
         }
 
         todoRepository.deleteById(id);
-
     }
 }
