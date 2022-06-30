@@ -66,7 +66,7 @@ public class CharacterService {
         Long partnerId = userId.equals(matching.getRequesterId()) ? matching.getRespondentId() : matching.getRequesterId();
 
         Member partner = memberRepository.findById(partnerId).orElseThrow(
-                ()-> new IllegalArgumentException("파트너가 존재하지 않습니다.")
+                () -> new IllegalArgumentException("파트너가 존재하지 않습니다.")
         );
 
         Character c = partner.getCharacter();
@@ -82,11 +82,6 @@ public class CharacterService {
     }
 
 
-
-
-
-
-
     //캐릭터가 장착한 아이템에서 필요한 정보 가져오기
     private List<EquipItemDto
             > getListDtos(Character c) {
@@ -96,24 +91,24 @@ public class CharacterService {
         Long hatId = c.getEquipItem().getHatId();
 
         List<EquipItemDto
-                >itemList = new ArrayList<>();
+                > itemList = new ArrayList<>();
 
-        if(hairId !=null){
+        if (hairId != null) {
             EquipItemDto
                     hair = addItem(hairId);
             itemList.add(hair);
         }
-        if(accessoryId !=null){
+        if (accessoryId != null) {
             EquipItemDto
                     accessory = addItem(accessoryId);
             itemList.add(accessory);
         }
-        if(clothId !=null){
+        if (clothId != null) {
             EquipItemDto
                     cloth = addItem(clothId);
             itemList.add(cloth);
         }
-        if(hatId !=null){
+        if (hatId != null) {
             EquipItemDto
                     hat = addItem(hatId);
             itemList.add(hat);
