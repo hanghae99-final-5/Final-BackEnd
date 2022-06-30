@@ -103,21 +103,19 @@ public class TodoService {
             case 1:
                 character.setMoneyAndExp(10, 5);
                 //characterRepository.save(character); // 테스트 해보기
-                calcLevelAndExp(character, exp, maxExp);
                 break;
             case 2:
                 character.setMoneyAndExp(20, 10);
-                calcLevelAndExp(character, exp, maxExp);
                 break;
             case 3:
                 character.setMoneyAndExp(30, 15);
-                calcLevelAndExp(character, exp, maxExp);
                 break;
             case 4:
                 character.setMoneyAndExp(40, 20);
-                calcLevelAndExp(character, exp, maxExp);
                 break;
         }
+
+        calcLevelAndExp(character, exp, maxExp);
 
         return TodoCompletionDto.builder()
                 .todoId(todo.getId())
