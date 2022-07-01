@@ -21,6 +21,9 @@ public class TodoInfoDto {
     @DateTimeFormat(pattern = "yyyy-MM-dd")
     private LocalDate endDate;
 
+    @DateTimeFormat(pattern = "yyyy-MM-dd")
+    private LocalDate confirmDate;
+
     private int difficulty;
 
     private Boolean confirmState;

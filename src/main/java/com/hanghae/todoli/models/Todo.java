@@ -9,7 +9,6 @@ import javax.persistence.*;
 import java.time.LocalDate;
 
 @Getter
-@Setter
 @Entity
 @NoArgsConstructor
 public class Todo extends Timestamped{
@@ -58,4 +57,40 @@ public class Todo extends Timestamped{
         this.completionState = true;
     }
 
+    // Setter
+    public void setProofImg(String proofImg) {
+        this.proofImg = proofImg;
+    }
+
+    public void setContent(String content) {
+        this.content = content;
+    }
+
+    public void setStartDate(LocalDate startDate) {
+        this.startDate = startDate;
+    }
+
+    public void setEndDate(LocalDate endDate) {
+        this.endDate = endDate;
+    }
+
+    public void setConfirmDate(LocalDate confirmDate) {
+        this.confirmDate = confirmDate;
+    }
+
+    public void setDifficulty(int difficulty) {
+        this.difficulty = difficulty;
+    }
+
+    public void setConfirmState(Boolean confirmState) {
+        this.confirmState = confirmState;
+    }
+
+    public void setCompletionState(Boolean completionState) {
+        this.completionState = completionState;
+    }
+
+    public void setWriter(Member writer) {
+        this.writer = writer;
+    }
 }
