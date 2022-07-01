@@ -189,7 +189,17 @@ public class TodoService {
         List<TodoInfoDto> todoInfoDtoList = new ArrayList<>();
         List<Todo> todos = todoRepository.findAllByWriterId(memberId);
         for (Todo todo : todos) {
-            TodoInfoDto todoInfoDto = TodoInfoDto.builder().todoId(todo.getId()).content(todo.getContent()).proofImg(todo.getProofImg()).startDate(todo.getStartDate()).endDate(todo.getEndDate()).difficulty(todo.getDifficulty()).confirmState(todo.getConfirmState()).completionState(todo.getCompletionState()).build();
+            TodoInfoDto todoInfoDto = TodoInfoDto.builder()
+                    .todoId(todo.getId())
+                    .content(todo.getContent())
+                    .proofImg(todo.getProofImg())
+                    .startDate(todo.getStartDate())
+                    .endDate(todo.getEndDate())
+                    .confirmDate(todo.getConfirmDate())
+                    .difficulty(todo.getDifficulty())
+                    .confirmState(todo.getConfirmState())
+                    .completionState(todo.getCompletionState())
+                    .build();
             todoInfoDtoList.add(todoInfoDto);
         }
         return new TodoResponseDto(matchingStateDto, todoInfoDtoList);
