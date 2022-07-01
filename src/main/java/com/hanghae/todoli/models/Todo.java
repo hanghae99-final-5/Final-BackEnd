@@ -41,6 +41,14 @@ public class Todo extends Timestamped{
     @Column
     private int difficulty;
 
+    /*
+    투두가 개인투두인지, 매칭투두인지 체크
+    0: 개인
+    1: 매칭
+    */
+    @Column
+    private int todoState;
+
     // 파트너의 인증 완료 상태
     @Column
     private Boolean confirmState = false;

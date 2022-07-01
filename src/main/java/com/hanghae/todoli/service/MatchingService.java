@@ -37,12 +37,10 @@ public class MatchingService {
         Long accessoryId = equipItem.getAccessoryId();
         Long clothId = equipItem.getClothId();
         Long hairId = equipItem.getHairId();
-        Long hatId = equipItem.getHatId();
 
         addItem(accessoryId);
         addItem(clothId);
         addItem(hairId);
-        addItem(hatId);
 
         return MatchingResponseDto.builder()
                 .memberId(member.getId())
