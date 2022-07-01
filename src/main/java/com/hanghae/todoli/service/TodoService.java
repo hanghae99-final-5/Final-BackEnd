@@ -2,32 +2,20 @@ package com.hanghae.todoli.service;
 
 
 import com.hanghae.todoli.dto.*;
-import com.hanghae.todoli.models.Matching;
-import com.hanghae.todoli.dto.TodoCompletionDto;
-import com.hanghae.todoli.dto.TodoConfirmDto;
-import com.hanghae.todoli.dto.TodoRegisterDto;
-import com.hanghae.todoli.models.Alarm;
 import com.hanghae.todoli.models.Character;
-import com.hanghae.todoli.models.Member;
-import com.hanghae.todoli.models.Todo;
-import com.hanghae.todoli.repository.MatchingRepository;
-import com.hanghae.todoli.models.Alarm;
-import com.hanghae.todoli.models.Character;
-
-import com.hanghae.todoli.repository.AlarmRepository;
-import com.hanghae.todoli.repository.CharacterRepository;
-import com.hanghae.todoli.repository.MemberRepository;
-import com.hanghae.todoli.repository.TodoRepository;
+import com.hanghae.todoli.models.*;
+import com.hanghae.todoli.repository.*;
 import com.hanghae.todoli.security.jwt.UserDetailsImpl;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
-import java.util.ArrayList;
-import java.util.List;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Date;
+import java.util.List;
 
 @Slf4j
 @Service
@@ -59,19 +47,14 @@ public class TodoService {
      */
 
     private final TodoRepository todoRepository;
-    
+
     private final MemberRepository memberRepository;
 
     private final MatchingRepository matchingRepository;
-    
+
     private final AlarmRepository alarmRepository;
 
-    private final CharacterRepository characterRepository;
-
     // 투두 등록
-    //TODO
-    //  작성자 정보 중 매칭 상태 저장
-
     @Transactional
     public void registerTodo(TodoRegisterDto registerDto, UserDetailsImpl userDetails) {
 
@@ -81,12 +64,16 @@ public class TodoService {
         // 새로운 투두
         final Todo todo = new Todo();
 
+        // 날짜 설정
+
+
         // 투두 데이터
         todo.setWriter(member);
         todo.setContent(registerDto.getContent());
         todo.setStartDate(registerDto.getStartDate());
         todo.setEndDate(registerDto.getEndDate());
         todo.setDifficulty(registerDto.getDifficulty());
+        todo.setConfirmDate(registerDto.getEndDate());
 
         todoRepository.save(todo);
     }
@@ -95,15 +82,13 @@ public class TodoService {
     //투두 인증해주기
     @Transactional
     public TodoConfirmDto confirmTodo(Long todoId, UserDetailsImpl userDetails) {
-        Todo todo = todoRepository.findById(todoId).orElseThrow(
-                () -> new IllegalArgumentException("todo가 존재하지 않습니다.")
-        );
+        Todo todo = todoRepository.findById(todoId).orElseThrow(() -> new IllegalArgumentException("Todo가 존재하지 않습니다."));
         todo.setConfirmState(true);
         //todoRepository.save(todo);    // 테스트 필요
 
-       Alarm alarm = new Alarm();
+        Alarm alarm = new Alarm();
         Date now = new Date();
-        SimpleDateFormat date = new SimpleDateFormat("yyyyMMdd");
+        SimpleDateFormat date = new SimpleDateFormat("yyyy-MM-dd");
         alarm.setAlarmDate(date.format(now));
         alarm.setMember(todo.getWriter());
         alarm.setSenderId(userDetails.getMember().getId());
@@ -111,10 +96,7 @@ public class TodoService {
 
         alarmRepository.save(alarm);
 
-        return TodoConfirmDto.builder()
-                .todoId(todo.getId())
-                .confirmState(todo.getConfirmState())
-                .build();
+        return TodoConfirmDto.builder().todoId(todo.getId()).confirmState(todo.getConfirmState()).build();
     }
 
     //투두 완료
@@ -122,18 +104,14 @@ public class TodoService {
     public TodoCompletionDto completionTodo(Long todoId, UserDetailsImpl userDetails) {
         Long memberId = userDetails.getMember().getId();
 
-        Todo todo = todoRepository.findById(todoId).orElseThrow(
-                () -> new IllegalArgumentException("todo가 존재하지 않습니다.")
-        );
-        Member member = memberRepository.findById(memberId).orElseThrow(
-                () -> new IllegalArgumentException("아이디가 존재하지 않습니다.")
-        );
+        Todo todo = todoRepository.findById(todoId).orElseThrow(() -> new IllegalArgumentException("Todo가 존재하지 않습니다."));
+        Member member = memberRepository.findById(memberId).orElseThrow(() -> new IllegalArgumentException("아이디가 존재하지 않습니다."));
 
         // 투두 완료
-        if (!todo.getCompletionState())
+        if (!todo.getCompletionState()){
             todo.completionState();
-        //todoRepository.save(todo);    // 테스트 필요
-
+            //todoRepository.save(todo);    // 테스트 필요
+        }
 
         Character character = member.getCharacter();
         int exp = character.getExp();
@@ -188,16 +166,13 @@ public class TodoService {
         if (!todo.getWriter().equals(userDetails.getMember())) {
             throw new IllegalArgumentException("Todo 작성자가 아닙니다!");
         }
-
         todoRepository.deleteById(id);
     }
 
     //상대방 투두 조회
     public TodoResponseDto getPairTodos(Long memberId, UserDetailsImpl userDetails) {
         Long id = userDetails.getMember().getId();
-        Matching matching = matchingRepository.getMatching(id).orElseThrow(
-                () -> new IllegalArgumentException("매칭되어있지 않습니다.")
-        );
+        Matching matching = matchingRepository.getMatching(id).orElseThrow(() -> new IllegalArgumentException("매칭되어있지 않습니다."));
         Long partnerId = id.equals(matching.getRequesterId()) ? matching.getRespondentId() : matching.getRequesterId();
         if (!memberId.equals(partnerId)) {
             throw new IllegalArgumentException("매칭되어있는 상대가 아닙니다.");
@@ -212,18 +187,34 @@ public class TodoService {
         List<TodoInfoDto> todoInfoDtoList = new ArrayList<>();
         List<Todo> todos = todoRepository.findAllByWriterId(memberId);
         for (Todo todo : todos) {
-            TodoInfoDto todoInfoDto = TodoInfoDto.builder()
-                    .todoId(todo.getId())
-                    .content(todo.getContent())
-                    .proofImg(todo.getProofImg())
-                    .startDate(todo.getStartDate())
-                    .endDate(todo.getEndDate())
-                    .difficulty(todo.getDifficulty())
-                    .confirmState(todo.getConfirmState())
-                    .completionState(todo.getCompletionState())
-                    .build();
+            TodoInfoDto todoInfoDto = TodoInfoDto.builder().todoId(todo.getId()).content(todo.getContent()).proofImg(todo.getProofImg()).startDate(todo.getStartDate()).endDate(todo.getEndDate()).difficulty(todo.getDifficulty()).confirmState(todo.getConfirmState()).completionState(todo.getCompletionState()).build();
             todoInfoDtoList.add(todoInfoDto);
         }
         return new TodoResponseDto(matchingStateDto, todoInfoDtoList);
+    }
+
+    // 내 투두 목록 조회
+    public TodoResponseDto getMyTodos(UserDetailsImpl userDetails) {
+        // 로그인중인 사용자 id 가져오기
+        Long myId = userDetails.getMember().getId();
+        
+        // 로그인중인 사용자의 매칭 정보
+        Member loggedMember = memberRepository.findById(myId).orElseThrow(() -> new IllegalArgumentException("사용자 정보가 존재하지 않습니다."));
+        Boolean loggedMemberMatchingState = memberRepository.findById(myId).orElseThrow(() -> new IllegalArgumentException("사용자 정보가 존재하지 않습니다.")).getMatchingState();
+
+        // 매칭 정보 리스트 생성
+        List<MatchingStateResponseDto> matchingStates = new ArrayList<>();
+        MatchingStateResponseDto stateResponseDto = new MatchingStateResponseDto(loggedMemberMatchingState);
+        matchingStates.add(stateResponseDto);
+
+        // 로그인중인 사용자 id로 작성한 투두 조회
+        List<TodoInfoDto> todoInfoList = new ArrayList<>();
+        List<Todo> todos = todoRepository.findAllByWriterId(myId);
+        for (Todo todo : todos) {
+            TodoInfoDto todoInfoDto = TodoInfoDto.builder().todoId(todo.getId()).content(todo.getContent()).proofImg(todo.getProofImg()).startDate(todo.getStartDate()).endDate(todo.getEndDate()).difficulty(todo.getDifficulty()).confirmState(todo.getConfirmState()).completionState(todo.getCompletionState()).build();
+            todoInfoList.add(todoInfoDto);
+        }
+
+        return new TodoResponseDto(matchingStates, todoInfoList);
     }
 }
