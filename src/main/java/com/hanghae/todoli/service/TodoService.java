@@ -34,6 +34,9 @@ public class TodoService {
      * - 매칭 번호가 작성자의 매칭 번호와 일치 하는지 확인
      * - 작성자 정보 중 매칭 상태 포함 return
      * <p>
+     * 투두 인증 사진 등록
+     * -
+     * <p>
      * 투두 완료 처리
      * -
      * <p>
@@ -65,7 +68,6 @@ public class TodoService {
         final Todo todo = new Todo();
 
         // 날짜 설정
-
 
         // 투두 데이터
         todo.setWriter(member);
@@ -108,7 +110,7 @@ public class TodoService {
         Member member = memberRepository.findById(memberId).orElseThrow(() -> new IllegalArgumentException("아이디가 존재하지 않습니다."));
 
         // 투두 완료
-        if (!todo.getCompletionState()){
+        if (!todo.getCompletionState()) {
             todo.completionState();
             //todoRepository.save(todo);    // 테스트 필요
         }
@@ -197,7 +199,7 @@ public class TodoService {
     public TodoResponseDto getMyTodos(UserDetailsImpl userDetails) {
         // 로그인중인 사용자 id 가져오기
         Long myId = userDetails.getMember().getId();
-        
+
         // 로그인중인 사용자의 매칭 정보
         Member loggedMember = memberRepository.findById(myId).orElseThrow(() -> new IllegalArgumentException("사용자 정보가 존재하지 않습니다."));
         Boolean loggedMemberMatchingState = memberRepository.findById(myId).orElseThrow(() -> new IllegalArgumentException("사용자 정보가 존재하지 않습니다.")).getMatchingState();
@@ -211,7 +213,7 @@ public class TodoService {
         List<TodoInfoDto> todoInfoList = new ArrayList<>();
         List<Todo> todos = todoRepository.findAllByWriterId(myId);
         for (Todo todo : todos) {
-            TodoInfoDto todoInfoDto = TodoInfoDto.builder().todoId(todo.getId()).content(todo.getContent()).proofImg(todo.getProofImg()).startDate(todo.getStartDate()).endDate(todo.getEndDate()).difficulty(todo.getDifficulty()).confirmState(todo.getConfirmState()).completionState(todo.getCompletionState()).build();
+            TodoInfoDto todoInfoDto = TodoInfoDto.builder().todoId(todo.getId()).content(todo.getContent()).proofImg(todo.getProofImg()).startDate(todo.getStartDate()).endDate(todo.getEndDate()).difficulty(todo.getDifficulty()).confirmState(todo.getConfirmState()).completionState(todo.getCompletionState()).confirmDate(todo.getConfirmDate()).build();
             todoInfoList.add(todoInfoDto);
         }
 
