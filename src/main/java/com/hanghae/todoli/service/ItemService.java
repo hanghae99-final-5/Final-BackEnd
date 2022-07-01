@@ -187,23 +187,21 @@ public class ItemService {
 
         return getEquipItemDto(item);
     }
-    
+
     //아이템 찾기
     private Item findItem(Long itemId) {
-        Item buyItem = itemRepository.findById(itemId).orElseThrow(
+        return itemRepository.findById(itemId).orElseThrow(
                 () -> new IllegalArgumentException("아이템이 존재하지 않습니다.")
         );
-        return buyItem;
     }
 
     //장착하는 아이템에 대한 정보를 가져온다.
     private EquipItemDto getEquipItemDto(Item item) {
-        EquipItemDto equipItemDto = EquipItemDto.builder()
+        return EquipItemDto.builder()
                 .itemId(item.getId())
                 .equipImg(item.getEquipImg())
                 .category(item.getCategory())
                 .build();
-        return equipItemDto;
     }
 
 

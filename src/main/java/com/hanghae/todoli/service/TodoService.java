@@ -88,7 +88,7 @@ public class TodoService {
 
         Alarm alarm = new Alarm();
         Date now = new Date();
-        SimpleDateFormat date = new SimpleDateFormat("yyyyMMdd");
+        SimpleDateFormat date = new SimpleDateFormat("yyyy-MM-dd");
         alarm.setAlarmDate(date.format(now));
         alarm.setMember(todo.getWriter());
         alarm.setSenderId(userDetails.getMember().getId());
@@ -108,9 +108,10 @@ public class TodoService {
         Member member = memberRepository.findById(memberId).orElseThrow(() -> new IllegalArgumentException("아이디가 존재하지 않습니다."));
 
         // 투두 완료
-        if (!todo.getCompletionState()) todo.completionState();
-        //todoRepository.save(todo);    // 테스트 필요
-
+        if (!todo.getCompletionState()){
+            todo.completionState();
+            //todoRepository.save(todo);    // 테스트 필요
+        }
 
         Character character = member.getCharacter();
         int exp = character.getExp();
@@ -136,7 +137,10 @@ public class TodoService {
 
         calcLevelAndExp(character, exp, maxExp);
 
-        return TodoCompletionDto.builder().todoId(todo.getId()).completionState(todo.getCompletionState()).build();
+        return TodoCompletionDto.builder()
+                .todoId(todo.getId())
+                .completionState(todo.getCompletionState())
+                .build();
     }
 
     private void calcLevelAndExp(Character character, int exp, int maxExp) {

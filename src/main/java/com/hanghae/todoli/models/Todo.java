@@ -57,4 +57,5 @@ public class Todo extends Timestamped{
     public void completionState(){
         this.completionState = true;
     }
+
 }
