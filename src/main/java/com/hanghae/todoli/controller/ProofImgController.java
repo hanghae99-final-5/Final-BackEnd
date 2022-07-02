@@ -11,10 +11,11 @@ import org.springframework.web.bind.annotation.RestController;
 @RequiredArgsConstructor
 public class ProofImgController {
 
-//    private final ProofImgService imgService;
-
     /**
      * 인증 사진 등록
-     * -
+     * - 사진 등록시 인증 날짜 = 종료일 + 3
      */
+
+//    private final ProofImgService imgService;
+
 }
