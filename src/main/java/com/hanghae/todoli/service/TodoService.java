@@ -36,14 +36,8 @@ public class TodoService {
      * - 매칭 번호가 작성자의 매칭 번호와 일치 하는지 확인
      * - 작성자 정보 중 매칭 상태 포함 return
      * <p>
-     * 투두 인증 사진 등록
-     * -
-     * <p>
      * 투두 완료 처리
      * -
-     * <p>
-     * 사진 등록 및 재등록
-     * - 사진 등록시 인증일 = 종료일 + 3 으로 설정
      * <p>
      * 투두 삭제
      * - 투두 작성자와 로그인 유저가 일치
@@ -215,8 +209,13 @@ public class TodoService {
         Long myId = userDetails.getMember().getId();
 
         // 로그인중인 사용자의 매칭 정보
-        Member loggedMember = memberRepository.findById(myId).orElseThrow(() -> new IllegalArgumentException("사용자 정보가 존재하지 않습니다."));
-        Boolean loggedMemberMatchingState = memberRepository.findById(myId).orElseThrow(() -> new IllegalArgumentException("사용자 정보가 존재하지 않습니다.")).getMatchingState();
+        Member loggedMember = memberRepository.findById(myId).orElseThrow(
+                () -> new IllegalArgumentException("사용자 정보가 존재하지 않습니다.")
+        );
+
+        Boolean loggedMemberMatchingState = memberRepository.findById(myId).orElseThrow(
+                () -> new IllegalArgumentException("사용자 정보가 존재하지 않습니다.")
+        ).getMatchingState();
 
         // 매칭 정보 리스트 생성
         List<MatchingStateResponseDto> matchingStates = new ArrayList<>();
@@ -227,10 +226,31 @@ public class TodoService {
         List<TodoInfoDto> todoInfoList = new ArrayList<>();
         List<Todo> todos = todoRepository.findAllByWriterId(myId);
         for (Todo todo : todos) {
-            TodoInfoDto todoInfoDto = TodoInfoDto.builder().todoId(todo.getId()).content(todo.getContent()).proofImg(todo.getProofImg()).startDate(todo.getStartDate()).endDate(todo.getEndDate()).difficulty(todo.getDifficulty()).confirmState(todo.getConfirmState()).completionState(todo.getCompletionState()).confirmDate(todo.getConfirmDate()).todoType(todo.getTodoType()).build();
+            TodoInfoDto todoInfoDto = TodoInfoDto.builder()
+                    .todoId(todo.getId())
+                    .content(todo.getContent())
+                    .proofImg(todo.getProofImg())
+                    .startDate(todo.getStartDate())
+                    .endDate(todo.getEndDate())
+                    .difficulty(todo.getDifficulty())
+                    .confirmState(todo.getConfirmState())
+                    .completionState(todo.getCompletionState())
+                    .confirmDate(todo.getConfirmDate())
+                    .build();
             todoInfoList.add(todoInfoDto);
         }
-
         return new TodoResponseDto(matchingStates, todoInfoList);
+    }
+
+    // 투두 수정
+    public void todoModify(Long id, UserDetailsImpl userDetails) {
+        // 로그인중인 사용자 id 가져오기
+        Long myId = userDetails.getMember().getId();
+
+        // 작성자와 로그인 사용자가 일치 판단
+
+        // 수정할 내용 set
+
+        
     }
 }
