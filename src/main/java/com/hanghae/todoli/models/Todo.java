@@ -47,7 +47,7 @@ public class Todo extends Timestamped{
     1: 매칭
     */
     @Column
-    private int todoState;
+    private int todoType;
 
     // 파트너의 인증 완료 상태
     @Column
@@ -100,5 +100,9 @@ public class Todo extends Timestamped{
 
     public void setWriter(Member writer) {
         this.writer = writer;
+    }
+
+    public void setTodoType(int todoType) {
+        this.todoType = todoType;
     }
 }
