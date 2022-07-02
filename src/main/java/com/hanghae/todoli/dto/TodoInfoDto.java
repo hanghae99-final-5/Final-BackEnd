@@ -29,4 +29,6 @@ public class TodoInfoDto {
     private Boolean confirmState;
 
     private Boolean completionState;
+
+    private int todoType;
 }

@@ -85,7 +85,6 @@ public class CharacterService {
         Long hairId = c.getEquipItem().getHairId();
         Long accessoryId = c.getEquipItem().getAccessoryId();
         Long clothId = c.getEquipItem().getClothId();
-        Long hatId = c.getEquipItem().getHatId();
 
         List<EquipItemDto> itemList = new ArrayList<>();
 
@@ -100,10 +99,6 @@ public class CharacterService {
         if (clothId != null) {
             EquipItemDto cloth = addItem(clothId);
             itemList.add(cloth);
-        }
-        if (hatId != null) {
-            EquipItemDto hat = addItem(hatId);
-            itemList.add(hat);
         }
         return itemList;
     }

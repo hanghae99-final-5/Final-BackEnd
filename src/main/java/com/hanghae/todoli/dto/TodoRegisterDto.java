@@ -26,6 +26,8 @@ public class TodoRegisterDto {
 
     private int difficulty;
 
+    private int todoType;
+
     // 투두 등록 Dto
     @Builder
     public TodoRegisterDto(String content, LocalDate startDate, LocalDate endDate, int difficulty, LocalDate confirmDate) {
