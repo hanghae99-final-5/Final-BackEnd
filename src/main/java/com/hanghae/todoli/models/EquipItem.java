@@ -15,9 +15,6 @@ public class EquipItem {
     private Long id;
 
     @Column
-    private Long hatId;
-
-    @Column
     private Long accessoryId;
 
     @Column
@@ -26,10 +23,6 @@ public class EquipItem {
     @Column
     private Long clothId;
 
-
-    public void updateHat(Long hatId){
-        this.hatId = hatId;
-    }
     public void updateAccessory(Long accessoryId){
         this.accessoryId = accessoryId;
     }

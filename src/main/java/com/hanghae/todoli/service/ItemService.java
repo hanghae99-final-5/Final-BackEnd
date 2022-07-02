@@ -162,12 +162,8 @@ public class ItemService {
         logger.warn(String.valueOf(equipItem.getAccessoryId()));
         logger.warn(String.valueOf(equipItem.getClothId()));
         logger.warn(String.valueOf(equipItem.getHairId()));
-        logger.warn(String.valueOf(equipItem.getHatId()));
 
         switch(category){
-            case HAT:
-                equipItem.updateHat(itemId);
-                break;
             case HAIR:
                 equipItem.updateHair(itemId);
                 break;
@@ -183,7 +179,6 @@ public class ItemService {
         logger.warn(String.valueOf(equipItem.getAccessoryId()));
         logger.warn(String.valueOf(equipItem.getClothId()));
         logger.warn(String.valueOf(equipItem.getHairId()));
-        logger.warn(String.valueOf(equipItem.getHatId()));
 
         return getEquipItemDto(item);
     }
