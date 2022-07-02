@@ -78,6 +78,7 @@ public class TodoService {
         todo.setEndDate(registerDto.getEndDate());
         todo.setDifficulty(registerDto.getDifficulty());
         todo.setConfirmDate(registerDto.getEndDate());
+        todo.setTodoType(registerDto.getTodoType());
 
         todoRepository.save(todo);
     }
@@ -201,6 +202,7 @@ public class TodoService {
                     .difficulty(todo.getDifficulty())
                     .confirmState(todo.getConfirmState())
                     .completionState(todo.getCompletionState())
+                    .todoType(todo.getTodoType())
                     .build();
             todoInfoDtoList.add(todoInfoDto);
         }
@@ -225,7 +227,7 @@ public class TodoService {
         List<TodoInfoDto> todoInfoList = new ArrayList<>();
         List<Todo> todos = todoRepository.findAllByWriterId(myId);
         for (Todo todo : todos) {
-            TodoInfoDto todoInfoDto = TodoInfoDto.builder().todoId(todo.getId()).content(todo.getContent()).proofImg(todo.getProofImg()).startDate(todo.getStartDate()).endDate(todo.getEndDate()).difficulty(todo.getDifficulty()).confirmState(todo.getConfirmState()).completionState(todo.getCompletionState()).confirmDate(todo.getConfirmDate()).build();
+            TodoInfoDto todoInfoDto = TodoInfoDto.builder().todoId(todo.getId()).content(todo.getContent()).proofImg(todo.getProofImg()).startDate(todo.getStartDate()).endDate(todo.getEndDate()).difficulty(todo.getDifficulty()).confirmState(todo.getConfirmState()).completionState(todo.getCompletionState()).confirmDate(todo.getConfirmDate()).todoType(todo.getTodoType()).build();
             todoInfoList.add(todoInfoDto);
         }
 
