@@ -18,6 +18,7 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Optional;
 
 @Slf4j
 @Service
@@ -209,7 +210,7 @@ public class TodoService {
         Long myId = userDetails.getMember().getId();
 
         // 로그인중인 사용자의 매칭 정보
-        Member loggedMember = memberRepository.findById(myId).orElseThrow(
+        Member loggedInMember = memberRepository.findById(myId).orElseThrow(
                 () -> new IllegalArgumentException("사용자 정보가 존재하지 않습니다.")
         );
 
@@ -243,14 +244,22 @@ public class TodoService {
     }
 
     // 투두 수정
-    public void todoModify(Long id, UserDetailsImpl userDetails) {
+    @Transactional
+    public void todoModify(Long todoId, TodoRegisterDto registerDto, UserDetailsImpl userDetails) {
+        // 투두 유무 확인
+        Todo todo = todoRepository.findById(todoId).orElseThrow(() -> new IllegalArgumentException("Todo가 존재하지 않습니다."));
+
         // 로그인중인 사용자 id 가져오기
         Long myId = userDetails.getMember().getId();
+        Member member = memberRepository.findById(myId).orElseThrow(() -> new IllegalArgumentException("작성자가 아닙니다."));
 
-        // 작성자와 로그인 사용자가 일치 판단
-
-        // 수정할 내용 set
-
-        
+        // 투두 데이터
+        todo.setWriter(member);
+        todo.setContent(registerDto.getContent());
+        todo.setStartDate(registerDto.getStartDate());
+        todo.setEndDate(registerDto.getEndDate());
+        todo.setDifficulty(registerDto.getDifficulty());
+        todo.setConfirmDate(registerDto.getEndDate());
+        todo.setTodoType(registerDto.getTodoType());
     }
 }

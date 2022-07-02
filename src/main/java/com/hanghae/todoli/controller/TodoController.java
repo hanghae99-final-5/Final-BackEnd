@@ -56,10 +56,11 @@ public class TodoController {
     }
 
     // 투두 수정
-    @PatchMapping("/todos/{todoId}")
-    public void todoModify(@PathVariable Long id,
+    @PatchMapping(value = "/todos/{todoId}")
+    public void todoModify(@PathVariable Long todoId,
+                           @RequestBody TodoRegisterDto registerDto,
                            @AuthenticationPrincipal UserDetailsImpl userDetails) {
-        todoService.todoModify(id, userDetails);
+        todoService.todoModify(todoId, registerDto, userDetails);
     }
 
     //투두 인증해주기
