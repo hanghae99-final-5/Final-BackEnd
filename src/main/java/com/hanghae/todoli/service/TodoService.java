@@ -4,7 +4,10 @@ package com.hanghae.todoli.service;
 import com.hanghae.todoli.dto.*;
 import com.hanghae.todoli.models.Character;
 import com.hanghae.todoli.models.*;
-import com.hanghae.todoli.repository.*;
+import com.hanghae.todoli.repository.AlarmRepository;
+import com.hanghae.todoli.repository.MatchingRepository;
+import com.hanghae.todoli.repository.MemberRepository;
+import com.hanghae.todoli.repository.TodoRepository;
 import com.hanghae.todoli.security.jwt.UserDetailsImpl;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -13,7 +16,6 @@ import org.springframework.stereotype.Service;
 import javax.transaction.Transactional;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 
@@ -165,7 +167,7 @@ public class TodoService {
         // 불일치시 메시지
         Todo todo = todoRepository.findById(id).orElseThrow(() -> new IllegalArgumentException("Todo가 존재하지 않습니다!"));
 
-        if (!todo.getWriter().equals(userDetails.getMember())) {
+        if (!todo.getWriter().getId().equals(userDetails.getMember().getId())) {
             throw new IllegalArgumentException("Todo 작성자가 아닙니다!");
         }
         todoRepository.deleteById(id);
