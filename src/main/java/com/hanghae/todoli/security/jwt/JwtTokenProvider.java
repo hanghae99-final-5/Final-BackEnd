@@ -32,7 +32,7 @@ public class JwtTokenProvider {
         secretKey = Base64.getEncoder().encodeToString(secretKey.getBytes());
     }
 
-    private static final long tokenValidTime = 1000L * 60 * 60 * 2;
+    private static final long tokenValidTime = 1000L * 60 * 60 * 10;
 
     //JWT 생성
     public String createToken(String username) {

@@ -4,6 +4,7 @@ import lombok.Getter;
 import lombok.Setter;
 
 import javax.persistence.*;
+import java.time.LocalDate;
 
 @Entity
 @Setter
@@ -18,7 +19,7 @@ public class Alarm{
     private String message;
 
     @Column
-    private String alarmDate;
+    private LocalDate alarmDate;
 
     @Column
     private Long senderId;

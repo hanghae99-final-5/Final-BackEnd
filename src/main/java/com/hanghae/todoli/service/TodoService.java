@@ -15,6 +15,8 @@ import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
 import java.text.SimpleDateFormat;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -87,9 +89,10 @@ public class TodoService {
         //todoRepository.save(todo);    // 테스트 필요
 
         Alarm alarm = new Alarm();
-        Date now = new Date();
-        SimpleDateFormat date = new SimpleDateFormat("yyyy-MM-dd");
-        alarm.setAlarmDate(date.format(now));
+//        Date now = new Date();
+//        SimpleDateFormat date = new SimpleDateFormat("yyyy-MM-dd");
+        LocalDate now = LocalDate.parse(LocalDate.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd")));
+        alarm.setAlarmDate(now);
         alarm.setMember(todo.getWriter());
         alarm.setSenderId(userDetails.getMember().getId());
         alarm.setMessage(userDetails.getMember().getNickname() + "님이 확인하셨습니다.");

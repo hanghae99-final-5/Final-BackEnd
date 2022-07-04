@@ -3,6 +3,8 @@ package com.hanghae.todoli.dto;
 import lombok.Builder;
 import lombok.Getter;
 
+import java.time.LocalDate;
+
 @Getter
 @Builder
 public class AlarmResponseDto {
@@ -10,7 +12,7 @@ public class AlarmResponseDto {
 
     private String message;
 
-    private String alarmDate;
+    private LocalDate alarmDate;
 
     private Long senderId;
 }

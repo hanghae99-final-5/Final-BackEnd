@@ -10,6 +10,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.text.SimpleDateFormat;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -64,9 +66,10 @@ public class MatchingService {
         }
 
         //현재 날짜 출력
-        Date now = new Date();
-        SimpleDateFormat date = new SimpleDateFormat("yyyyMMdd");
-        alarm.setAlarmDate(date.format(now));
+//        Date now = new Date();
+//        SimpleDateFormat date = new SimpleDateFormat("yyyy-MM-dd");
+        LocalDate now = LocalDate.parse(LocalDate.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd")));
+        alarm.setAlarmDate(now);
         alarm.setMember(targetMember);
         alarm.setSenderId(userDetails.getMember().getId());
         alarm.setMessage(userDetails.getMember().getNickname() + "님과 함께하시겠습니까?");
