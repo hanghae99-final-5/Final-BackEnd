@@ -65,14 +65,24 @@ public class TodoController {
 
     //투두 인증해주기
     @PatchMapping("/todos/confirm/{todoId}")
-    public TodoConfirmDto confirmTodo(@PathVariable Long todoId, @AuthenticationPrincipal UserDetailsImpl userDetails) {
-        return todoService.confirmTodo(todoId, userDetails);
+    public String confirmTodo(@PathVariable Long todoId, @AuthenticationPrincipal UserDetailsImpl userDetails) {
+        try{
+            todoService.confirmTodo(todoId, userDetails);
+            return "인증을 완료하였습니다.";
+        }catch (IllegalArgumentException e){
+            return e.getMessage();
+        }
     }
 
     //투두 완료(경험치, 돈 획득)
     @PatchMapping("/todos/completion/{todoId}")
-    public TodoCompletionDto completionTodo(@PathVariable Long todoId, @AuthenticationPrincipal UserDetailsImpl userDetails) {
-        return todoService.completionTodo(todoId, userDetails);
+    public String completionTodo(@PathVariable Long todoId, @AuthenticationPrincipal UserDetailsImpl userDetails) {
+        try{
+            todoService.completionTodo(todoId, userDetails);
+            return "완료하였습니다.";
+        }catch (IllegalArgumentException e){
+            return e.getMessage();
+        }
     }
 
     // 투두 삭제

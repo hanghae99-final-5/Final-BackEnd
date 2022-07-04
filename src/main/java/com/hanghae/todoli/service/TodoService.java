@@ -85,21 +85,30 @@ public class TodoService {
     @Transactional
     public TodoConfirmDto confirmTodo(Long todoId, UserDetailsImpl userDetails) {
         Todo todo = todoRepository.findById(todoId).orElseThrow(() -> new IllegalArgumentException("Todo가 존재하지 않습니다."));
-        todo.setConfirmState(true);
-        //todoRepository.save(todo);    // 테스트 필요
 
-        Alarm alarm = new Alarm();
+        if(!todo.getProofImg().isEmpty() && todo.getTodoType() == 1){
+            if(todo.getConfirmState()){
+                throw new IllegalArgumentException("이미 인증하였습니다.");
+            }
+            todo.setConfirmState(true);
+            //todoRepository.save(todo);    // 테스트 필요
+
+            Alarm alarm = new Alarm();
 //        Date now = new Date();
 //        SimpleDateFormat date = new SimpleDateFormat("yyyy-MM-dd");
-        LocalDate now = LocalDate.parse(LocalDate.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd")));
-        alarm.setAlarmDate(now);
-        alarm.setMember(todo.getWriter());
-        alarm.setSenderId(userDetails.getMember().getId());
-        alarm.setMessage(userDetails.getMember().getNickname() + "님이 확인하셨습니다.");
+            LocalDate now = LocalDate.parse(LocalDate.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd")));
+            alarm.setAlarmDate(now);
+            alarm.setMember(todo.getWriter());
+            alarm.setSenderId(userDetails.getMember().getId());
+            alarm.setMessage(userDetails.getMember().getNickname() + "님이 확인하셨습니다.");
 
-        alarmRepository.save(alarm);
+            alarmRepository.save(alarm);
 
-        return TodoConfirmDto.builder().todoId(todo.getId()).confirmState(todo.getConfirmState()).build();
+            return TodoConfirmDto.builder().todoId(todo.getId()).confirmState(todo.getConfirmState()).build();
+        }else{
+            throw new IllegalArgumentException("상대방이 인증하지 않았습니다.");
+        }
+
     }
 
     //투두 완료
@@ -111,9 +120,11 @@ public class TodoService {
         Member member = memberRepository.findById(memberId).orElseThrow(() -> new IllegalArgumentException("아이디가 존재하지 않습니다."));
 
         // 투두 완료
-        if (!todo.getCompletionState()) {
+        if (!todo.getCompletionState() && todo.getConfirmState()) {
             todo.completionState();
             //todoRepository.save(todo);    // 테스트 필요
+        }else{
+            throw new IllegalArgumentException("파트너에게 인증을 받아주세요.");
         }
 
         Character character = member.getCharacter();

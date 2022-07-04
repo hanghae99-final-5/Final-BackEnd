@@ -19,7 +19,7 @@ public class CharResponseDto {
     private int money;
     private String charImg;
 
-    private List<EquipItemDto> listDto;  //List<EquipItemDto> listDto
+    private List<EquipItemDto> equipItems;  //List<EquipItemDto> listDto
 
     //상대방 캐릭터 상태
     @Data
@@ -29,6 +29,6 @@ public class CharResponseDto {
         private String nickname;
         private String charImg;
 
-        private List<EquipItemDto> listDto;
+        private List<EquipItemDto> equipItems;
     }
 }
