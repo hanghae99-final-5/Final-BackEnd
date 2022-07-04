@@ -39,9 +39,7 @@ dependencies {
     compileOnly('org.springframework.boot:spring-boot-starter-oauth2-client')
 
     // S3
-    implementation 'org.springframework.cloud:spring-cloud-starter-aws:2.2.6.RELEASE'
-    implementation 'com.amazonaws:aws-java-sdk:1.12.239'
-
+    implementation group: 'com.amazonaws', name: 'aws-java-sdk-s3', version: '1.12.172'
 }
 
 tasks.named('test') {
