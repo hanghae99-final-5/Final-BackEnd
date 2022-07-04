@@ -51,8 +51,16 @@ public class TodoController {
 
     // 투두 조회
     @GetMapping("/mytodos")
-    public TodoResponseDto getMyTodos(@AuthenticationPrincipal UserDetailsImpl userDetails){
+    public TodoResponseDto getMyTodos(@AuthenticationPrincipal UserDetailsImpl userDetails) {
         return todoService.getMyTodos(userDetails);
+    }
+
+    // 투두 수정
+    @PatchMapping(value = "/todos/{todoId}")
+    public void todoModify(@PathVariable Long todoId,
+                           @RequestBody TodoRegisterDto registerDto,
+                           @AuthenticationPrincipal UserDetailsImpl userDetails) {
+        todoService.todoModify(todoId, registerDto, userDetails);
     }
 
     //투두 인증해주기
@@ -76,6 +84,6 @@ public class TodoController {
     //상대방 투두 조회
     @GetMapping("/todos/pair/{memberId}")
     public TodoResponseDto getPairTodos(@PathVariable Long memberId, @AuthenticationPrincipal UserDetailsImpl userDetails) {
-        return todoService.getPairTodos(memberId,userDetails);
+        return todoService.getPairTodos(memberId, userDetails);
     }
 }
