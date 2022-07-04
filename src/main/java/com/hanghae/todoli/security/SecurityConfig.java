@@ -44,11 +44,11 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
     @Override
     protected void configure(HttpSecurity http) throws Exception {
-        http
-                .csrf().disable()
-                .headers().frameOptions().disable().and()
-                .authorizeRequests()
-
+        http.csrf().disable();
+        http.headers().frameOptions().disable()
+                .and()
+                .cors();
+        http.authorizeRequests()
                 // api 요청 접근허용
                 .antMatchers("**").permitAll()
                 .antMatchers("/api/**").permitAll()
