@@ -36,8 +36,7 @@ public class CharacterService {
         Character c = m.getCharacter();
 
         //캐릭터가 장착한 아이템에서 필요한 정보 가져오기
-        List<EquipItemDto
-                > itemList = getListDtos(c);
+        List<EquipItemDto> itemList = getListDtos(c);
 
         return CharResponseDto.builder()
                 .matchingState(m.getMatchingState())
