@@ -61,29 +61,23 @@ public class Character {
         this.money -= price;
     }
 
-    public void setMoneyAndExp(int money, int exp){
+    public void setMoney(int money){
         this.money += money;
+    }
+
+    public void editExp(int exp) {
         this.exp += exp;
-    }
-
-    public void levelUp(){
-        this.level++;
-        //this.exp = 0;
-    }
-
-    public void addExp(int exp){
-        this.exp += exp;
-    }
-
-    public void zeroExp(){
-        this.exp = 0;
+        if (this.exp >= 100) {
+            this.level++;
+            this.exp = this.exp - 100;
+        }
     }
 
     public void minHpAndLv(){
         this.hp -= 10;
 
         //0 아래로 내려가거나, 레벨이 1초과인 경우만 레벨을 뺀 후 hp를 100으로 돌려놓는다.
-        if(hp < 0 && this.level > 1){
+        if(this.level > 1 && hp <= 0){
             this.level--;
             this.hp = 100;
         }

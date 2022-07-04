@@ -47,7 +47,7 @@ public class CharacterService {
                 .maxExp(c.getMaxExp())
                 .money(c.getMoney())
                 .charImg(c.getCharImg())
-                .listDto(itemList)
+                .equipItems(itemList)
                 .build();
     }
 
@@ -74,7 +74,7 @@ public class CharacterService {
                 .memberId(partner.getId())
                 .nickname(partner.getNickname())
                 .charImg(partner.getCharacter().getCharImg())
-                .listDto(memberItems)
+                .equipItems(memberItems)
                 .build();
     }
 

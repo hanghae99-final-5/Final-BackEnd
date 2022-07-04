@@ -84,8 +84,6 @@ public class ProofImgService {
         objectMetadata.setContentLength(imageUrl.getSize());
         objectMetadata.setContentType(imageUrl.getContentType());
 
-        System.out.println(bucket);
-
         try (InputStream inputStream = imageUrl.getInputStream()) {
             amazonS3.putObject(new PutObjectRequest(bucket, fileName, inputStream, objectMetadata)
                     .withCannedAcl(CannedAccessControlList.PublicRead));

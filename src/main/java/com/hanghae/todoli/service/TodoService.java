@@ -14,13 +14,10 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
-import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
-import java.util.Optional;
 
 @Slf4j
 @Service
@@ -85,9 +82,17 @@ public class TodoService {
     @Transactional
     public TodoConfirmDto confirmTodo(Long todoId, UserDetailsImpl userDetails) {
         Todo todo = todoRepository.findById(todoId).orElseThrow(() -> new IllegalArgumentException("Todo가 존재하지 않습니다."));
+        //파트너 아이디 구하기
+        Long userId = userDetails.getMember().getId();
+        Matching matching = matchingRepository.getMatching(userId).orElseThrow(() -> new IllegalArgumentException("매칭된 상대가 존재하지 않습니다."));
+        Long partnerId = userId.equals(matching.getRequesterId()) ? matching.getRespondentId() : matching.getRequesterId();
 
-        if(!todo.getProofImg().isEmpty() && todo.getTodoType() == 1){
-            if(todo.getConfirmState()){
+        if (!todo.getWriter().getId().equals(partnerId)) {
+            throw new IllegalArgumentException("잘못된 접근입니다.");
+        }
+
+        if (!todo.getProofImg().isEmpty() && todo.getTodoType() == 1) {
+            if (todo.getConfirmState()) {
                 throw new IllegalArgumentException("이미 인증하였습니다.");
             }
             todo.setConfirmState(true);
@@ -100,12 +105,12 @@ public class TodoService {
             alarm.setAlarmDate(now);
             alarm.setMember(todo.getWriter());
             alarm.setSenderId(userDetails.getMember().getId());
-            alarm.setMessage(userDetails.getMember().getNickname() + "님이 확인하셨습니다.");
+            alarm.setMessage(userDetails.getMember().getNickname() + "님이 인증하셨습니다.");
 
             alarmRepository.save(alarm);
 
             return TodoConfirmDto.builder().todoId(todo.getId()).confirmState(todo.getConfirmState()).build();
-        }else{
+        } else {
             throw new IllegalArgumentException("상대방이 인증하지 않았습니다.");
         }
 
@@ -123,33 +128,36 @@ public class TodoService {
         if (!todo.getCompletionState() && todo.getConfirmState()) {
             todo.completionState();
             //todoRepository.save(todo);    // 테스트 필요
-        }else{
+        } else {
             throw new IllegalArgumentException("파트너에게 인증을 받아주세요.");
         }
 
         Character character = member.getCharacter();
-        int exp = character.getExp();
-        int maxExp = character.getMaxExp();
+        int exp = 0;
 
         //난이도별 보상, 레벨업
         int difficulty = todo.getDifficulty();
         switch (difficulty) {
             case 1:
-                character.setMoneyAndExp(10, 5);
+                character.setMoney(10);
                 //characterRepository.save(character); // 테스트 해보기
+                exp = 5;
                 break;
             case 2:
-                character.setMoneyAndExp(20, 10);
+                character.setMoney(20);
+                exp = 10;
                 break;
             case 3:
-                character.setMoneyAndExp(30, 15);
+                character.setMoney(30);
+                exp = 15;
                 break;
             case 4:
-                character.setMoneyAndExp(40, 20);
+                character.setMoney(40);
+                exp = 20;
                 break;
         }
 
-        calcLevelAndExp(character, exp, maxExp);
+        calcLevelAndExp(character, exp);
 
         return TodoCompletionDto.builder()
                 .todoId(todo.getId())
@@ -157,17 +165,8 @@ public class TodoService {
                 .build();
     }
 
-    private void calcLevelAndExp(Character character, int exp, int maxExp) {
-        int tmp = 0;
-        if (exp >= maxExp) {
-            character.levelUp();    // 레벨 올리고 exp 0 만들어준다.
-            if (exp != maxExp) {
-                tmp = exp - 100;
-                character.zeroExp();
-                character.addExp(tmp);
-            }
-            character.zeroExp();
-        }
+    private void calcLevelAndExp(Character character, int exp) {
+        character.editExp(exp);
     }
 
     // 투두 삭제
