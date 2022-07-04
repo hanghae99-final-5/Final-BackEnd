@@ -38,7 +38,7 @@ public class MemberController {
     @PostMapping("/api/users/login")
     public void login(HttpServletResponse response, @RequestBody LoginRequestDto loginRequestDto) {
         Member member = memberService.login(loginRequestDto);
-        String token = jwtTokenProvider.createToken(member.getUsername());
+        String token = jwtTokenProvider.createToken(member.getUsername(),member.getNickname());
         response.addHeader("Authorization", token);
         System.out.println(token);
     }
