@@ -49,7 +49,7 @@ public class Character {
 
     public Character(EquipItem equipItem) {
         this.equipItem = equipItem;
-        this.charImg = "charImg";
+        this.charImg = "https://twodo-li.s3.ap-northeast-2.amazonaws.com/spon.png";
         this.maxHp = 100;
         this.hp = 100;
         this.maxExp = 100;
