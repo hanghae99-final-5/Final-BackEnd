@@ -65,6 +65,16 @@ public class ProofImgService {
         // 이미지 url을 String으로 변환
         String proofImgUrl = getImgUrl(imgRequestDto.getProofImg());
 
+        /**
+         * 인증 가능 날짜 = 종료일 + 3
+         * 이미 url이 존재 하는 경우에는 증가 X
+         * url 초기 등록시만 +3
+         */
+        if (todo.getProofImg() == null){
+            todo.setConfirmDate(todo.getEndDate().plusDays(3));
+        }
+
+        // 이미지 url 저장
         todo.setProofImg(proofImgUrl);
     }
 
