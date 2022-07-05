@@ -40,8 +40,8 @@ public class JwtTokenProvider {
 //        Claims claims1 = Jwts.claims().setSubject(nickname);
         Date now = new Date();
         return Jwts.builder()
-                .claim("username",username)
-                .claim("nickname",nickname)
+                .claim("nickname", nickname)
+                .claim("username", username)
 //                .setClaims(claims)          // 정보 저장
                 .setIssuedAt(now)           // 토큰 발행 정보
                 .setExpiration(new Date(now.getTime() + tokenValidTime))    //만료시간 설정
@@ -72,6 +72,6 @@ public class JwtTokenProvider {
 
     //토큰에서 회원 정보 추출
     public String getUserPk(String token) {
-        return Jwts.parser().setSigningKey(secretKey).parseClaimsJws(token).getBody().getSubject();
+        return Jwts.parser().setSigningKey(secretKey).parseClaimsJws(token).getBody().get("username",String.class);
     }
 }

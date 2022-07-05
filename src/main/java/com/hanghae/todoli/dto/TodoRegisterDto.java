@@ -21,20 +21,16 @@ public class TodoRegisterDto {
     @DateTimeFormat(pattern = "yyyy-MM-dd")
     private LocalDate endDate;
 
-    @DateTimeFormat(pattern = "yyyy-MM-dd")
-    private LocalDate confirmDate;
-
     private int difficulty;
 
     private int todoType;
 
     // 투두 등록 Dto
     @Builder
-    public TodoRegisterDto(String content, LocalDate startDate, LocalDate endDate, int difficulty, LocalDate confirmDate) {
+    public TodoRegisterDto(String content, LocalDate startDate, LocalDate endDate, int difficulty) {
         this.content = content;
         this.startDate = startDate;
         this.endDate = endDate;
         this.difficulty = difficulty;
-        this.confirmDate = confirmDate;
     }
 }
