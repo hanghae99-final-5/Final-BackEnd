@@ -248,6 +248,7 @@ public class TodoService {
                     .confirmState(todo.getConfirmState())
                     .completionState(todo.getCompletionState())
                     .confirmDate(todo.getConfirmDate())
+                    .todoType(todo.getTodoType())
                     .build();
             todoInfoList.add(todoInfoDto);
         }

@@ -71,6 +71,7 @@ public class JwtTokenProvider {
     }
 
     //토큰에서 회원 정보 추출
+    //claim으로 넣어서 수정
     public String getUserPk(String token) {
         return Jwts.parser().setSigningKey(secretKey).parseClaimsJws(token).getBody().get("username",String.class);
     }
