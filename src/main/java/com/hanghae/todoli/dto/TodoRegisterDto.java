@@ -27,10 +27,11 @@ public class TodoRegisterDto {
 
     // 투두 등록 Dto
     @Builder
-    public TodoRegisterDto(String content, LocalDate startDate, LocalDate endDate, int difficulty) {
+    public TodoRegisterDto(String content, LocalDate startDate, LocalDate endDate, int difficulty, int todoType) {
         this.content = content;
         this.startDate = startDate;
         this.endDate = endDate;
         this.difficulty = difficulty;
+        this.todoType = todoType;
     }
 }

@@ -63,8 +63,6 @@ public class TodoService {
         // 새로운 투두
         final Todo todo = new Todo();
 
-        // 날짜 설정
-
         // 투두 데이터
         todo.setWriter(member);
         todo.setContent(registerDto.getContent());
