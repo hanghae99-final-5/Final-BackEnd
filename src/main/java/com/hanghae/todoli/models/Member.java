@@ -1,12 +1,15 @@
 package com.hanghae.todoli.models;
 
-import com.fasterxml.jackson.annotation.JsonManagedReference;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
 import java.util.ArrayList;
 import java.util.List;
 
 @Entity
+@NoArgsConstructor
+@Getter
 public class Member {
 
     @Id
@@ -23,9 +26,6 @@ public class Member {
     private String password;
 
     @Column
-    private Long googleId;
-
-    @Column
     private Boolean matchingState;
 
     @OneToOne(fetch = FetchType.LAZY)
@@ -36,4 +36,16 @@ public class Member {
 
     @OneToMany
     private List<Todo> todos = new ArrayList<>();
+
+    public Member(String username, String nickname, String password, Boolean matchingState, Character character) {
+        this.character = character;
+        this.username = username;
+        this.nickname = nickname;
+        this.password = password;
+        this.matchingState = matchingState;
+    }
+
+    public void changeMatchingState(Member member) {
+        this.matchingState = !member.getMatchingState();
+    }
 }

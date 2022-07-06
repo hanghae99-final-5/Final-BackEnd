@@ -1,8 +1,14 @@
 package com.hanghae.todoli.models;
 
+import com.hanghae.todoli.dto.ItemRequestDto;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+
 import javax.persistence.*;
 
 @Entity
+@Getter
+@NoArgsConstructor
 public class Item {
 
     @Id
@@ -12,6 +18,7 @@ public class Item {
     @Column
     private String name;
 
+    @Enumerated(EnumType.STRING)
     @Column
     private Category category;
 
@@ -23,4 +30,12 @@ public class Item {
 
     @Column
     private int price;
+
+    public Item(ItemRequestDto itemRequestDto) {
+        this.name = itemRequestDto.getName();
+        this.category = itemRequestDto.getCategory();
+        this.equipImg = itemRequestDto.getEquipImg();
+        this.viewImg = itemRequestDto.getViewImg();
+        this.price = itemRequestDto.getPrice();
+    }
 }

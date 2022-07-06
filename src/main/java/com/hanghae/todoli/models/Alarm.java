@@ -1,9 +1,15 @@
 package com.hanghae.todoli.models;
 
+import lombok.Getter;
+import lombok.Setter;
+
 import javax.persistence.*;
+import java.time.LocalDate;
 
 @Entity
-public class Alarm {
+@Setter
+@Getter
+public class Alarm{
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -13,8 +19,11 @@ public class Alarm {
     private String message;
 
     @Column
-    private String alarmDate;
+    private LocalDate alarmDate;
 
     @Column
     private Long senderId;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    private Member member;
 }
