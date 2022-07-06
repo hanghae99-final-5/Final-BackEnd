@@ -56,6 +56,14 @@ jobs:
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-region: ${{ secrets.AWS_REGION }}
           
+      - name: Setup MySQL
+        uses: samin/mysql-action@v1
+        with:
+          character set server: 'utf8' 
+          mysql database: 'mysql' 
+          mysql user: 'so23go'
+          mysql password: ${{ secrets.MYSQL_PASSWORD }} # github Secret 탭에서 설정하세요!
+          
     # (5) 빌드 결과물을 S3 버킷에 업로드
       - name: Upload to AWS S3
         run: aws deploy push --application-name ${{ env.CODE_DEPLOY_APPLICATION_NAME }} --ignore-hidden-files --s3-location s3://$S3_BUCKET_NAME/$GITHUB_SHA.zip --source .
