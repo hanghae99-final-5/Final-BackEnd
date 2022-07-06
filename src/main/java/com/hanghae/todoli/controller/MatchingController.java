@@ -17,9 +17,9 @@ public class MatchingController {
     private final MatchingService matchingService;
 
     //사용자 검색
-    @GetMapping(value = "/api/users/{username}")
-    public MatchingResponseDto searchMember(@PathVariable String username) {
-        return matchingService.searchMember(username);
+    @GetMapping("/api/users/{username}")
+    public MatchingResponseDto searchMember(@PathVariable String username,@AuthenticationPrincipal UserDetailsImpl userDetails) {
+        return matchingService.searchMember(username,userDetails);
     }
 
     //매칭 초대기능

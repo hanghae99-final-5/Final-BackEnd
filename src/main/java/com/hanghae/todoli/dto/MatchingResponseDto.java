@@ -16,6 +16,7 @@ public class MatchingResponseDto {
     private Long memberId;
     private String nickname;
     private Boolean matchingState;
+    private String partner;
     private String charImg;
     private List<EquipItemDto> equipItems;
 }

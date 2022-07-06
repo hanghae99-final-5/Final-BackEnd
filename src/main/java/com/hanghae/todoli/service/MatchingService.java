@@ -9,12 +9,11 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -30,12 +29,22 @@ public class MatchingService {
     List<EquipItemDto> itemList = new ArrayList<>();
 
     //상대방 찾기
-    public MatchingResponseDto searchMember(String username) {
+    public MatchingResponseDto searchMember(String username, UserDetailsImpl userDetails) {
         Member member = memberRepository.findByUsername(username).orElseThrow(
                 () -> new IllegalArgumentException("유저가 존재하지 않습니다.")
         );
-        EquipItem equipItem = member.getCharacter().getEquipItem();
+        Matching matching =matchingRepository.getMatching(userDetails.getMember().getId()).orElse(null);
+        String partnerUsername = "";
+        if (matching != null) {
+            Long partnerId = userDetails.getMember().getId()
+                    .equals(matching.getRequesterId()) ? matching.getRespondentId() : matching.getRequesterId();
 
+            Member partner = memberRepository.findById(partnerId).orElseThrow(
+                    () -> new IllegalArgumentException("유저가 존재하지 않습니다.")
+            );
+            partnerUsername = partner.getUsername();
+        }
+        EquipItem equipItem = member.getCharacter().getEquipItem();
         Long accessoryId = equipItem.getAccessoryId();
         Long clothId = equipItem.getClothId();
         Long hairId = equipItem.getHairId();
@@ -48,6 +57,7 @@ public class MatchingService {
                 .memberId(member.getId())
                 .nickname(member.getNickname())
                 .matchingState(member.getMatchingState())
+                .partner(partnerUsername)
                 .charImg(member.getCharacter().getCharImg())
                 .equipItems(itemList)
                 .build();

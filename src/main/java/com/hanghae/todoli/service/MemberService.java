@@ -59,7 +59,6 @@ public class MemberService {
         return Member;
     }
 
-    @Transactional
     //아이디 중복확인
     private void idCheck(String username) {
         Optional<Member> found = memberRepository.findByUsername(username);
