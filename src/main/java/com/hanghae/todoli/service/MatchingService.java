@@ -32,26 +32,29 @@ public class MatchingService {
 
     //상대방 찾기
     public MatchingResponseDto searchMember(String username, UserDetailsImpl userDetails) {
-        String regex = "^[0-9a-zA-Z]([-_.]?[0-9a-zA-Z])*@[0-9a-zA-Z]([-_.]?[0-9a-zA-Z])*.[a-zA-Z]{2,3}$";
-        if (Pattern.matches(regex,username)) {
+        String regex ="^[a-zA-Z0-9]+@[a-zA-Z0-9]+\\.[a-z]+$";
+        if (!Pattern.matches(regex,username)) {
             throw new IllegalArgumentException("이메일 형식이 아닙니다.");
         }
-
-        Member member = memberRepository.findByUsername(username).orElseThrow(
+        Long myId = userDetails.getMember().getId();
+        Member myInfo = memberRepository.findById(myId).orElseThrow(
                 () -> new IllegalArgumentException("유저가 존재하지 않습니다.")
         );
-        Matching matching =matchingRepository.getMatching(userDetails.getMember().getId()).orElse(null);
-        String partnerUsername = "";
+        Member target = memberRepository.findByUsername(username).orElseThrow(
+                () -> new IllegalArgumentException("검색한 유저가 존재하지 않습니다.")
+        );
+        Matching matching =matchingRepository.getMatching(target.getId()).orElse(null);
+        String searchedUserPartnerName = "";
         if (matching != null) {
-            Long partnerId = userDetails.getMember().getId()
+            Long searchedUserPartnerId = target.getId()
                     .equals(matching.getRequesterId()) ? matching.getRespondentId() : matching.getRequesterId();
 
-            Member partner = memberRepository.findById(partnerId).orElseThrow(
-                    () -> new IllegalArgumentException("유저가 존재하지 않습니다.")
+            Member partner = memberRepository.findById(searchedUserPartnerId).orElseThrow(
+                    () -> new IllegalArgumentException("상대방의 매칭 유저가 존재하지 않습니다.")
             );
-            partnerUsername = partner.getUsername();
+            searchedUserPartnerName = partner.getUsername();
         }
-        EquipItem equipItem = member.getCharacter().getEquipItem();
+        EquipItem equipItem = target.getCharacter().getEquipItem();
         Long accessoryId = equipItem.getAccessoryId();
         Long clothId = equipItem.getClothId();
         Long hairId = equipItem.getHairId();
@@ -61,11 +64,12 @@ public class MatchingService {
         addItem(hairId);
 
         return MatchingResponseDto.builder()
-                .memberId(member.getId())
-                .nickname(member.getNickname())
-                .matchingState(member.getMatchingState())
-                .partner(partnerUsername)
-                .charImg(member.getCharacter().getCharImg())
+                .myMatchingState(myInfo.getMatchingState())
+                .memberId(target.getId())
+                .nickname(target.getNickname())
+                .partnerMatchingState(target.getMatchingState())
+                .searchedUserPartner(searchedUserPartnerName)
+                .charImg(target.getCharacter().getCharImg())
                 .equipItems(itemList)
                 .build();
     }

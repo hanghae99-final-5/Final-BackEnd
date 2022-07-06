@@ -13,10 +13,11 @@ import java.util.List;
 @AllArgsConstructor
 public class MatchingResponseDto {
 
+    private Boolean myMatchingState;
     private Long memberId;
     private String nickname;
-    private Boolean matchingState;
-    private String partner;
+    private Boolean partnerMatchingState;
+    private String searchedUserPartner;
     private String charImg;
     private List<EquipItemDto> equipItems;
 }
