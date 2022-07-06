@@ -30,7 +30,7 @@ public class CharacterService {
     public CharResponseDto getCharState(UserDetailsImpl userDetails) {
         Long memberId = userDetails.getMember().getId();
         Member m = memberRepository.findById(memberId).orElseThrow(
-                () -> new IllegalArgumentException("X")
+                () -> new IllegalArgumentException("자신의 아이디가 잘못되었습니다.")
         );
         //Member m = userDetails.getMember();
         Character c = m.getCharacter();

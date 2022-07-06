@@ -14,6 +14,8 @@ import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 @Service
 @RequiredArgsConstructor
@@ -30,6 +32,11 @@ public class MatchingService {
 
     //상대방 찾기
     public MatchingResponseDto searchMember(String username, UserDetailsImpl userDetails) {
+        String regex = "^[0-9a-zA-Z]([-_.]?[0-9a-zA-Z])*@[0-9a-zA-Z]([-_.]?[0-9a-zA-Z])*.[a-zA-Z]{2,3}$";
+        if (Pattern.matches(regex,username)) {
+            throw new IllegalArgumentException("이메일 형식이 아닙니다.");
+        }
+
         Member member = memberRepository.findByUsername(username).orElseThrow(
                 () -> new IllegalArgumentException("유저가 존재하지 않습니다.")
         );
