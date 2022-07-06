@@ -44,12 +44,13 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
     @Override
     protected void configure(HttpSecurity http) throws Exception {
-        http
-                .csrf().disable()
-                .headers().frameOptions().disable().and()
-                .authorizeRequests()
-
+        http.csrf().disable();
+        http.headers().frameOptions().disable()
+                .and()
+                .cors();
+        http.authorizeRequests()
                 // api 요청 접근허용
+                .antMatchers("**").permitAll()
                 .antMatchers("/api/**").permitAll()
                 .antMatchers("/h2-console/**").permitAll()
                 // 그 외 모든 요청은 인증과정 필요

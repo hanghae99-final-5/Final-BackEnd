@@ -35,11 +35,14 @@ public class JwtTokenProvider {
     private static final long tokenValidTime = 1000L * 60 * 60 * 10;
 
     //JWT 생성
-    public String createToken(String username) {
-        Claims claims = Jwts.claims().setSubject(username);
+    public String createToken(String username,String nickname) {
+//        Claims claims = Jwts.claims().setSubject(username);
+//        Claims claims1 = Jwts.claims().setSubject(nickname);
         Date now = new Date();
         return Jwts.builder()
-                .setClaims(claims)          // 정보 저장
+                .claim("nickname", nickname)
+                .claim("username", username)
+//                .setClaims(claims)          // 정보 저장
                 .setIssuedAt(now)           // 토큰 발행 정보
                 .setExpiration(new Date(now.getTime() + tokenValidTime))    //만료시간 설정
                 .signWith(SignatureAlgorithm.HS256, secretKey)              //사용할 알고리즘,secret값 셋팅
@@ -68,7 +71,8 @@ public class JwtTokenProvider {
     }
 
     //토큰에서 회원 정보 추출
+    //claim으로 넣어서 수정
     public String getUserPk(String token) {
-        return Jwts.parser().setSigningKey(secretKey).parseClaimsJws(token).getBody().getSubject();
+        return Jwts.parser().setSigningKey(secretKey).parseClaimsJws(token).getBody().get("username",String.class);
     }
 }
