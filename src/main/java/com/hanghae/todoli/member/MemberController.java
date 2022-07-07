@@ -4,6 +4,9 @@ import com.hanghae.todoli.googleLogin.GetSocialOAuthRes;
 import com.hanghae.todoli.googleLogin.OAuthService;
 import com.hanghae.todoli.googleLogin.SocialLoginType;
 import com.hanghae.todoli.security.jwt.JwtTokenProvider;
+import io.swagger.annotations.ApiOperation;
+import io.swagger.annotations.ApiResponse;
+import io.swagger.annotations.ApiResponses;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -30,10 +33,15 @@ public class MemberController {
     }
 
     //로그인
+    @ApiResponses({
+            @ApiResponse(code = 200, message = "성공"),
+            @ApiResponse(code = 400, message = "실패")
+    })
+    @ApiOperation(value = "로그인 메소드", notes = "성공시 jwt 토큰을 헤더에 넣어서 반환합니다.")
     @PostMapping("/api/users/login")
     public void login(HttpServletResponse response, @RequestBody LoginRequestDto loginRequestDto) {
         Member member = memberService.login(loginRequestDto);
-        String token = jwtTokenProvider.createToken(member.getUsername(),member.getNickname());
+        String token = jwtTokenProvider.createToken(member.getUsername(), member.getNickname());
         response.addHeader("Authorization", token);
         System.out.println(token);
     }
