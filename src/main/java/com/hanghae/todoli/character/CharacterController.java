@@ -22,7 +22,7 @@ public class CharacterController {
 
     //상대방 캐릭터 상태
     @GetMapping("/api/characters/partners")
-    public CharResponseDto.PartnerDto getPartnerState(@AuthenticationPrincipal UserDetailsImpl userDetails){
+    public CharResponseDto getPartnerState(@AuthenticationPrincipal UserDetailsImpl userDetails){
         return characterService.getPartnerState(userDetails);
     }
 }

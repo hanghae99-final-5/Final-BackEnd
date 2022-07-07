@@ -19,6 +19,6 @@ public class MatchingResponseDto {
     private String nickname;
     private Boolean partnerMatchingState;
     private String searchedUserPartner;
-    private String charImg;
+    private String thumbnailCharImg;
     private List<EquipItemDto> equipItems;
 }

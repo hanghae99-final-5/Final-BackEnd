@@ -22,14 +22,4 @@ public class CharResponseDto {
 
     private List<EquipItemDto> equipItems;  //List<EquipItemDto> listDto
 
-    //상대방 캐릭터 상태
-    @Data
-    @Builder
-    public static class PartnerDto{
-        private Long memberId;
-        private String nickname;
-        private String charImg;
-
-        private List<EquipItemDto> equipItems;
-    }
 }
