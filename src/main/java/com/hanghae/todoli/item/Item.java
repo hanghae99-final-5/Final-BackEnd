@@ -37,6 +37,7 @@ public class Item {
         this.name = itemRequestDto.getName();
         this.category = itemRequestDto.getCategory();
         this.equipImg = itemRequestDto.getEquipImg();
+        this.thumbnailImg = itemRequestDto.getThumbnailImg();
         this.viewImg = itemRequestDto.getViewImg();
         this.price = itemRequestDto.getPrice();
     }

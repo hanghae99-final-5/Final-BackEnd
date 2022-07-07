@@ -25,4 +25,10 @@ public class CharacterController {
     public CharResponseDto getPartnerState(@AuthenticationPrincipal UserDetailsImpl userDetails){
         return characterService.getPartnerState(userDetails);
     }
+
+    //푸터용 자신, 상대방 캐릭터
+    @GetMapping("/api/characters/footer")
+    public FooterResponseDto getCharacterInFooter(@AuthenticationPrincipal UserDetailsImpl userDetails) {
+        return characterService.getCharacterInFooter(userDetails);
+    }
 }

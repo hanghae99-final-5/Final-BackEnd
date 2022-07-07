@@ -1,5 +1,6 @@
 package com.hanghae.todoli.matching;
 
+import com.hanghae.todoli.character.ThumbnailDto;
 import com.hanghae.todoli.equipitem.EquipItemDto;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -20,5 +21,5 @@ public class MatchingResponseDto {
     private Boolean partnerMatchingState;
     private String searchedUserPartner;
     private String thumbnailCharImg;
-    private List<EquipItemDto> equipItems;
+    private List<ThumbnailDto> equipItems;
 }

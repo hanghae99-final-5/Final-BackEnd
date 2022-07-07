@@ -205,6 +205,7 @@ public class ItemService {
         String name = requestDto.getName();
         Category category = requestDto.getCategory();
         String equipImg = requestDto.getEquipImg();
+        String thumbnailImg = requestDto.getThumbnailImg();
         String viewImg = requestDto.getViewImg();
         int price = requestDto.getPrice();
 
@@ -213,6 +214,7 @@ public class ItemService {
                 .category(category)
                 .equipImg(equipImg)
                 .viewImg(viewImg)
+                .thumbnailImg(thumbnailImg)
                 .price(price)
                 .build();
 

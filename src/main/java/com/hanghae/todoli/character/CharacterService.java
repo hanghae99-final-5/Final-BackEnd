@@ -1,5 +1,6 @@
 package com.hanghae.todoli.character;
 
+import com.hanghae.todoli.equipitem.EquipItem;
 import com.hanghae.todoli.equipitem.EquipItemDto;
 import com.hanghae.todoli.item.Item;
 import com.hanghae.todoli.item.ItemRepository;
@@ -41,7 +42,7 @@ public class CharacterService {
     public CharResponseDto getPartnerState(UserDetailsImpl userDetails) {
         Long userId = userDetails.getMember().getId();
         Matching matching = matchingRepository.getMatching(userId).orElseThrow(
-                () -> new IllegalArgumentException("매칭된 상대가 존재하지 않습니다.")
+                () -> new IllegalArgumentException("매칭이 안 되어있습니다.")
         );
 
         //파트너 아이디 구하기
@@ -92,6 +93,56 @@ public class CharacterService {
             itemList.add(cloth);
         }
         return itemList;
+    }
+
+    public FooterResponseDto getCharacterInFooter(UserDetailsImpl userDetails) {
+        Long myId = userDetails.getMember().getId();
+        Member myInfo = memberRepository.findById(myId).orElseThrow(
+                () -> new IllegalArgumentException("현재 아이디가 없습니다.")
+        );
+        Matching matching = matchingRepository.getMatching(myId).orElseThrow(
+                () -> new IllegalArgumentException("매칭이 안 되어있습니다.")
+        );
+        Long partnerId = myId.equals(matching.getRequesterId()) ? matching.getRespondentId() : matching.getRequesterId();
+        Member partnerInfo = memberRepository.findById(partnerId).orElseThrow(
+                () -> new IllegalArgumentException("파트너가 존재하지 않습니다.")
+        );
+        List<ThumbnailDto> myEquipItemList = getThumbnailDtos(myInfo);
+        List<ThumbnailDto> partnerEquipItemList = getThumbnailDtos(partnerInfo);
+
+        return FooterResponseDto.builder()
+                .thumbnailCharImg(new CharacterImg().getThumbnailCharImg())
+                .myId(myInfo.getId())
+                .myNickname(myInfo.getNickname())
+                .myEquipItems(myEquipItemList)
+                .partnerId(partnerId)
+                .partnerNickname(partnerInfo.getNickname())
+                .partnerEquipItems(partnerEquipItemList)
+                .build();
+    }
+
+    private List<ThumbnailDto> getThumbnailDtos(Member Info) {
+        List<ThumbnailDto> myEquipItemList = new ArrayList<>();
+        EquipItem myEquipItem = Info.getCharacter().getEquipItem();
+        Long hairId = myEquipItem.getHairId();
+        Long clothId = myEquipItem.getClothId();
+        Long accessoryId = myEquipItem.getAccessoryId();
+        if (hairId != null) {
+            Item hair = itemRepository.findById(hairId).orElse(null);
+            ThumbnailDto thumbnailDto1 = new ThumbnailDto(hair.getId(),hair.getThumbnailImg(),hair.getCategory());
+            myEquipItemList.add(thumbnailDto1);
+        }
+        if (clothId != null) {
+            Item cloth = itemRepository.findById(clothId).orElse(null);
+            ThumbnailDto thumbnailDto2 = new ThumbnailDto(cloth.getId(),cloth.getThumbnailImg(),cloth.getCategory());
+            myEquipItemList.add(thumbnailDto2);
+        }
+        if (accessoryId != null) {
+            Item accessory = itemRepository.findById(accessoryId).orElse(null);
+            ThumbnailDto thumbnailDto3 = new ThumbnailDto(accessory.getId(),accessory.getThumbnailImg(),accessory.getCategory());
+            myEquipItemList.add(thumbnailDto3);
+        }
+        return myEquipItemList;
     }
 
     //장착된 아이템에서 원하는 정보만 가져오기

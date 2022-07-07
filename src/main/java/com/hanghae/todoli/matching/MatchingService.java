@@ -2,6 +2,9 @@ package com.hanghae.todoli.matching;
 
 import com.hanghae.todoli.alarm.Alarm;
 import com.hanghae.todoli.alarm.AlarmRepository;
+import com.hanghae.todoli.character.CharacterImg;
+import com.hanghae.todoli.character.CharacterService;
+import com.hanghae.todoli.character.ThumbnailDto;
 import com.hanghae.todoli.equipitem.EquipItem;
 import com.hanghae.todoli.equipitem.EquipItemDto;
 import com.hanghae.todoli.item.Item;
@@ -31,9 +34,8 @@ public class MatchingService {
     private final MatchingRepository matchingRepository;
     private final TodoRepository todoRepository;
 
-    List<EquipItemDto> itemList = new ArrayList<>();
-
     //상대방 찾기
+    @Transactional
     public MatchingResponseDto searchMember(String username, UserDetailsImpl userDetails) {
         String regex ="^[a-zA-Z0-9]+@[a-zA-Z0-9]+\\.[a-z]+$";
         if (!Pattern.matches(regex,username)) {
@@ -57,14 +59,7 @@ public class MatchingService {
             );
             searchedUserPartnerName = partner.getUsername();
         }
-        EquipItem equipItem = target.getCharacter().getEquipItem();
-        Long accessoryId = equipItem.getAccessoryId();
-        Long clothId = equipItem.getClothId();
-        Long hairId = equipItem.getHairId();
-
-        addItem(accessoryId);
-        addItem(clothId);
-        addItem(hairId);
+        List<ThumbnailDto> targetThumbnailDtos = getThumbnailDtos(target);
 
         return MatchingResponseDto.builder()
                 .myMatchingState(myInfo.getMatchingState())
@@ -72,8 +67,8 @@ public class MatchingService {
                 .nickname(target.getNickname())
                 .partnerMatchingState(target.getMatchingState())
                 .searchedUserPartner(searchedUserPartnerName)
-                .thumbnailCharImg(target.getCharacter().getCharImg())
-                .equipItems(itemList)
+                .thumbnailCharImg(new CharacterImg().getThumbnailCharImg())
+                .equipItems(targetThumbnailDtos)
                 .build();
     }
 
@@ -149,14 +144,28 @@ public class MatchingService {
     }
 
     //아이템 리스트dto에 추가
-    public void addItem(Long id) {
-        EquipItemDto equipItemDto = new EquipItemDto();
-        if (id != null) {
-            Item item = itemRepository.findById(id).orElse(null);
-            equipItemDto.setItemId(id);
-            equipItemDto.setEquipImg(item.getEquipImg());
-            equipItemDto.setCategory(item.getCategory());
-            itemList.add(equipItemDto);
+    private List<ThumbnailDto> getThumbnailDtos(Member Info) {
+        List<ThumbnailDto> myEquipItemList = new ArrayList<>();
+        EquipItem myEquipItem = Info.getCharacter().getEquipItem();
+        Long hairId = myEquipItem.getHairId();
+        Long clothId = myEquipItem.getClothId();
+        Long accessoryId = myEquipItem.getAccessoryId();
+        if (hairId != null) {
+            Item hair = itemRepository.findById(hairId).orElse(null);
+            ThumbnailDto thumbnailDto1 = new ThumbnailDto(hair.getId(),hair.getThumbnailImg(),hair.getCategory());
+            myEquipItemList.add(thumbnailDto1);
         }
+        if (clothId != null) {
+            Item cloth = itemRepository.findById(clothId).orElse(null);
+            ThumbnailDto thumbnailDto2 = new ThumbnailDto(cloth.getId(),cloth.getThumbnailImg(),cloth.getCategory());
+            myEquipItemList.add(thumbnailDto2);
+        }
+        if (accessoryId != null) {
+            Item accessory = itemRepository.findById(accessoryId).orElse(null);
+            ThumbnailDto thumbnailDto3 = new ThumbnailDto(accessory.getId(),accessory.getThumbnailImg(),accessory.getCategory());
+            myEquipItemList.add(thumbnailDto3);
+        }
+        return myEquipItemList;
     }
+
 }

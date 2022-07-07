@@ -11,5 +11,6 @@ public class ItemRequestDto {
     private Category category;
     private String equipImg;
     private String viewImg;
+    private String thumbnailImg;
     private int price;
 }
