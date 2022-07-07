@@ -4,6 +4,7 @@ import com.hanghae.todoli.googleLogin.GetSocialOAuthRes;
 import com.hanghae.todoli.googleLogin.OAuthService;
 import com.hanghae.todoli.googleLogin.SocialLoginType;
 import com.hanghae.todoli.security.jwt.JwtTokenProvider;
+import com.nimbusds.oauth2.sdk.ErrorResponse;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
@@ -35,7 +36,7 @@ public class MemberController {
     //로그인
     @ApiResponses({
             @ApiResponse(code = 200, message = "성공"),
-            @ApiResponse(code = 400, message = "실패")
+            @ApiResponse(code = 400, message = "1.등록되지 않은 개인 미션 \t\n 2.등록되지 않은 유저 \t\n 3.하루 인증 횟수 초과", response = ErrorResponse.class)
     })
     @ApiOperation(value = "로그인 메소드", notes = "성공시 jwt 토큰을 헤더에 넣어서 반환합니다.")
     @PostMapping("/api/users/login")
