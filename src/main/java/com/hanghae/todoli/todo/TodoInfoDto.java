@@ -5,6 +5,7 @@ import lombok.Getter;
 import org.springframework.format.annotation.DateTimeFormat;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 @Getter
 @Builder
@@ -23,6 +24,9 @@ public class TodoInfoDto {
 
     @DateTimeFormat(pattern = "yyyy-MM-dd")
     private LocalDate confirmDate;
+
+    @DateTimeFormat(pattern = "yyyy-MM-dd")
+    private LocalDate createdAt;
 
     private int difficulty;
 

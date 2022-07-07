@@ -81,6 +81,7 @@ public class TodoService {
     @Transactional
     public TodoConfirmDto confirmTodo(Long todoId, UserDetailsImpl userDetails) {
         Todo todo = todoRepository.findById(todoId).orElseThrow(() -> new IllegalArgumentException("Todo가 존재하지 않습니다."));
+
         //파트너 아이디 구하기
         Long userId = userDetails.getMember().getId();
         Matching matching = matchingRepository.getMatching(userId).orElseThrow(() -> new IllegalArgumentException("매칭된 상대가 존재하지 않습니다."));
@@ -210,6 +211,7 @@ public class TodoService {
                     .confirmState(todo.getConfirmState())
                     .completionState(todo.getCompletionState())
                     .todoType(todo.getTodoType())
+                    .createdAt(todo.getCreatedAt())
                     .build();
             todoInfoDtoList.add(todoInfoDto);
         }
@@ -250,6 +252,7 @@ public class TodoService {
                     .completionState(todo.getCompletionState())
                     .confirmDate(todo.getConfirmDate())
                     .todoType(todo.getTodoType())
+                    .createdAt(todo.getCreatedAt())
                     .build();
             todoInfoList.add(todoInfoDto);
         }
