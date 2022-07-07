@@ -28,6 +28,9 @@ public class Item {
     private String viewImg;
 
     @Column
+    private String thumbnail;
+
+    @Column
     private int price;
 
     public Item(ItemRequestDto itemRequestDto) {
