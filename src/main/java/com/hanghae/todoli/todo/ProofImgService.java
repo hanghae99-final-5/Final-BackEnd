@@ -5,6 +5,12 @@ import com.amazonaws.services.s3.model.CannedAccessControlList;
 import com.amazonaws.services.s3.model.DeleteObjectRequest;
 import com.amazonaws.services.s3.model.ObjectMetadata;
 import com.amazonaws.services.s3.model.PutObjectRequest;
+import com.hanghae.todoli.alarm.Alarm;
+import com.hanghae.todoli.alarm.AlarmRepository;
+import com.hanghae.todoli.matching.Matching;
+import com.hanghae.todoli.matching.MatchingRepository;
+import com.hanghae.todoli.member.Member;
+import com.hanghae.todoli.member.MemberRepository;
 import com.hanghae.todoli.security.UserDetailsImpl;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -17,7 +23,12 @@ import org.springframework.web.server.ResponseStatusException;
 import javax.transaction.Transactional;
 import java.io.IOException;
 import java.io.InputStream;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
+import java.util.Optional;
 import java.util.UUID;
+
+import static com.hanghae.todoli.alarm.AlarmType.*;
 
 @Slf4j
 @Service
@@ -31,9 +42,12 @@ public class ProofImgService {
      */
 
     private final AmazonS3 amazonS3;
+    private final TodoRepository todoRepository;
+    private final MemberRepository memberRepository;
+    private final MatchingRepository matchingRepository;
+    private final AlarmRepository alarmRepository;
     @Value("${cloud.aws.s3.bucket}")
     private String bucket;
-    private final TodoRepository todoRepository;
 
     @Transactional
     public void imgRegister(Long id, ProofImgRequestDto imgRequestDto, UserDetailsImpl userDetails) {
@@ -41,9 +55,12 @@ public class ProofImgService {
         Todo todo = todoRepository.findById(id).orElseThrow(() -> new IllegalArgumentException("Todo가 존재하지 않습니다."));
 
         // 로그인 사용자 가져와서 작성자와 일치하는지 확인
-        Long id1 = userDetails.getMember().getId();
+        Long myId = userDetails.getMember().getId();
+        Member myInfo = memberRepository.findById(myId).orElseThrow(
+                () -> new IllegalArgumentException("유저가 존재하지 않습니다.")
+        );
 
-        if (!todo.getWriter().getId().equals(id1)) {
+        if (!todo.getWriter().getId().equals(myId)) {
             throw new IllegalArgumentException("투두 작성자가 아닙니다!");
         }
 
@@ -69,6 +86,25 @@ public class ProofImgService {
          */
         if (todo.getProofImg() == null){
             todo.setConfirmDate(todo.getEndDate().plusDays(3));
+        }
+        //자신이 매칭되어 있고, 매칭투두일때
+        if (myInfo.getMatchingState() && todo.getTodoType()==1) {
+            Matching matching =matchingRepository.getMatching(myId).orElse(null);
+            Long partnerId = myId.equals(matching.getRequesterId()) ? matching.getRespondentId() : matching.getRequesterId();
+            Member partner = memberRepository.findById(partnerId).orElseThrow(
+                    () -> new IllegalArgumentException("상대방의 매칭 유저가 존재하지 않습니다."));
+
+            //현재 날짜 출력
+            LocalDate now = LocalDate.parse(LocalDate.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd")));
+            Alarm alarm = Alarm.builder()
+                    .alarmDate(now)
+                    .alarmType(AUTHENTICATION)
+                    .member(partner)
+                    .senderId(myInfo.getId())
+                    .message(myInfo.getNickname() + "님이 인증을 요청하셨습니다.")
+                    .build();
+
+            alarmRepository.save(alarm);
         }
 
         // 이미지 url 저장

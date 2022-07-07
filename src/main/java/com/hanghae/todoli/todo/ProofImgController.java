@@ -22,8 +22,8 @@ public class ProofImgController {
 
     private final ProofImgService imgService;
 
-    @PatchMapping("/proofimgs/{id}")
-    public void proofImgRegister(@PathVariable Long id, ProofImgRequestDto imgRequestDto, @AuthenticationPrincipal UserDetailsImpl userDetails){
-        imgService.imgRegister(id, imgRequestDto, userDetails);
+    @PatchMapping("/proofimgs/{todoId}")
+    public void proofImgRegister(@PathVariable Long todoId, ProofImgRequestDto imgRequestDto, @AuthenticationPrincipal UserDetailsImpl userDetails){
+        imgService.imgRegister(todoId, imgRequestDto, userDetails);
     }
 }

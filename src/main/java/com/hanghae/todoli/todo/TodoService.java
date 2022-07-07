@@ -58,6 +58,11 @@ public class TodoService {
     @Transactional
     public void registerTodo(TodoRegisterDto registerDto, UserDetailsImpl userDetails) {
 
+        //매칭 아닐때 매칭투두 작성 에러처리
+        if (!userDetails.getMember().getMatchingState() && registerDto.getTodoType() ==1) {
+            throw new IllegalArgumentException("매칭Todo는 매칭 후 작성할 수 있습니다.");
+        }
+
         // 작성자 정보
         final Member member = userDetails.getMember();
 
@@ -86,7 +91,7 @@ public class TodoService {
         Long userId = userDetails.getMember().getId();
         Matching matching = matchingRepository.getMatching(userId).orElseThrow(() -> new IllegalArgumentException("매칭된 상대가 존재하지 않습니다."));
         Long partnerId = userId.equals(matching.getRequesterId()) ? matching.getRespondentId() : matching.getRequesterId();
-
+        
         if (!todo.getWriter().getId().equals(partnerId)) {
             throw new IllegalArgumentException("잘못된 접근입니다.");
         }
@@ -96,18 +101,15 @@ public class TodoService {
                 throw new IllegalArgumentException("이미 인증하였습니다.");
             }
             todo.setConfirmState(true);
-            //todoRepository.save(todo);    // 테스트 필요
 
-            Alarm alarm = new Alarm();
-//        Date now = new Date();
-//        SimpleDateFormat date = new SimpleDateFormat("yyyy-MM-dd");
-            LocalDate now = LocalDate.parse(LocalDate.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd")));
-            alarm.setAlarmDate(now);
-            alarm.setMember(todo.getWriter());
-            alarm.setSenderId(userDetails.getMember().getId());
-            alarm.setMessage(userDetails.getMember().getNickname() + "님이 인증하셨습니다.");
-
-            alarmRepository.save(alarm);
+            //알림 보내기 추후에 추가기능으로 열 수 있음
+//            Alarm alarm = new Alarm();
+//            LocalDate now = LocalDate.parse(LocalDate.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd")));
+//            alarm.setAlarmDate(now);
+//            alarm.setMember(todo.getWriter());
+//            alarm.setSenderId(userDetails.getMember().getId());
+//            alarm.setMessage(userDetails.getMember().getNickname() + "님이 인증하셨습니다.");
+//            alarmRepository.save(alarm);
 
             return TodoConfirmDto.builder().todoId(todo.getId()).confirmState(todo.getConfirmState()).build();
         } else {

@@ -2,6 +2,7 @@ package com.hanghae.todoli.matching;
 
 import com.hanghae.todoli.alarm.Alarm;
 import com.hanghae.todoli.alarm.AlarmRepository;
+import com.hanghae.todoli.alarm.AlarmType;
 import com.hanghae.todoli.character.CharacterImg;
 import com.hanghae.todoli.character.CharacterService;
 import com.hanghae.todoli.character.ThumbnailDto;
@@ -22,6 +23,8 @@ import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.Pattern;
+
+import static com.hanghae.todoli.alarm.AlarmType.*;
 
 @Service
 @RequiredArgsConstructor
@@ -75,7 +78,6 @@ public class MatchingService {
     //상대방 초대
     @Transactional
     public void inviteMatching(Long memberId, UserDetailsImpl userDetails) {
-        Alarm alarm = new Alarm();
         //상대방 찾기
         Member targetMember = memberRepository.findById(memberId).orElseThrow(
                 () -> new IllegalArgumentException("상대방이 존재하지 않습니다.")
@@ -85,13 +87,14 @@ public class MatchingService {
         }
 
         //현재 날짜 출력
-//        Date now = new Date();
-//        SimpleDateFormat date = new SimpleDateFormat("yyyy-MM-dd");
         LocalDate now = LocalDate.parse(LocalDate.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd")));
-        alarm.setAlarmDate(now);
-        alarm.setMember(targetMember);
-        alarm.setSenderId(userDetails.getMember().getId());
-        alarm.setMessage(userDetails.getMember().getNickname() + "님과 함께하시겠습니까?");
+        Alarm alarm = Alarm.builder()
+                .alarmDate(now)
+                .alarmType(ACCEPTANCE)
+                .member(targetMember)
+                .senderId(userDetails.getMember().getId())
+                .message(userDetails.getMember().getNickname() + "님과 함께하시겠습니까?")
+                .build();
 
         alarmRepository.save(alarm);
     }
