@@ -17,7 +17,7 @@ public class SwaggerConfig {
         return new Docket(DocumentationType.OAS_30)
                 .useDefaultResponseMessages(false)
                 .select()
-                .apis(RequestHandlerSelectors.basePackage("com.hanghae.todoli.controller"))
+                .apis(RequestHandlerSelectors.basePackage("com.hanghae.todoli"))
                 .paths(PathSelectors.any())
                 .build()
                 .apiInfo(apiInfo());
@@ -27,7 +27,7 @@ public class SwaggerConfig {
         return new ApiInfoBuilder()
                 .title("TwoDo-Li")
                 .description("투두를 진행하며 자신만의 캐릭터를 성장시키는 프로젝트 입니다.")
-                .version("1.0")
+                .version("1.0.1")
                 .build();
     }
 }
