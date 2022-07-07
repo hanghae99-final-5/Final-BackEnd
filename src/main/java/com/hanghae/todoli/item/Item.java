@@ -28,7 +28,7 @@ public class Item {
     private String viewImg;
 
     @Column
-    private String thumbnail;
+    private String thumbnailImg;
 
     @Column
     private int price;
