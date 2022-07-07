@@ -29,32 +29,16 @@ public class CharacterService {
     //@Transactional
     public CharResponseDto getCharState(UserDetailsImpl userDetails) {
         Long memberId = userDetails.getMember().getId();
-        Member m = memberRepository.findById(memberId).orElseThrow(
+        Member member = memberRepository.findById(memberId).orElseThrow(
                 () -> new IllegalArgumentException("자신의 아이디가 잘못되었습니다.")
         );
-        //Member m = userDetails.getMember();
-        Character c = m.getCharacter();
-
-        //캐릭터가 장착한 아이템에서 필요한 정보 가져오기
-        List<EquipItemDto> itemList = getListDtos(c);
-
-        return CharResponseDto.builder()
-                .matchingState(m.getMatchingState())
-                .level(c.getLevel())
-                .hp(c.getHp())
-                .maxHp(c.getMaxHp())
-                .exp(c.getExp())
-                .maxExp(c.getMaxExp())
-                .money(c.getMoney())
-                .charImg(c.getCharImg())
-                .equipItems(itemList)
-                .build();
+        return getCharResponseDto(member);
     }
 
 
     //상대방 캐릭터 상태 조회
     //@Transactional
-    public CharResponseDto.PartnerDto getPartnerState(UserDetailsImpl userDetails) {
+    public CharResponseDto getPartnerState(UserDetailsImpl userDetails) {
         Long userId = userDetails.getMember().getId();
         Matching matching = matchingRepository.getMatching(userId).orElseThrow(
                 () -> new IllegalArgumentException("매칭된 상대가 존재하지 않습니다.")
@@ -62,18 +46,26 @@ public class CharacterService {
 
         //파트너 아이디 구하기
         Long partnerId = userId.equals(matching.getRequesterId()) ? matching.getRespondentId() : matching.getRequesterId();
-
         Member partner = memberRepository.findById(partnerId).orElseThrow(
                 () -> new IllegalArgumentException("파트너가 존재하지 않습니다.")
         );
 
+        return getCharResponseDto(partner);
+    }
+
+    private CharResponseDto getCharResponseDto(Member partner) {
         Character c = partner.getCharacter();
         List<EquipItemDto> memberItems = getListDtos(c);
 
-        return CharResponseDto.PartnerDto.builder()
-                .memberId(partner.getId())
-                .nickname(partner.getNickname())
-                .charImg(partner.getCharacter().getCharImg())
+        return CharResponseDto.builder()
+                .matchingState(partner.getMatchingState())
+                .level(c.getLevel())
+                .hp(c.getHp())
+                .maxHp(c.getMaxHp())
+                .exp(c.getExp())
+                .maxExp(c.getMaxExp())
+                .money(c.getMoney())
+                .charImg(c.getCharImg())
                 .equipItems(memberItems)
                 .build();
     }
