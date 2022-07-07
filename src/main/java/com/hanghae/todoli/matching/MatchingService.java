@@ -72,7 +72,7 @@ public class MatchingService {
                 .nickname(target.getNickname())
                 .partnerMatchingState(target.getMatchingState())
                 .searchedUserPartner(searchedUserPartnerName)
-                .charImg(target.getCharacter().getCharImg())
+                .thumbnailCharImg(target.getCharacter().getCharImg())
                 .equipItems(itemList)
                 .build();
     }
