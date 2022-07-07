@@ -1,5 +1,6 @@
 package com.hanghae.todoli.utils;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.Getter;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
@@ -17,10 +18,12 @@ import java.time.LocalDateTime;
 public abstract class Timestamped {
 
     @CreatedDate
+    @JsonFormat(pattern = "yyyy-MM-dd")
     @Column(nullable = false, updatable = false)
     private LocalDate createdAt;
 
     @LastModifiedDate
+    @JsonFormat(pattern = "yyyy-MM-dd")
     @Column(nullable = false)
     private LocalDate modifiedAt;
 }
