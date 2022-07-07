@@ -1,11 +1,11 @@
 package com.hanghae.todoli.googleLogin;
 
-import com.hanghae.todoli.models.Character;
-import com.hanghae.todoli.models.EquipItem;
-import com.hanghae.todoli.models.Member;
-import com.hanghae.todoli.repository.CharacterRepository;
-import com.hanghae.todoli.repository.EquipItemRepository;
-import com.hanghae.todoli.repository.MemberRepository;
+import com.hanghae.todoli.character.Character;
+import com.hanghae.todoli.character.CharacterRepository;
+import com.hanghae.todoli.equipitem.EquipItem;
+import com.hanghae.todoli.equipitem.EquipItemRepository;
+import com.hanghae.todoli.member.Member;
+import com.hanghae.todoli.member.MemberRepository;
 import com.hanghae.todoli.security.jwt.JwtTokenProvider;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
