@@ -141,6 +141,13 @@ public class MatchingService {
         member.changeMatchingState(member);
         sender.changeMatchingState(sender);
 
+
+        List<Alarm> allByAlarm = alarmRepository.findAllByAlarm(member.getId());
+
+        for(Alarm a : allByAlarm){
+            a.setAlarmState(1L);
+        }
+
         //매칭에 매칭 정보 저장
         Matching matching = new Matching(senderId, member.getId());
         matchingRepository.save(matching);
