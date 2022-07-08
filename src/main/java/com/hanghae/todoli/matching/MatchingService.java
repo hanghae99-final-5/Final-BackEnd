@@ -41,7 +41,7 @@ public class MatchingService {
     public MatchingResponseDto searchMember(String username, UserDetailsImpl userDetails) {
         String regex ="^[a-zA-Z0-9]+@[a-zA-Z0-9]+\\.[a-z]+$";
         if (!Pattern.matches(regex,username)) {
-            throw new IllegalArgumentException("이메일 형식이 아닙니다.");
+            throw new CustomException(ErrorCode.WRONG_PATTERN_EMAIL);
         }
         Long myId = userDetails.getMember().getId();
         Member myInfo = memberRepository.findById(myId).orElseThrow(

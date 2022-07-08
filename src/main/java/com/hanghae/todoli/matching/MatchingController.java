@@ -1,5 +1,7 @@
 package com.hanghae.todoli.matching;
 
+import com.hanghae.todoli.exception.CustomException;
+import com.hanghae.todoli.exception.ErrorCode;
 import com.hanghae.todoli.security.UserDetailsImpl;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -25,7 +27,7 @@ public class MatchingController {
     @PostMapping("/api/users/invitation/{memberId}")
     public void inviteMatching(@PathVariable Long memberId, @AuthenticationPrincipal UserDetailsImpl userDetails) {
         if (userDetails.getMember().getMatchingState()) {
-            throw new IllegalArgumentException("이미 매칭중입니다.");
+            throw new CustomException(ErrorCode.MATCHED_MEMBER);
         }
         System.out.println("매칭 초대 성공");
         matchingService.inviteMatching(memberId, userDetails);
@@ -35,7 +37,7 @@ public class MatchingController {
     @PatchMapping("/api/users/cancel/{memberId}")
     public void cancelMatching(@PathVariable Long memberId, @AuthenticationPrincipal UserDetailsImpl userDetails) {
         if (!userDetails.getMember().getMatchingState()) {
-            throw new IllegalArgumentException("매칭해야 합니다.");
+            throw new CustomException(ErrorCode.NOT_MATCHED_MEMBER);
         }
         matchingService.cancelMatching(memberId, userDetails);
     }
@@ -44,7 +46,7 @@ public class MatchingController {
     @PostMapping("/api/users/acceptance/{senderId}")
     public void acceptMatching(@PathVariable Long senderId, @AuthenticationPrincipal UserDetailsImpl userDetails) {
         if (userDetails.getMember().getMatchingState()) {
-            throw new IllegalArgumentException("이미 매칭되었습니다.");
+            throw new CustomException(ErrorCode.MATCHED_MEMBER);
         }
         matchingService.acceptMatching(senderId, userDetails);
     }

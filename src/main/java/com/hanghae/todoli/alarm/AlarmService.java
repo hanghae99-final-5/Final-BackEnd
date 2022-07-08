@@ -27,7 +27,7 @@ public class AlarmService {
 
     //전체 알람조회
     public List<AlarmResponseDto> getAlarms(UserDetailsImpl userDetails) {
-        Long id = userDetails.getMember().getId();  //a
+        Long id = userDetails.getMember().getId();
 
         List<Alarm> alarms = alarmRepository.findAllByMemberId(id);  // a의 알람전체
 

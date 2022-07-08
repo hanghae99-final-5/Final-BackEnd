@@ -54,7 +54,7 @@ public class ProofImgService {
     @Transactional
     public void imgRegister(Long id, ProofImgRequestDto imgRequestDto, UserDetailsImpl userDetails) {
         // 개시글 조회
-        Todo todo = todoRepository.findById(id).orElseThrow(() -> new IllegalArgumentException("Todo가 존재하지 않습니다."));
+        Todo todo = todoRepository.findById(id).orElseThrow(() -> new CustomException(ErrorCode.NOT_FOUND_TODO));
 
         // 로그인 사용자 가져와서 작성자와 일치하는지 확인
         Long myId = userDetails.getMember().getId();
@@ -62,7 +62,7 @@ public class ProofImgService {
                 () -> new CustomException(ErrorCode.NOT_FOUND_MEMBER));
 
         if (!todo.getWriter().getId().equals(myId)) {
-            throw new IllegalArgumentException("투두 작성자가 아닙니다!");
+            throw new CustomException(ErrorCode.NOT_TODO_WRITER);
         }
 
         // url이  not null 일 때

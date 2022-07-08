@@ -119,7 +119,9 @@ public class ItemService {
         Character character = member.getCharacter();
 
         //구매했다면
-        Inventory exist = inventoryRepository.findByCharacterAndItem(character, buyItem).orElse(null);
+        Inventory exist = inventoryRepository.findByCharacterAndItem(character, buyItem).orElseThrow(
+                () -> new CustomException(ErrorCode.NOT_FOUND_ITEM)
+        );
 
         if (exist == null) {
             //계산
@@ -151,7 +153,7 @@ public class ItemService {
 
         Optional<Inventory> found = inventoryRepository.findByCharacterAndItem(character, item);
         if (found.isEmpty())
-            throw new IllegalArgumentException("아이템을 먼저 구매해 주세요.");
+            throw new CustomException(ErrorCode.NOT_FOUND_ITEM);
 
         EquipItem equipItem = character.getEquipItem();
         Category category = item.getCategory();
@@ -183,8 +185,7 @@ public class ItemService {
     //아이템 찾기
     private Item findItem(Long itemId) {
         return itemRepository.findById(itemId).orElseThrow(
-                () -> new IllegalArgumentException("아이템이 존재하지 않습니다.")
-        );
+                () -> new CustomException(ErrorCode.NO_ITEM));
     }
 
     //장착하는 아이템에 대한 정보를 가져온다.
