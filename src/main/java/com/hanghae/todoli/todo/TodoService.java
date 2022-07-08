@@ -4,6 +4,8 @@ package com.hanghae.todoli.todo;
 import com.hanghae.todoli.alarm.Alarm;
 import com.hanghae.todoli.alarm.AlarmRepository;
 import com.hanghae.todoli.character.Character;
+import com.hanghae.todoli.exception.CustomException;
+import com.hanghae.todoli.exception.ErrorCode;
 import com.hanghae.todoli.matching.Matching;
 import com.hanghae.todoli.matching.MatchingRepository;
 import com.hanghae.todoli.matching.MatchingStateResponseDto;
@@ -69,6 +71,7 @@ public class TodoService {
         // 새로운 투두
         final Todo todo = new Todo();
 
+        validator(registerDto);
         // 투두 데이터
         todo.setWriter(member);
         todo.setContent(registerDto.getContent());
@@ -124,7 +127,7 @@ public class TodoService {
         Long memberId = userDetails.getMember().getId();
 
         Todo todo = todoRepository.findById(todoId).orElseThrow(() -> new IllegalArgumentException("Todo가 존재하지 않습니다."));
-        Member member = memberRepository.findById(memberId).orElseThrow(() -> new IllegalArgumentException("아이디가 존재하지 않습니다."));
+        Member member = memberRepository.findById(memberId).orElseThrow(() -> new CustomException(ErrorCode.MEMBER_NOT_FOUND));
 
         // 투두 완료
         if (!todo.getCompletionState() && todo.getConfirmState()) {
@@ -227,11 +230,10 @@ public class TodoService {
 
         // 로그인중인 사용자의 매칭 정보
         Member loggedInMember = memberRepository.findById(myId).orElseThrow(
-                () -> new IllegalArgumentException("사용자 정보가 존재하지 않습니다.")
-        );
+                () -> new CustomException(ErrorCode.MEMBER_NOT_FOUND));
 
         Boolean loggedMemberMatchingState = memberRepository.findById(myId).orElseThrow(
-                () -> new IllegalArgumentException("사용자 정보가 존재하지 않습니다.")
+                () -> new CustomException(ErrorCode.MEMBER_NOT_FOUND)
         ).getMatchingState();
 
         // 매칭 정보 리스트 생성
@@ -269,7 +271,7 @@ public class TodoService {
 
         // 로그인중인 사용자 id 가져오기
         Long myId = userDetails.getMember().getId();
-        Member member = memberRepository.findById(myId).orElseThrow(() -> new IllegalArgumentException("작성자가 아닙니다."));
+        Member member = memberRepository.findById(myId).orElseThrow(() -> new CustomException(ErrorCode.MEMBER_NOT_FOUND));
 
         // 투두 데이터
         todo.setWriter(member);
@@ -279,5 +281,26 @@ public class TodoService {
         todo.setDifficulty(registerDto.getDifficulty());
         todo.setConfirmDate(registerDto.getEndDate());
         todo.setTodoType(registerDto.getTodoType());
+    }
+
+    private void validator(TodoRegisterDto registerDto) {
+        LocalDate now = LocalDate.parse(LocalDate.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd")));
+
+        if(registerDto.getStartDate() == null)
+            throw new IllegalArgumentException("시작날짜를 입력해주세요.");
+        if(registerDto.getEndDate() == null)
+            throw new IllegalArgumentException("끝나는 날짜를 입력해주세요.");
+        if(registerDto.getTodoType() == 0)
+            throw new IllegalArgumentException("투두 타입을 입력해주세요.");
+        if(registerDto.getContent() == null)
+            throw new IllegalArgumentException("투두 내용을 입력해주세요.");
+        if(registerDto.getDifficulty() == 0)
+            throw new IllegalArgumentException("난이도를 입력해주세요.");
+        if (registerDto.getEndDate().isBefore(registerDto.getStartDate())) {
+            throw new IllegalArgumentException("끝나는 시간이 시작 시간보다 빠를 수 없습니다.");
+        }
+        if (registerDto.getStartDate().isBefore(now)) {
+            throw new IllegalArgumentException("시작 시간이 현재 날짜보다 빠를 수 없습니다.");
+        }
     }
 }

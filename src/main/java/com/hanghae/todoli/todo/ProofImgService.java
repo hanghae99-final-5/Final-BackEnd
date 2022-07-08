@@ -7,6 +7,8 @@ import com.amazonaws.services.s3.model.ObjectMetadata;
 import com.amazonaws.services.s3.model.PutObjectRequest;
 import com.hanghae.todoli.alarm.Alarm;
 import com.hanghae.todoli.alarm.AlarmRepository;
+import com.hanghae.todoli.exception.CustomException;
+import com.hanghae.todoli.exception.ErrorCode;
 import com.hanghae.todoli.matching.Matching;
 import com.hanghae.todoli.matching.MatchingRepository;
 import com.hanghae.todoli.member.Member;
@@ -57,8 +59,7 @@ public class ProofImgService {
         // 로그인 사용자 가져와서 작성자와 일치하는지 확인
         Long myId = userDetails.getMember().getId();
         Member myInfo = memberRepository.findById(myId).orElseThrow(
-                () -> new IllegalArgumentException("유저가 존재하지 않습니다.")
-        );
+                () -> new CustomException(ErrorCode.MEMBER_NOT_FOUND));
 
         if (!todo.getWriter().getId().equals(myId)) {
             throw new IllegalArgumentException("투두 작성자가 아닙니다!");

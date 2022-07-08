@@ -5,6 +5,8 @@ import com.hanghae.todoli.character.CharacterRepository;
 import com.hanghae.todoli.equipitem.EquipItem;
 import com.hanghae.todoli.equipitem.EquipItemDto;
 import com.hanghae.todoli.equipitem.EquipItemRepository;
+import com.hanghae.todoli.exception.CustomException;
+import com.hanghae.todoli.exception.ErrorCode;
 import com.hanghae.todoli.inventory.Inventory;
 import com.hanghae.todoli.inventory.InventoryRepository;
 import com.hanghae.todoli.member.Member;
@@ -39,8 +41,7 @@ public class ItemService {
     public List<ExistItemListDto> getExistItemList(UserDetailsImpl userDetails) {
         Long memberId = userDetails.getMember().getId();
         Member member = memberRepository.findById(memberId).orElseThrow(
-                () -> new IllegalArgumentException("아이디가 존재하지 않습니다.")
-        );
+                () -> new CustomException(ErrorCode.MEMBER_NOT_FOUND));
         Character c = member.getCharacter();
         return existItemList(c);
     }
@@ -78,8 +79,7 @@ public class ItemService {
         //1. 가지고 있는 ItemId 조회
         Long memberId = userDetails.getMember().getId();
         Member member = memberRepository.findById(memberId).orElseThrow(
-                () -> new IllegalArgumentException("아이디가 존재하지 않습니다.")
-        );
+                () -> new CustomException(ErrorCode.MEMBER_NOT_FOUND));
 
         List<Inventory> inventory = member.getCharacter().getInventory();
 
@@ -114,8 +114,7 @@ public class ItemService {
 
         Long memberId = userDetails.getMember().getId();
         Member member = memberRepository.findById(memberId).orElseThrow(
-                () -> new IllegalArgumentException("아이디가 존재하지 않습니다.")
-        );
+                () -> new CustomException(ErrorCode.MEMBER_NOT_FOUND));
 
         Character character = member.getCharacter();
 
@@ -146,8 +145,7 @@ public class ItemService {
     public EquipItemDto equipItem(Long itemId, UserDetailsImpl userDetails) {
         Long memberId = userDetails.getMember().getId();
         Member member = memberRepository.findById(memberId).orElseThrow(
-                () -> new IllegalArgumentException("아이디가 존재하지 않습니다.")
-        );
+                () -> new CustomException(ErrorCode.MEMBER_NOT_FOUND));
         Character character = member.getCharacter();
         Item item = findItem(itemId);
 

@@ -8,6 +8,8 @@ import com.hanghae.todoli.character.CharacterService;
 import com.hanghae.todoli.character.ThumbnailDto;
 import com.hanghae.todoli.equipitem.EquipItem;
 import com.hanghae.todoli.equipitem.EquipItemDto;
+import com.hanghae.todoli.exception.CustomException;
+import com.hanghae.todoli.exception.ErrorCode;
 import com.hanghae.todoli.item.Item;
 import com.hanghae.todoli.item.ItemRepository;
 import com.hanghae.todoli.member.Member;
@@ -46,8 +48,8 @@ public class MatchingService {
         }
         Long myId = userDetails.getMember().getId();
         Member myInfo = memberRepository.findById(myId).orElseThrow(
-                () -> new IllegalArgumentException("유저가 존재하지 않습니다.")
-        );
+                () -> new CustomException(ErrorCode.MEMBER_NOT_FOUND));
+
         Member target = memberRepository.findByUsername(username).orElseThrow(
                 () -> new IllegalArgumentException("검색한 유저가 존재하지 않습니다.")
         );
