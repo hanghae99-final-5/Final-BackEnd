@@ -2,12 +2,11 @@ package com.hanghae.todoli.matching;
 
 import com.hanghae.todoli.alarm.Alarm;
 import com.hanghae.todoli.alarm.AlarmRepository;
-import com.hanghae.todoli.alarm.AlarmType;
 import com.hanghae.todoli.character.CharacterImg;
-import com.hanghae.todoli.character.CharacterService;
 import com.hanghae.todoli.character.ThumbnailDto;
 import com.hanghae.todoli.equipitem.EquipItem;
-import com.hanghae.todoli.equipitem.EquipItemDto;
+import com.hanghae.todoli.exception.CustomException;
+import com.hanghae.todoli.exception.ErrorCode;
 import com.hanghae.todoli.item.Item;
 import com.hanghae.todoli.item.ItemRepository;
 import com.hanghae.todoli.member.Member;
@@ -42,24 +41,26 @@ public class MatchingService {
     public MatchingResponseDto searchMember(String username, UserDetailsImpl userDetails) {
         String regex ="^[a-zA-Z0-9]+@[a-zA-Z0-9]+\\.[a-z]+$";
         if (!Pattern.matches(regex,username)) {
-            throw new IllegalArgumentException("이메일 형식이 아닙니다.");
+            throw new CustomException(ErrorCode.WRONG_PATTERN_EMAIL);
         }
         Long myId = userDetails.getMember().getId();
         Member myInfo = memberRepository.findById(myId).orElseThrow(
-                () -> new IllegalArgumentException("유저가 존재하지 않습니다.")
-        );
+                () -> new CustomException(ErrorCode.NOT_FOUND_MEMBER));
+
         Member target = memberRepository.findByUsername(username).orElseThrow(
-                () -> new IllegalArgumentException("검색한 유저가 존재하지 않습니다.")
-        );
-        Matching matching =matchingRepository.getMatching(target.getId()).orElse(null);
+                () -> new CustomException(ErrorCode.NOT_FOUND_SEARCHED_MEMBER));
+
+        Matching matching =matchingRepository.getMatching(target.getId()).orElseThrow(
+                ()-> new CustomException(ErrorCode.NOT_FOUND_MATCHING));
+
         String searchedUserPartnerName = "";
         if (matching != null) {
             Long searchedUserPartnerId = target.getId()
                     .equals(matching.getRequesterId()) ? matching.getRespondentId() : matching.getRequesterId();
 
             Member partner = memberRepository.findById(searchedUserPartnerId).orElseThrow(
-                    () -> new IllegalArgumentException("상대방의 매칭 유저가 존재하지 않습니다.")
-            );
+                    () -> new CustomException(ErrorCode.NOT_FOUND_PARTNER));
+
             searchedUserPartnerName = partner.getUsername();
         }
         List<ThumbnailDto> targetThumbnailDtos = getThumbnailDtos(target);
@@ -80,10 +81,10 @@ public class MatchingService {
     public void inviteMatching(Long memberId, UserDetailsImpl userDetails) {
         //상대방 찾기
         Member targetMember = memberRepository.findById(memberId).orElseThrow(
-                () -> new IllegalArgumentException("상대방이 존재하지 않습니다.")
+                () -> new CustomException(ErrorCode.NOT_FOUND_SEARCHED_MEMBER)
         );
         if (targetMember.getMatchingState()) {
-            throw new IllegalArgumentException("상대방이 이미 매칭 중입니다.");
+            throw new CustomException(ErrorCode.MATCHED_PARTNER);
         }
 
         //현재 날짜 출력
@@ -105,17 +106,17 @@ public class MatchingService {
     public void cancelMatching(Long memberId, UserDetailsImpl userDetails) {
         Long id = userDetails.getMember().getId();
         Member member = memberRepository.findById(id).orElseThrow(
-                () -> new IllegalArgumentException("로그인한 상태가 없습니다.")
+                () -> new CustomException(ErrorCode.NOT_FOUND_MEMBER)
         );
 //        Member member = userDetails.getMember();
 
         //상대방 찾기
         Member targetMember = memberRepository.findById(memberId).orElseThrow(
-                () -> new IllegalArgumentException("상대방이 존재하지 않습니다.")
+                () -> new CustomException(ErrorCode.NOT_FOUND_PARTNER)
         );
         Matching matching = matchingRepository.getMatching(member.getId()).orElseThrow(
-                () -> new IllegalArgumentException("매칭상태가 없습니다.")
-        );
+                () -> new CustomException(ErrorCode.NOT_FOUND_MATCHING));
+
         //매칭 정보 삭제
         matchingRepository.delete(matching);
         //멤버의 매칭 상태 변경
@@ -131,11 +132,10 @@ public class MatchingService {
     public void acceptMatching(Long senderId, UserDetailsImpl userDetails) {
         Long id = userDetails.getMember().getId();
         Member member = memberRepository.findById(id).orElseThrow(
-                () -> new IllegalArgumentException("로그인한 상태가 없습니다.")
-        );
-//        Member member = userDetails.getMember();
+                () -> new CustomException(ErrorCode.NOT_FOUND_MEMBER));
+
         Member sender = memberRepository.findById(senderId).orElseThrow(
-                () -> new IllegalArgumentException("상대방이 없습니다.")
+                () -> new CustomException(ErrorCode.NOT_FOUND_REQUESTER)
         );
 
         //멤버의 매칭 상태 변경

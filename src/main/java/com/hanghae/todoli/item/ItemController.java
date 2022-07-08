@@ -29,12 +29,8 @@ public class ItemController {
     //아이템 구매
     @PostMapping("/api/items/{itemId}")
     public String buyItem(@PathVariable Long itemId, @AuthenticationPrincipal UserDetailsImpl userDetails){
-        try{
             itemService.buyItem(itemId, userDetails);
-            return "성공적으로 구매하였습니다.";
-        }catch (IllegalArgumentException e){
-            return e.getMessage();
-        }
+        return "구매를 성공하였습니다.";
     }
 
     //아이템 장착

@@ -11,6 +11,7 @@ import io.swagger.annotations.ApiResponses;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletResponse;
@@ -69,10 +70,5 @@ public class MemberController {
         System.out.println(">> 소셜 로그인 API 서버로부터 받은 code :" + code);
         SocialLoginType socialLoginType = SocialLoginType.valueOf(socialLoginPath.toUpperCase());
         return oAuthService.oAuthLogin(socialLoginType, code);
-    }
-
-    @ExceptionHandler(IllegalArgumentException.class)
-    public ResponseEntity<String> handleIllegalArgumentException(IllegalArgumentException e) {
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
     }
 }

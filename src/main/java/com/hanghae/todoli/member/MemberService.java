@@ -4,6 +4,8 @@ import com.hanghae.todoli.character.Character;
 import com.hanghae.todoli.character.CharacterRepository;
 import com.hanghae.todoli.equipitem.EquipItem;
 import com.hanghae.todoli.equipitem.EquipItemRepository;
+import com.hanghae.todoli.exception.CustomException;
+import com.hanghae.todoli.exception.ErrorCode;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -46,11 +48,11 @@ public class MemberService {
     public Member login(LoginRequestDto loginRequestDto) {
         String username = loginRequestDto.getUsername();
         Member Member = memberRepository.findByUsername(username).orElseThrow(
-                () -> new IllegalArgumentException("아이디가 존재하지 않습니다.")
+                () -> new CustomException(ErrorCode.NOT_FOUND_MEMBER)
         );
 
         if (!passwordEncoder.matches(loginRequestDto.getPassword(), Member.getPassword())) {
-            throw new IllegalArgumentException("비밀번호가 일치하지 않습니다.");
+            throw new CustomException(ErrorCode.PASSWORD_NOT_SAME);
         }
         return Member;
     }
@@ -59,7 +61,7 @@ public class MemberService {
     private void idCheck(String username) {
         Optional<Member> found = memberRepository.findByUsername(username);
         if (found.isPresent()) {
-            throw new IllegalArgumentException("이미 중복된 아이디입니다.");
+            throw new CustomException(ErrorCode.DUPLICATED_ID);
         }
     }
 }

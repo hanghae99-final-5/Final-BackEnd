@@ -7,6 +7,8 @@ import com.amazonaws.services.s3.model.ObjectMetadata;
 import com.amazonaws.services.s3.model.PutObjectRequest;
 import com.hanghae.todoli.alarm.Alarm;
 import com.hanghae.todoli.alarm.AlarmRepository;
+import com.hanghae.todoli.exception.CustomException;
+import com.hanghae.todoli.exception.ErrorCode;
 import com.hanghae.todoli.matching.Matching;
 import com.hanghae.todoli.matching.MatchingRepository;
 import com.hanghae.todoli.member.Member;
@@ -25,10 +27,9 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
-import java.util.Optional;
 import java.util.UUID;
 
-import static com.hanghae.todoli.alarm.AlarmType.*;
+import static com.hanghae.todoli.alarm.AlarmType.AUTHENTICATION;
 
 @Slf4j
 @Service
@@ -53,16 +54,15 @@ public class ProofImgService {
     @Transactional
     public void imgRegister(Long id, ProofImgRequestDto imgRequestDto, UserDetailsImpl userDetails) {
         // 개시글 조회
-        Todo todo = todoRepository.findById(id).orElseThrow(() -> new IllegalArgumentException("Todo가 존재하지 않습니다."));
+        Todo todo = todoRepository.findById(id).orElseThrow(() -> new CustomException(ErrorCode.NOT_FOUND_TODO));
 
         // 로그인 사용자 가져와서 작성자와 일치하는지 확인
         Long myId = userDetails.getMember().getId();
         Member myInfo = memberRepository.findById(myId).orElseThrow(
-                () -> new IllegalArgumentException("유저가 존재하지 않습니다.")
-        );
+                () -> new CustomException(ErrorCode.NOT_FOUND_MEMBER));
 
         if (!todo.getWriter().getId().equals(myId)) {
-            throw new IllegalArgumentException("투두 작성자가 아닙니다!");
+            throw new CustomException(ErrorCode.NOT_TODO_WRITER);
         }
 
         // url이  not null 일 때
@@ -91,10 +91,12 @@ public class ProofImgService {
         // TODO : 2022-07-08 AlarmService로 옮겨서 리팩토링해도 될듯
         //자신이 매칭되어 있고, 매칭투두일때
         if (myInfo.getMatchingState() && todo.getTodoType()==1) {
-            Matching matching =matchingRepository.getMatching(myId).orElse(null);
+            Matching matching =matchingRepository.getMatching(myId).orElseThrow(
+                    ()->new CustomException(ErrorCode.NOT_FOUND_MATCHING));
+
             Long partnerId = myId.equals(matching.getRequesterId()) ? matching.getRespondentId() : matching.getRequesterId();
             Member partner = memberRepository.findById(partnerId).orElseThrow(
-                    () -> new IllegalArgumentException("상대방의 매칭 유저가 존재하지 않습니다."));
+                    () -> new CustomException(ErrorCode.NOT_FOUND_PARTNER));
 
 
             //현재 날짜 출력

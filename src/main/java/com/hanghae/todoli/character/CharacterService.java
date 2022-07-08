@@ -2,6 +2,8 @@ package com.hanghae.todoli.character;
 
 import com.hanghae.todoli.equipitem.EquipItem;
 import com.hanghae.todoli.equipitem.EquipItemDto;
+import com.hanghae.todoli.exception.CustomException;
+import com.hanghae.todoli.exception.ErrorCode;
 import com.hanghae.todoli.item.Item;
 import com.hanghae.todoli.item.ItemRepository;
 import com.hanghae.todoli.matching.Matching;
@@ -31,8 +33,8 @@ public class CharacterService {
     public CharResponseDto getCharState(UserDetailsImpl userDetails) {
         Long memberId = userDetails.getMember().getId();
         Member member = memberRepository.findById(memberId).orElseThrow(
-                () -> new IllegalArgumentException("자신의 아이디가 잘못되었습니다.")
-        );
+                () -> new CustomException(ErrorCode.NOT_FOUND_MEMBER));
+
         return getCharResponseDto(member);
     }
 
@@ -42,14 +44,12 @@ public class CharacterService {
     public CharResponseDto getPartnerState(UserDetailsImpl userDetails) {
         Long userId = userDetails.getMember().getId();
         Matching matching = matchingRepository.getMatching(userId).orElseThrow(
-                () -> new IllegalArgumentException("매칭이 안 되어있습니다.")
-        );
+                () -> new CustomException(ErrorCode.NOT_FOUND_MATCHING));
 
         //파트너 아이디 구하기
         Long partnerId = userId.equals(matching.getRequesterId()) ? matching.getRespondentId() : matching.getRequesterId();
         Member partner = memberRepository.findById(partnerId).orElseThrow(
-                () -> new IllegalArgumentException("파트너가 존재하지 않습니다.")
-        );
+                () -> new CustomException(ErrorCode.NOT_FOUND_PARTNER));
 
         return getCharResponseDto(partner);
     }
@@ -98,15 +98,15 @@ public class CharacterService {
     public FooterResponseDto getCharacterInFooter(UserDetailsImpl userDetails) {
         Long myId = userDetails.getMember().getId();
         Member myInfo = memberRepository.findById(myId).orElseThrow(
-                () -> new IllegalArgumentException("현재 아이디가 없습니다.")
-        );
+                () -> new CustomException(ErrorCode.NOT_FOUND_MEMBER));
+
         Matching matching = matchingRepository.getMatching(myId).orElseThrow(
-                () -> new IllegalArgumentException("매칭이 안 되어있습니다.")
-        );
+                () -> new CustomException(ErrorCode.NOT_FOUND_MATCHING));
+
         Long partnerId = myId.equals(matching.getRequesterId()) ? matching.getRespondentId() : matching.getRequesterId();
         Member partnerInfo = memberRepository.findById(partnerId).orElseThrow(
-                () -> new IllegalArgumentException("파트너가 존재하지 않습니다.")
-        );
+                () -> new CustomException(ErrorCode.NOT_FOUND_PARTNER));
+
         List<ThumbnailDto> myEquipItemList = getThumbnailDtos(myInfo);
         List<ThumbnailDto> partnerEquipItemList = getThumbnailDtos(partnerInfo);
 

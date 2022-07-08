@@ -4,6 +4,8 @@ package com.hanghae.todoli.todo;
 import com.hanghae.todoli.alarm.Alarm;
 import com.hanghae.todoli.alarm.AlarmRepository;
 import com.hanghae.todoli.character.Character;
+import com.hanghae.todoli.exception.CustomException;
+import com.hanghae.todoli.exception.ErrorCode;
 import com.hanghae.todoli.matching.Matching;
 import com.hanghae.todoli.matching.MatchingRepository;
 import com.hanghae.todoli.matching.MatchingStateResponseDto;
@@ -59,8 +61,8 @@ public class TodoService {
     public void registerTodo(TodoRegisterDto registerDto, UserDetailsImpl userDetails) {
 
         //매칭 아닐때 매칭투두 작성 에러처리
-        if (!userDetails.getMember().getMatchingState() && registerDto.getTodoType() ==1) {
-            throw new IllegalArgumentException("매칭Todo는 매칭 후 작성할 수 있습니다.");
+        if (!userDetails.getMember().getMatchingState() && registerDto.getTodoType() ==2) {
+            throw new CustomException(ErrorCode.NOT_MATCHED_MEMBER);
         }
 
         // 작성자 정보
@@ -69,6 +71,7 @@ public class TodoService {
         // 새로운 투두
         Todo todo = new Todo();
 
+        validator(registerDto);
         // 투두 데이터
         todo.setWriter(member);
         todo.setContent(registerDto.getContent());
@@ -85,20 +88,23 @@ public class TodoService {
     //투두 인증해주기
     @Transactional
     public TodoConfirmDto confirmTodo(Long todoId, UserDetailsImpl userDetails) {
-        Todo todo = todoRepository.findById(todoId).orElseThrow(() -> new IllegalArgumentException("Todo가 존재하지 않습니다."));
+        Todo todo = todoRepository.findById(todoId).orElseThrow(
+                () -> new CustomException(ErrorCode.NOT_FOUND_TODO));
 
         //파트너 아이디 구하기
         Long userId = userDetails.getMember().getId();
-        Matching matching = matchingRepository.getMatching(userId).orElseThrow(() -> new IllegalArgumentException("매칭된 상대가 존재하지 않습니다."));
+        Matching matching = matchingRepository.getMatching(userId).orElseThrow(
+                () -> new CustomException(ErrorCode.NOT_FOUND_MATCHING));
+
         Long partnerId = userId.equals(matching.getRequesterId()) ? matching.getRespondentId() : matching.getRequesterId();
         
         if (!todo.getWriter().getId().equals(partnerId)) {
-            throw new IllegalArgumentException("잘못된 접근입니다.");
+            throw new CustomException(ErrorCode.FORBIDDEN_ACCESS);
         }
 
         if (!todo.getProofImg().isEmpty() && todo.getTodoType() == 1) {
             if (todo.getConfirmState()) {
-                throw new IllegalArgumentException("이미 인증하였습니다.");
+                throw new CustomException(ErrorCode.CONFIRMED_TODO);
             }
             todo.setConfirmState(true);
             Alarm byTodoId = alarmRepository.findByTodoId(todoId);
@@ -115,7 +121,7 @@ public class TodoService {
 
             return TodoConfirmDto.builder().todoId(todo.getId()).confirmState(todo.getConfirmState()).build();
         } else {
-            throw new IllegalArgumentException("상대방이 인증하지 않았습니다.");
+            throw new CustomException(ErrorCode.FORBIDDEN_ACCESS);
         }
 
     }
@@ -125,15 +131,15 @@ public class TodoService {
     public TodoCompletionDto completionTodo(Long todoId, UserDetailsImpl userDetails) {
         Long memberId = userDetails.getMember().getId();
 
-        Todo todo = todoRepository.findById(todoId).orElseThrow(() -> new IllegalArgumentException("Todo가 존재하지 않습니다."));
-        Member member = memberRepository.findById(memberId).orElseThrow(() -> new IllegalArgumentException("아이디가 존재하지 않습니다."));
+        Todo todo = todoRepository.findById(todoId).orElseThrow(() -> new CustomException(ErrorCode.NOT_FOUND_TODO));
+        Member member = memberRepository.findById(memberId).orElseThrow(() -> new CustomException(ErrorCode.NOT_FOUND_MEMBER));
 
         // 투두 완료
         if (!todo.getCompletionState() && todo.getConfirmState()) {
             todo.completionState();
             //todoRepository.save(todo);    // 테스트 필요
         } else {
-            throw new IllegalArgumentException("파트너에게 인증을 받아주세요.");
+            throw new CustomException(ErrorCode.NOT_CONFIRMED_TODO);
         }
 
         Character character = member.getCharacter();
@@ -178,10 +184,10 @@ public class TodoService {
     public void deleteTodo(Long id, UserDetailsImpl userDetails) {
         // 로그인 유저와 작성자가 일치?
         // 불일치시 메시지
-        Todo todo = todoRepository.findById(id).orElseThrow(() -> new IllegalArgumentException("Todo가 존재하지 않습니다!"));
+        Todo todo = todoRepository.findById(id).orElseThrow(() -> new CustomException(ErrorCode.NOT_FOUND_TODO));
 
         if (!todo.getWriter().getId().equals(userDetails.getMember().getId())) {
-            throw new IllegalArgumentException("Todo 작성자가 아닙니다!");
+            throw new CustomException(ErrorCode.NOT_TODO_WRITER);
         }
         todoRepository.deleteById(id);
     }
@@ -189,12 +195,16 @@ public class TodoService {
     //상대방 투두 조회
     public TodoResponseDto getPairTodos(Long memberId, UserDetailsImpl userDetails) {
         Long id = userDetails.getMember().getId();
-        Matching matching = matchingRepository.getMatching(id).orElseThrow(() -> new IllegalArgumentException("매칭되어있지 않습니다."));
+        Matching matching = matchingRepository.getMatching(id).orElseThrow(
+                () -> new CustomException(ErrorCode.NOT_FOUND_MATCHING));
+
         Long partnerId = id.equals(matching.getRequesterId()) ? matching.getRespondentId() : matching.getRequesterId();
         if (!memberId.equals(partnerId)) {
-            throw new IllegalArgumentException("매칭되어있는 상대가 아닙니다.");
+            throw new CustomException(ErrorCode.NOT_MATCHING_PARTNER);
         }
-        Member member = memberRepository.findById(id).orElse(null);
+        Member member = memberRepository.findById(id).orElseThrow(
+                ()-> new CustomException(ErrorCode.NOT_FOUND_MEMBER));
+
         Boolean matchingState = member.getMatchingState();
 
         List<MatchingStateResponseDto> matchingStateDto = new ArrayList<>();
@@ -228,12 +238,8 @@ public class TodoService {
         Long myId = userDetails.getMember().getId();
 
         // 로그인중인 사용자의 매칭 정보
-        Member loggedInMember = memberRepository.findById(myId).orElseThrow(
-                () -> new IllegalArgumentException("사용자 정보가 존재하지 않습니다.")
-        );
-
         Boolean loggedMemberMatchingState = memberRepository.findById(myId).orElseThrow(
-                () -> new IllegalArgumentException("사용자 정보가 존재하지 않습니다.")
+                () -> new CustomException(ErrorCode.NOT_FOUND_MEMBER)
         ).getMatchingState();
 
         // 매칭 정보 리스트 생성
@@ -267,12 +273,15 @@ public class TodoService {
     @Transactional
     public void todoModify(Long todoId, TodoRegisterDto registerDto, UserDetailsImpl userDetails) {
         // 투두 유무 확인
-        Todo todo = todoRepository.findById(todoId).orElseThrow(() -> new IllegalArgumentException("Todo가 존재하지 않습니다."));
+        Todo todo = todoRepository.findById(todoId).orElseThrow(() -> new CustomException(ErrorCode.NOT_FOUND_TODO));
 
         // 로그인중인 사용자 id 가져오기
         Long myId = userDetails.getMember().getId();
-        Member member = memberRepository.findById(myId).orElseThrow(() -> new IllegalArgumentException("작성자가 아닙니다."));
+        Member member = memberRepository.findById(myId).orElseThrow(() -> new CustomException(ErrorCode.NOT_FOUND_MEMBER));
 
+        if (!todo.getWriter().getId().equals(myId)) {
+            throw new CustomException(ErrorCode.NOT_TODO_WRITER);
+        }
         // 투두 데이터
         todo.setWriter(member);
         todo.setContent(registerDto.getContent());
@@ -281,5 +290,24 @@ public class TodoService {
         todo.setDifficulty(registerDto.getDifficulty());
         todo.setConfirmDate(registerDto.getEndDate());
         todo.setTodoType(registerDto.getTodoType());
+    }
+
+    private void validator(TodoRegisterDto registerDto) {
+        LocalDate now = LocalDate.parse(LocalDate.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd")));
+
+        if(registerDto.getStartDate() == null)
+            throw new CustomException(ErrorCode.NO_INPUT_START_DATE);
+        if(registerDto.getEndDate() == null)
+            throw new CustomException(ErrorCode.NO_INPUT_END_DATE);
+        if(registerDto.getContent() == null)
+            throw new CustomException(ErrorCode.NO_INPUT_CONTENT);
+        if(registerDto.getDifficulty() == 0)
+            throw new CustomException(ErrorCode.NO_INPUT_DIFFICULTY);
+        if(registerDto.getTodoType() ==0)
+            throw new CustomException(ErrorCode.NO_INPUT_TODO_TYPE);
+        if (registerDto.getStartDate().isBefore(now))
+            throw new CustomException(ErrorCode.FORBIDDEN_START_DATE);
+        if (registerDto.getEndDate().isBefore(registerDto.getStartDate()))
+            throw new CustomException(ErrorCode.FORBIDDEN_END_DATE);
     }
 }
