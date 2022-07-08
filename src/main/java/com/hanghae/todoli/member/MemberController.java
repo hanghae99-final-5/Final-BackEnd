@@ -16,6 +16,7 @@ import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.web.bind.annotation.*;
 import springfox.documentation.annotations.ApiIgnore;
 
+import javax.mail.MessagingException;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
@@ -95,8 +96,9 @@ public class MemberController {
 
     //비밀번호 찾기
     @GetMapping("/api/users/find/password/{username}")
-    public String findPassword(@PathVariable String username){
+    public String findPassword(@PathVariable String username) throws MessagingException {
         memberService.findPassword(username);
+
         return "메일을 전송하였습니다.";
     }
 

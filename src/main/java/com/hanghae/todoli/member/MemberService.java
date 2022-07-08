@@ -8,11 +8,17 @@ import com.hanghae.todoli.member.dto.SignupRequestDto;
 import com.hanghae.todoli.utils.Validator;
 import lombok.RequiredArgsConstructor;
 import org.springframework.mail.javamail.JavaMailSender;
+import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+
 import javax.servlet.http.HttpServletResponse;
+
+import javax.activation.FileDataSource;
+import javax.mail.MessagingException;
+
 import javax.mail.internet.MimeMessage;
 
 import java.util.Optional;
@@ -79,7 +85,34 @@ public class MemberService {
 
     private final JavaMailSender javaMailSender;
     @Transactional
-    public void findPassword(String username) {
-        MimeMessage mimeMessage = javaMailSender
+    public void findPassword(String username) throws MessagingException {
+        Member member = memberRepository.findByUsername(username).orElseThrow(
+                () -> new IllegalArgumentException("해당 이메일이 존재하지 않습니다.")
+        );
+
+        String pw = "";
+        for (int i = 0; i < 12; i++) {
+            pw += (char) ((Math.random() * 26) + 97);
+        }
+
+        MimeMessage mimeMessage = javaMailSender.createMimeMessage();
+        MimeMessageHelper mimeMessageHelper = new MimeMessageHelper(mimeMessage, true, "UTF-8");
+        mimeMessageHelper.setFrom("wjstjddud119@naver.com");
+        mimeMessageHelper.setTo(member.getUsername());
+        mimeMessageHelper.setSubject("[TwoDoRi]임시 비밀번호 발급 안내");
+
+        StringBuilder body = new StringBuilder();
+        body.append("안녕하세요" + member.getNickname() + "님!\n\n\n");
+        body.append(member.getNickname() + "님의 임시 비밀번호는" + pw + "입니다.");
+        String content = "메일 테스트 내용" + "<img src=\"https://drive.google.com/uc?id=1SF2WHxR-U52qCfDb45G3Ptj0z8A2vhMz\">";
+        //mimeMessageHelper.addInline("zz", new FileDataSource("C://Temp/cute_cat.jpg"));
+        mimeMessageHelper.setText(content);
+        mimeMessageHelper.setText(body.toString());
+
+
+        javaMailSender.send(mimeMessage);
+
+        String password = passwordEncoder.encode(pw);
+        member.pwUpdate(password);
     }
 }
