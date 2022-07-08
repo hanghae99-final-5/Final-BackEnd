@@ -90,6 +90,7 @@ public class MatchingService {
         LocalDate now = LocalDate.parse(LocalDate.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd")));
         Alarm alarm = Alarm.builder()
                 .alarmDate(now)
+                .alarmState(0L)
                 .alarmType(ACCEPTANCE)
                 .member(targetMember)
                 .senderId(userDetails.getMember().getId())

@@ -103,6 +103,7 @@ public class ProofImgService {
                     .alarmDate(now)
                     .alarmType(AUTHENTICATION)
                     .member(partner)
+                    .alarmState(0L)
                     .senderId(myInfo.getId())
                     .message(myInfo.getNickname() + "님이 인증을 요청하셨습니다.")
                     .todoId(todo.getId())

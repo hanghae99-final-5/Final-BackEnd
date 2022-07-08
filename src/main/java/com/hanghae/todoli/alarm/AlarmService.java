@@ -40,6 +40,7 @@ public class AlarmService {
 
             AlarmResponseDto alarmResponseDto = AlarmResponseDto.builder()
                     .alarmId(alarm.getId())
+                    .alarmState(alarm.getAlarmState())
                     .message(alarm.getMessage())
                     .alarmDate(alarm.getAlarmDate())
                     .alarmType(alarm.getAlarmType())

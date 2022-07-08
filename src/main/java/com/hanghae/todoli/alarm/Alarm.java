@@ -28,7 +28,7 @@ public class Alarm{
     private Long senderId;
 
     @Column
-    private Long alarmState = 0L;
+    private Long alarmState;
 
     @Column
     private Long todoId;
