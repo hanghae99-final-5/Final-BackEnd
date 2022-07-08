@@ -18,6 +18,8 @@ public class AlarmResponseDto {
 
     private AlarmType alarmType;
 
+    private Long alarmState;
+
     private Long senderId;
 
     private String thumbnailCharImg;

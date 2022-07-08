@@ -50,6 +50,7 @@ public class ProofImgService {
     @Value("${cloud.aws.s3.bucket}")
     private String bucket;
 
+    //사진 등록
     @Transactional
     public void imgRegister(Long id, ProofImgRequestDto imgRequestDto, UserDetailsImpl userDetails) {
         // 개시글 조회
@@ -69,7 +70,6 @@ public class ProofImgService {
             // S3에서 기존 이미지 삭제
 //          https://twodo-li.s3.ap-northeast-2.amazonaws.com/
             String imgUrl = todo.getProofImg();
-
             String imgName = imgUrl.substring(49);
 
             // S3 저장된 기존 이미지 삭제
@@ -87,6 +87,8 @@ public class ProofImgService {
         if (todo.getProofImg() == null){
             todo.setConfirmDate(todo.getEndDate().plusDays(3));
         }
+
+        // TODO : 2022-07-08 AlarmService로 옮겨서 리팩토링해도 될듯
         //자신이 매칭되어 있고, 매칭투두일때
         if (myInfo.getMatchingState() && todo.getTodoType()==1) {
             Matching matching =matchingRepository.getMatching(myId).orElseThrow(
@@ -96,14 +98,17 @@ public class ProofImgService {
             Member partner = memberRepository.findById(partnerId).orElseThrow(
                     () -> new CustomException(ErrorCode.NOT_FOUND_PARTNER));
 
+
             //현재 날짜 출력
             LocalDate now = LocalDate.parse(LocalDate.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd")));
             Alarm alarm = Alarm.builder()
                     .alarmDate(now)
                     .alarmType(AUTHENTICATION)
                     .member(partner)
+                    .alarmState(0L)
                     .senderId(myInfo.getId())
                     .message(myInfo.getNickname() + "님이 인증을 요청하셨습니다.")
+                    .todoId(todo.getId())
                     .build();
 
             alarmRepository.save(alarm);

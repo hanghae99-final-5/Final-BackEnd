@@ -91,6 +91,7 @@ public class MatchingService {
         LocalDate now = LocalDate.parse(LocalDate.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd")));
         Alarm alarm = Alarm.builder()
                 .alarmDate(now)
+                .alarmState(0L)
                 .alarmType(ACCEPTANCE)
                 .member(targetMember)
                 .senderId(userDetails.getMember().getId())
@@ -140,6 +141,13 @@ public class MatchingService {
         //멤버의 매칭 상태 변경
         member.changeMatchingState(member);
         sender.changeMatchingState(sender);
+
+
+        List<Alarm> allByAlarm = alarmRepository.findAllByAlarm(member.getId());
+
+        for(Alarm a : allByAlarm){
+            a.setAlarmState(1L);
+        }
 
         //매칭에 매칭 정보 저장
         Matching matching = new Matching(senderId, member.getId());

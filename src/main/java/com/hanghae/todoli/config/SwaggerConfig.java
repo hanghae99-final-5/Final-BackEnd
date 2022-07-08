@@ -1,4 +1,4 @@
-package com.hanghae.todoli.utils;
+package com.hanghae.todoli.config;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

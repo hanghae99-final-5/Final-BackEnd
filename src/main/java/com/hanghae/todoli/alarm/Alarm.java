@@ -28,6 +28,12 @@ public class Alarm{
     private Long senderId;
 
     @Column
+    private Long alarmState;
+
+    @Column
+    private Long todoId;
+
+    @Column
     @Enumerated(EnumType.STRING)
     private AlarmType alarmType;
 
