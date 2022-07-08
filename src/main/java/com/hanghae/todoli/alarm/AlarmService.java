@@ -3,6 +3,8 @@ package com.hanghae.todoli.alarm;
 import com.hanghae.todoli.character.CharacterImg;
 import com.hanghae.todoli.character.ThumbnailDto;
 import com.hanghae.todoli.equipitem.EquipItem;
+import com.hanghae.todoli.exception.CustomException;
+import com.hanghae.todoli.exception.ErrorCode;
 import com.hanghae.todoli.item.Item;
 import com.hanghae.todoli.item.ItemRepository;
 import com.hanghae.todoli.member.Member;
@@ -25,7 +27,7 @@ public class AlarmService {
 
     //전체 알람조회
     public List<AlarmResponseDto> getAlarms(UserDetailsImpl userDetails) {
-        Long id = userDetails.getMember().getId();  //a
+        Long id = userDetails.getMember().getId();
 
         List<Alarm> alarms = alarmRepository.findAllByMemberId(id);  // a의 알람전체
 
@@ -34,8 +36,8 @@ public class AlarmService {
         for (Alarm alarm : alarms) {
             Long senderId = alarm.getSenderId();
             Member sender = memberRepository.findById(senderId).orElseThrow(
-                    () -> new IllegalArgumentException("유저가 존재하지 않습니다.")
-            );
+                    () -> new CustomException(ErrorCode.NOT_FOUND_MEMBER));
+
             List<ThumbnailDto> senderEquipItems = getThumbnailDtos(sender);
 
             AlarmResponseDto alarmResponseDto = AlarmResponseDto.builder()

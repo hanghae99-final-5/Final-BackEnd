@@ -5,6 +5,8 @@ import com.hanghae.todoli.character.CharacterRepository;
 import com.hanghae.todoli.equipitem.EquipItem;
 import com.hanghae.todoli.equipitem.EquipItemDto;
 import com.hanghae.todoli.equipitem.EquipItemRepository;
+import com.hanghae.todoli.exception.CustomException;
+import com.hanghae.todoli.exception.ErrorCode;
 import com.hanghae.todoli.inventory.Inventory;
 import com.hanghae.todoli.inventory.InventoryRepository;
 import com.hanghae.todoli.member.Member;
@@ -39,8 +41,7 @@ public class ItemService {
     public List<ExistItemListDto> getExistItemList(UserDetailsImpl userDetails) {
         Long memberId = userDetails.getMember().getId();
         Member member = memberRepository.findById(memberId).orElseThrow(
-                () -> new IllegalArgumentException("아이디가 존재하지 않습니다.")
-        );
+                () -> new CustomException(ErrorCode.NOT_FOUND_MEMBER));
         Character c = member.getCharacter();
         return existItemList(c);
     }
@@ -78,8 +79,7 @@ public class ItemService {
         //1. 가지고 있는 ItemId 조회
         Long memberId = userDetails.getMember().getId();
         Member member = memberRepository.findById(memberId).orElseThrow(
-                () -> new IllegalArgumentException("아이디가 존재하지 않습니다.")
-        );
+                () -> new CustomException(ErrorCode.NOT_FOUND_MEMBER));
 
         List<Inventory> inventory = member.getCharacter().getInventory();
 
@@ -114,13 +114,14 @@ public class ItemService {
 
         Long memberId = userDetails.getMember().getId();
         Member member = memberRepository.findById(memberId).orElseThrow(
-                () -> new IllegalArgumentException("아이디가 존재하지 않습니다.")
-        );
+                () -> new CustomException(ErrorCode.NOT_FOUND_MEMBER));
 
         Character character = member.getCharacter();
 
         //구매했다면
-        Inventory exist = inventoryRepository.findByCharacterAndItem(character, buyItem).orElse(null);
+        Inventory exist = inventoryRepository.findByCharacterAndItem(character, buyItem).orElseThrow(
+                () -> new CustomException(ErrorCode.NOT_FOUND_ITEM)
+        );
 
         if (exist == null) {
             //계산
@@ -128,14 +129,14 @@ public class ItemService {
                 character.minMoney(buyItem.getPrice());     //charRepository에 저장해야하나???
                 characterRepository.save(character);
             } else {
-                throw new IllegalArgumentException("잔액이 부족합니다.");
+                throw new CustomException(ErrorCode.NOT_ENOUGH_MONEY);
             }
 
             Inventory inventory = new Inventory(buyItem, character);
             inventoryRepository.save(inventory);
 
         } else {
-            throw new IllegalArgumentException("이미 구매하신 물품입니다.");
+            throw new CustomException(ErrorCode.ALREADY_GOT_ITEM);
         }
 
 
@@ -146,14 +147,13 @@ public class ItemService {
     public EquipItemDto equipItem(Long itemId, UserDetailsImpl userDetails) {
         Long memberId = userDetails.getMember().getId();
         Member member = memberRepository.findById(memberId).orElseThrow(
-                () -> new IllegalArgumentException("아이디가 존재하지 않습니다.")
-        );
+                () -> new CustomException(ErrorCode.NOT_FOUND_MEMBER));
         Character character = member.getCharacter();
         Item item = findItem(itemId);
 
         Optional<Inventory> found = inventoryRepository.findByCharacterAndItem(character, item);
         if (found.isEmpty())
-            throw new IllegalArgumentException("아이템을 먼저 구매해 주세요.");
+            throw new CustomException(ErrorCode.NOT_FOUND_ITEM);
 
         EquipItem equipItem = character.getEquipItem();
         Category category = item.getCategory();
@@ -185,8 +185,7 @@ public class ItemService {
     //아이템 찾기
     private Item findItem(Long itemId) {
         return itemRepository.findById(itemId).orElseThrow(
-                () -> new IllegalArgumentException("아이템이 존재하지 않습니다.")
-        );
+                () -> new CustomException(ErrorCode.NO_ITEM));
     }
 
     //장착하는 아이템에 대한 정보를 가져온다.
