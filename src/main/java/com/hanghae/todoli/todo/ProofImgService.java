@@ -87,6 +87,8 @@ public class ProofImgService {
         if (todo.getProofImg() == null){
             todo.setConfirmDate(todo.getEndDate().plusDays(3));
         }
+
+        // TODO : 2022-07-08 AlarmService로 옮겨서 리팩토링해도 될듯
         //자신이 매칭되어 있고, 매칭투두일때
         if (myInfo.getMatchingState() && todo.getTodoType()==1) {
             Matching matching =matchingRepository.getMatching(myId).orElse(null);
