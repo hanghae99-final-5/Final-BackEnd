@@ -64,10 +64,10 @@ public class TodoService {
         }
 
         // 작성자 정보
-        final Member member = userDetails.getMember();
+        Member member = userDetails.getMember();
 
         // 새로운 투두
-        final Todo todo = new Todo();
+        Todo todo = new Todo();
 
         // 투두 데이터
         todo.setWriter(member);
@@ -101,6 +101,8 @@ public class TodoService {
                 throw new IllegalArgumentException("이미 인증하였습니다.");
             }
             todo.setConfirmState(true);
+            Alarm byTodoId = alarmRepository.findByTodoId(todoId);
+            byTodoId.setAlarmState(1L);
 
             //알림 보내기 추후에 추가기능으로 열 수 있음
 //            Alarm alarm = new Alarm();
