@@ -33,7 +33,7 @@ public class CharacterService {
     public CharResponseDto getCharState(UserDetailsImpl userDetails) {
         Long memberId = userDetails.getMember().getId();
         Member member = memberRepository.findById(memberId).orElseThrow(
-                () -> new CustomException(ErrorCode.MEMBER_NOT_FOUND));
+                () -> new CustomException(ErrorCode.NOT_FOUND_MEMBER));
 
         return getCharResponseDto(member);
     }
@@ -44,13 +44,12 @@ public class CharacterService {
     public CharResponseDto getPartnerState(UserDetailsImpl userDetails) {
         Long userId = userDetails.getMember().getId();
         Matching matching = matchingRepository.getMatching(userId).orElseThrow(
-                () -> new CustomException(ErrorCode.MATCHING_NOT_FOUND));
+                () -> new CustomException(ErrorCode.NOT_FOUND_MATCHING));
 
         //파트너 아이디 구하기
         Long partnerId = userId.equals(matching.getRequesterId()) ? matching.getRespondentId() : matching.getRequesterId();
         Member partner = memberRepository.findById(partnerId).orElseThrow(
-                () -> new IllegalArgumentException("파트너가 존재하지 않습니다.")
-        );
+                () -> new CustomException(ErrorCode.NOT_FOUND_PARTNER));
 
         return getCharResponseDto(partner);
     }
@@ -99,15 +98,15 @@ public class CharacterService {
     public FooterResponseDto getCharacterInFooter(UserDetailsImpl userDetails) {
         Long myId = userDetails.getMember().getId();
         Member myInfo = memberRepository.findById(myId).orElseThrow(
-                () -> new CustomException(ErrorCode.MEMBER_NOT_FOUND));
+                () -> new CustomException(ErrorCode.NOT_FOUND_MEMBER));
 
         Matching matching = matchingRepository.getMatching(myId).orElseThrow(
-                () -> new CustomException(ErrorCode.MATCHING_NOT_FOUND));
+                () -> new CustomException(ErrorCode.NOT_FOUND_MATCHING));
 
         Long partnerId = myId.equals(matching.getRequesterId()) ? matching.getRespondentId() : matching.getRequesterId();
         Member partnerInfo = memberRepository.findById(partnerId).orElseThrow(
-                () -> new IllegalArgumentException("파트너가 존재하지 않습니다.")
-        );
+                () -> new CustomException(ErrorCode.NOT_FOUND_PARTNER));
+
         List<ThumbnailDto> myEquipItemList = getThumbnailDtos(myInfo);
         List<ThumbnailDto> partnerEquipItemList = getThumbnailDtos(partnerInfo);
 

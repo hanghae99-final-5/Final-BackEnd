@@ -48,7 +48,7 @@ public class MemberService {
     public Member login(LoginRequestDto loginRequestDto) {
         String username = loginRequestDto.getUsername();
         Member Member = memberRepository.findByUsername(username).orElseThrow(
-                () -> new CustomException(ErrorCode.MEMBER_NOT_FOUND)
+                () -> new CustomException(ErrorCode.NOT_FOUND_MEMBER)
         );
 
         if (!passwordEncoder.matches(loginRequestDto.getPassword(), Member.getPassword())) {

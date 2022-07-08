@@ -36,7 +36,7 @@ public class AlarmService {
         for (Alarm alarm : alarms) {
             Long senderId = alarm.getSenderId();
             Member sender = memberRepository.findById(senderId).orElseThrow(
-                    () -> new CustomException(ErrorCode.MEMBER_NOT_FOUND));
+                    () -> new CustomException(ErrorCode.NOT_FOUND_MEMBER));
 
             List<ThumbnailDto> senderEquipItems = getThumbnailDtos(sender);
 

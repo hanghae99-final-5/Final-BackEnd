@@ -58,7 +58,7 @@ public class ProofImgService {
         // 로그인 사용자 가져와서 작성자와 일치하는지 확인
         Long myId = userDetails.getMember().getId();
         Member myInfo = memberRepository.findById(myId).orElseThrow(
-                () -> new CustomException(ErrorCode.MEMBER_NOT_FOUND));
+                () -> new CustomException(ErrorCode.NOT_FOUND_MEMBER));
 
         if (!todo.getWriter().getId().equals(myId)) {
             throw new IllegalArgumentException("투두 작성자가 아닙니다!");
@@ -90,11 +90,11 @@ public class ProofImgService {
         //자신이 매칭되어 있고, 매칭투두일때
         if (myInfo.getMatchingState() && todo.getTodoType()==1) {
             Matching matching =matchingRepository.getMatching(myId).orElseThrow(
-                    ()->new CustomException(ErrorCode.MATCHING_NOT_FOUND));
+                    ()->new CustomException(ErrorCode.NOT_FOUND_MATCHING));
 
             Long partnerId = myId.equals(matching.getRequesterId()) ? matching.getRespondentId() : matching.getRequesterId();
             Member partner = memberRepository.findById(partnerId).orElseThrow(
-                    () -> new CustomException(ErrorCode.PARTNER_NOT_FOUND));
+                    () -> new CustomException(ErrorCode.NOT_FOUND_PARTNER));
 
             //현재 날짜 출력
             LocalDate now = LocalDate.parse(LocalDate.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd")));

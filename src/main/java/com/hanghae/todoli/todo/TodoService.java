@@ -1,7 +1,6 @@
 package com.hanghae.todoli.todo;
 
 
-import com.hanghae.todoli.alarm.Alarm;
 import com.hanghae.todoli.alarm.AlarmRepository;
 import com.hanghae.todoli.character.Character;
 import com.hanghae.todoli.exception.CustomException;
@@ -93,7 +92,7 @@ public class TodoService {
         //파트너 아이디 구하기
         Long userId = userDetails.getMember().getId();
         Matching matching = matchingRepository.getMatching(userId).orElseThrow(
-                () -> new CustomException(ErrorCode.MATCHING_NOT_FOUND));
+                () -> new CustomException(ErrorCode.NOT_FOUND_MATCHING));
 
         Long partnerId = userId.equals(matching.getRequesterId()) ? matching.getRespondentId() : matching.getRequesterId();
         
@@ -129,7 +128,7 @@ public class TodoService {
         Long memberId = userDetails.getMember().getId();
 
         Todo todo = todoRepository.findById(todoId).orElseThrow(() -> new IllegalArgumentException("Todo가 존재하지 않습니다."));
-        Member member = memberRepository.findById(memberId).orElseThrow(() -> new CustomException(ErrorCode.MEMBER_NOT_FOUND));
+        Member member = memberRepository.findById(memberId).orElseThrow(() -> new CustomException(ErrorCode.NOT_FOUND_MEMBER));
 
         // 투두 완료
         if (!todo.getCompletionState() && todo.getConfirmState()) {
@@ -193,14 +192,14 @@ public class TodoService {
     public TodoResponseDto getPairTodos(Long memberId, UserDetailsImpl userDetails) {
         Long id = userDetails.getMember().getId();
         Matching matching = matchingRepository.getMatching(id).orElseThrow(
-                () -> new CustomException(ErrorCode.MATCHING_NOT_FOUND));
+                () -> new CustomException(ErrorCode.NOT_FOUND_MATCHING));
 
         Long partnerId = id.equals(matching.getRequesterId()) ? matching.getRespondentId() : matching.getRequesterId();
         if (!memberId.equals(partnerId)) {
             throw new CustomException(ErrorCode.NOT_MATCHING_PARTNER);
         }
         Member member = memberRepository.findById(id).orElseThrow(
-                ()-> new CustomException(ErrorCode.MEMBER_NOT_FOUND));
+                ()-> new CustomException(ErrorCode.NOT_FOUND_MEMBER));
 
         Boolean matchingState = member.getMatchingState();
 
@@ -236,10 +235,10 @@ public class TodoService {
 
         // 로그인중인 사용자의 매칭 정보
         Member loggedInMember = memberRepository.findById(myId).orElseThrow(
-                () -> new CustomException(ErrorCode.MEMBER_NOT_FOUND));
+                () -> new CustomException(ErrorCode.NOT_FOUND_MEMBER));
 
         Boolean loggedMemberMatchingState = memberRepository.findById(myId).orElseThrow(
-                () -> new CustomException(ErrorCode.MEMBER_NOT_FOUND)
+                () -> new CustomException(ErrorCode.NOT_FOUND_MEMBER)
         ).getMatchingState();
 
         // 매칭 정보 리스트 생성
@@ -277,7 +276,7 @@ public class TodoService {
 
         // 로그인중인 사용자 id 가져오기
         Long myId = userDetails.getMember().getId();
-        Member member = memberRepository.findById(myId).orElseThrow(() -> new CustomException(ErrorCode.MEMBER_NOT_FOUND));
+        Member member = memberRepository.findById(myId).orElseThrow(() -> new CustomException(ErrorCode.NOT_FOUND_MEMBER));
 
         // 투두 데이터
         todo.setWriter(member);

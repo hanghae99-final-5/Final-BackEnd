@@ -41,7 +41,7 @@ public class ItemService {
     public List<ExistItemListDto> getExistItemList(UserDetailsImpl userDetails) {
         Long memberId = userDetails.getMember().getId();
         Member member = memberRepository.findById(memberId).orElseThrow(
-                () -> new CustomException(ErrorCode.MEMBER_NOT_FOUND));
+                () -> new CustomException(ErrorCode.NOT_FOUND_MEMBER));
         Character c = member.getCharacter();
         return existItemList(c);
     }
@@ -79,7 +79,7 @@ public class ItemService {
         //1. 가지고 있는 ItemId 조회
         Long memberId = userDetails.getMember().getId();
         Member member = memberRepository.findById(memberId).orElseThrow(
-                () -> new CustomException(ErrorCode.MEMBER_NOT_FOUND));
+                () -> new CustomException(ErrorCode.NOT_FOUND_MEMBER));
 
         List<Inventory> inventory = member.getCharacter().getInventory();
 
@@ -114,7 +114,7 @@ public class ItemService {
 
         Long memberId = userDetails.getMember().getId();
         Member member = memberRepository.findById(memberId).orElseThrow(
-                () -> new CustomException(ErrorCode.MEMBER_NOT_FOUND));
+                () -> new CustomException(ErrorCode.NOT_FOUND_MEMBER));
 
         Character character = member.getCharacter();
 
@@ -127,14 +127,14 @@ public class ItemService {
                 character.minMoney(buyItem.getPrice());     //charRepository에 저장해야하나???
                 characterRepository.save(character);
             } else {
-                throw new IllegalArgumentException("잔액이 부족합니다.");
+                throw new CustomException(ErrorCode.NOT_ENOUGH_MONEY);
             }
 
             Inventory inventory = new Inventory(buyItem, character);
             inventoryRepository.save(inventory);
 
         } else {
-            throw new IllegalArgumentException("이미 구매하신 물품입니다.");
+            throw new CustomException(ErrorCode.ALREADY_GOT_ITEM);
         }
 
 
@@ -145,7 +145,7 @@ public class ItemService {
     public EquipItemDto equipItem(Long itemId, UserDetailsImpl userDetails) {
         Long memberId = userDetails.getMember().getId();
         Member member = memberRepository.findById(memberId).orElseThrow(
-                () -> new CustomException(ErrorCode.MEMBER_NOT_FOUND));
+                () -> new CustomException(ErrorCode.NOT_FOUND_MEMBER));
         Character character = member.getCharacter();
         Item item = findItem(itemId);
 
