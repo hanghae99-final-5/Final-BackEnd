@@ -7,11 +7,14 @@ import com.hanghae.todoli.member.dto.LoginRequestDto;
 import com.hanghae.todoli.member.dto.SignupRequestDto;
 import com.hanghae.todoli.utils.Validator;
 import lombok.RequiredArgsConstructor;
+import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.servlet.http.HttpServletResponse;
+import javax.mail.internet.MimeMessage;
+
 import java.util.Optional;
 import java.util.regex.Pattern;
 
@@ -65,7 +68,7 @@ public class MemberService {
     //아이디 찾기
     @Transactional
     public String findUsername(String nickname) {
-        Member member = memberRepository.findByUsername(nickname).orElse(null);
+        Member member = memberRepository.findByNickname(nickname).orElse(null);
         if(member == null)
             throw new IllegalArgumentException("회원가입한 이력이 없습니다.");
 
@@ -73,7 +76,10 @@ public class MemberService {
     }
 
     //비밀번호 찾기
+
+    private final JavaMailSender javaMailSender;
+    @Transactional
     public void findPassword(String username) {
-        
+        MimeMessage mimeMessage = javaMailSender
     }
 }
