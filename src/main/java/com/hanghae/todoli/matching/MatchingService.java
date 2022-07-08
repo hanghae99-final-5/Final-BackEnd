@@ -53,15 +53,17 @@ public class MatchingService {
         Member target = memberRepository.findByUsername(username).orElseThrow(
                 () -> new IllegalArgumentException("검색한 유저가 존재하지 않습니다.")
         );
-        Matching matching =matchingRepository.getMatching(target.getId()).orElse(null);
+        Matching matching =matchingRepository.getMatching(target.getId()).orElseThrow(
+                ()-> new CustomException(ErrorCode.MATCHING_NOT_FOUND));
+
         String searchedUserPartnerName = "";
         if (matching != null) {
             Long searchedUserPartnerId = target.getId()
                     .equals(matching.getRequesterId()) ? matching.getRespondentId() : matching.getRequesterId();
 
             Member partner = memberRepository.findById(searchedUserPartnerId).orElseThrow(
-                    () -> new IllegalArgumentException("상대방의 매칭 유저가 존재하지 않습니다.")
-            );
+                    () -> new CustomException(ErrorCode.PARTNER_NOT_FOUND));
+
             searchedUserPartnerName = partner.getUsername();
         }
         List<ThumbnailDto> targetThumbnailDtos = getThumbnailDtos(target);
@@ -115,8 +117,8 @@ public class MatchingService {
                 () -> new IllegalArgumentException("상대방이 존재하지 않습니다.")
         );
         Matching matching = matchingRepository.getMatching(member.getId()).orElseThrow(
-                () -> new IllegalArgumentException("매칭상태가 없습니다.")
-        );
+                () -> new CustomException(ErrorCode.MATCHING_NOT_FOUND));
+
         //매칭 정보 삭제
         matchingRepository.delete(matching);
         //멤버의 매칭 상태 변경
@@ -132,9 +134,8 @@ public class MatchingService {
     public void acceptMatching(Long senderId, UserDetailsImpl userDetails) {
         Long id = userDetails.getMember().getId();
         Member member = memberRepository.findById(id).orElseThrow(
-                () -> new IllegalArgumentException("로그인한 상태가 없습니다.")
-        );
-//        Member member = userDetails.getMember();
+                () -> new CustomException(ErrorCode.MEMBER_NOT_FOUND));
+
         Member sender = memberRepository.findById(senderId).orElseThrow(
                 () -> new IllegalArgumentException("상대방이 없습니다.")
         );

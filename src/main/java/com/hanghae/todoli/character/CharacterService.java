@@ -44,8 +44,7 @@ public class CharacterService {
     public CharResponseDto getPartnerState(UserDetailsImpl userDetails) {
         Long userId = userDetails.getMember().getId();
         Matching matching = matchingRepository.getMatching(userId).orElseThrow(
-                () -> new IllegalArgumentException("매칭이 안 되어있습니다.")
-        );
+                () -> new CustomException(ErrorCode.MATCHING_NOT_FOUND));
 
         //파트너 아이디 구하기
         Long partnerId = userId.equals(matching.getRequesterId()) ? matching.getRespondentId() : matching.getRequesterId();
@@ -103,8 +102,8 @@ public class CharacterService {
                 () -> new CustomException(ErrorCode.MEMBER_NOT_FOUND));
 
         Matching matching = matchingRepository.getMatching(myId).orElseThrow(
-                () -> new IllegalArgumentException("매칭이 안 되어있습니다.")
-        );
+                () -> new CustomException(ErrorCode.MATCHING_NOT_FOUND));
+
         Long partnerId = myId.equals(matching.getRequesterId()) ? matching.getRespondentId() : matching.getRequesterId();
         Member partnerInfo = memberRepository.findById(partnerId).orElseThrow(
                 () -> new IllegalArgumentException("파트너가 존재하지 않습니다.")

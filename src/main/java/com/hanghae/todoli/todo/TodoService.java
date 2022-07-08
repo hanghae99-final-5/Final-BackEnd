@@ -92,7 +92,9 @@ public class TodoService {
 
         //파트너 아이디 구하기
         Long userId = userDetails.getMember().getId();
-        Matching matching = matchingRepository.getMatching(userId).orElseThrow(() -> new IllegalArgumentException("매칭된 상대가 존재하지 않습니다."));
+        Matching matching = matchingRepository.getMatching(userId).orElseThrow(
+                () -> new CustomException(ErrorCode.MATCHING_NOT_FOUND));
+
         Long partnerId = userId.equals(matching.getRequesterId()) ? matching.getRespondentId() : matching.getRequesterId();
         
         if (!todo.getWriter().getId().equals(partnerId)) {
@@ -190,12 +192,16 @@ public class TodoService {
     //상대방 투두 조회
     public TodoResponseDto getPairTodos(Long memberId, UserDetailsImpl userDetails) {
         Long id = userDetails.getMember().getId();
-        Matching matching = matchingRepository.getMatching(id).orElseThrow(() -> new IllegalArgumentException("매칭되어있지 않습니다."));
+        Matching matching = matchingRepository.getMatching(id).orElseThrow(
+                () -> new CustomException(ErrorCode.MATCHING_NOT_FOUND));
+
         Long partnerId = id.equals(matching.getRequesterId()) ? matching.getRespondentId() : matching.getRequesterId();
         if (!memberId.equals(partnerId)) {
-            throw new IllegalArgumentException("매칭되어있는 상대가 아닙니다.");
+            throw new CustomException(ErrorCode.NOT_MATCHING_PARTNER);
         }
-        Member member = memberRepository.findById(id).orElse(null);
+        Member member = memberRepository.findById(id).orElseThrow(
+                ()-> new CustomException(ErrorCode.MEMBER_NOT_FOUND));
+
         Boolean matchingState = member.getMatchingState();
 
         List<MatchingStateResponseDto> matchingStateDto = new ArrayList<>();

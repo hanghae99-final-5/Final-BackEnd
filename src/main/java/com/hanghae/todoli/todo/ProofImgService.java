@@ -27,10 +27,9 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
-import java.util.Optional;
 import java.util.UUID;
 
-import static com.hanghae.todoli.alarm.AlarmType.*;
+import static com.hanghae.todoli.alarm.AlarmType.AUTHENTICATION;
 
 @Slf4j
 @Service
@@ -90,10 +89,12 @@ public class ProofImgService {
         }
         //자신이 매칭되어 있고, 매칭투두일때
         if (myInfo.getMatchingState() && todo.getTodoType()==1) {
-            Matching matching =matchingRepository.getMatching(myId).orElse(null);
+            Matching matching =matchingRepository.getMatching(myId).orElseThrow(
+                    ()->new CustomException(ErrorCode.MATCHING_NOT_FOUND));
+
             Long partnerId = myId.equals(matching.getRequesterId()) ? matching.getRespondentId() : matching.getRequesterId();
             Member partner = memberRepository.findById(partnerId).orElseThrow(
-                    () -> new IllegalArgumentException("상대방의 매칭 유저가 존재하지 않습니다."));
+                    () -> new CustomException(ErrorCode.PARTNER_NOT_FOUND));
 
             //현재 날짜 출력
             LocalDate now = LocalDate.parse(LocalDate.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd")));
