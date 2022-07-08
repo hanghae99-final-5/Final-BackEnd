@@ -5,14 +5,14 @@ import com.hanghae.todoli.googleLogin.OAuthService;
 import com.hanghae.todoli.googleLogin.SocialLoginType;
 import com.hanghae.todoli.member.dto.LoginRequestDto;
 import com.hanghae.todoli.member.dto.SignupRequestDto;
+import com.hanghae.todoli.security.UserDetailsImpl;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
 import lombok.RequiredArgsConstructor;
-import lombok.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.mail.javamail.JavaMailSender;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 import springfox.documentation.annotations.ApiIgnore;
 
@@ -93,14 +93,26 @@ public class MemberController {
         }
     }
 
-
     //비밀번호 찾기
     @GetMapping("/api/users/find/password/{username}")
     public String findPassword(@PathVariable String username) throws MessagingException {
-        memberService.findPassword(username);
-
-        return "메일을 전송하였습니다.";
+        try{
+            memberService.findPassword(username);
+            return "메일을 전송하였습니다.";
+        }catch (IllegalArgumentException e){
+            return e.getMessage();
+        }
     }
+
+    //비밀번호 변경
+    @PatchMapping("/api/users/update/password") //현재 비밀번호, 바꿀 비밀번호, 비밀번호 확인인
+    public String updatePassword(@RequestBody PasswordUpdateDto updateDto, @AuthenticationPrincipal UserDetailsImpl userDetails){
+
+            memberService.updatePassword(updateDto, userDetails);
+            return "비밀번호 변경이 완료되었습니다.";
+
+    }
+
 
    @ExceptionHandler(IllegalArgumentException.class)
     public ResponseEntity<String> handleIllegalArgumentException(IllegalArgumentException e) {
