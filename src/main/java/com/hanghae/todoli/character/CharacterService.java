@@ -54,12 +54,12 @@ public class CharacterService {
         return getCharResponseDto(partner);
     }
 
-    private CharResponseDto getCharResponseDto(Member partner) {
-        Character c = partner.getCharacter();
+    private CharResponseDto getCharResponseDto(Member member) {
+        Character c = member.getCharacter();
         List<EquipItemDto> memberItems = getListDtos(c);
 
         return CharResponseDto.builder()
-                .matchingState(partner.getMatchingState())
+                .matchingState(member.getMatchingState())
                 .level(c.getLevel())
                 .hp(c.getHp())
                 .maxHp(c.getMaxHp())
@@ -68,6 +68,7 @@ public class CharacterService {
                 .money(c.getMoney())
                 .charImg(c.getCharImg())
                 .equipItems(memberItems)
+                .nickname(member.getNickname())
                 .build();
     }
 

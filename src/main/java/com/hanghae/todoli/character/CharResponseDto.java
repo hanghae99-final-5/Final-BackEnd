@@ -19,6 +19,7 @@ public class CharResponseDto {
     private int maxExp;
     private int money;
     private String charImg;
+    private String nickname;
 
     private List<EquipItemDto> equipItems;  //List<EquipItemDto> listDto
 
