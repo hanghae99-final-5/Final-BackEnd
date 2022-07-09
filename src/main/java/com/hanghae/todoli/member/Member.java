@@ -2,12 +2,11 @@ package com.hanghae.todoli.member;
 
 import com.hanghae.todoli.alarm.Alarm;
 import com.hanghae.todoli.character.Character;
-import com.hanghae.todoli.todo.Todo;
+import com.hanghae.todoli.todo.model.Todo;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
-import javax.validation.constraints.NotNull;
 import java.util.ArrayList;
 import java.util.List;
 
