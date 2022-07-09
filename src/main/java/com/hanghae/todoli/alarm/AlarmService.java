@@ -29,7 +29,7 @@ public class AlarmService {
     public List<AlarmResponseDto> getAlarms(UserDetailsImpl userDetails) {
         Long id = userDetails.getMember().getId();
 
-        List<Alarm> alarms = alarmRepository.findAllByMemberId(id);  // a의 알람전체
+        List<Alarm> alarms = alarmRepository.findAllByMemberIdOrderByIdDesc(id);  // a의 알람전체
 
         List<AlarmResponseDto> alarmList = new ArrayList<>();
 
