@@ -90,7 +90,7 @@ public class ProofImgService {
 
         // TODO : 2022-07-08 AlarmService로 옮겨서 리팩토링해도 될듯
         //자신이 매칭되어 있고, 매칭투두일때
-        if (myInfo.getMatchingState() && todo.getTodoType()==1) {
+        if (myInfo.getMatchingState() && todo.getTodoType()==2) {
             Matching matching =matchingRepository.getMatching(myId).orElseThrow(
                     ()->new CustomException(ErrorCode.NOT_FOUND_MATCHING));
 
