@@ -92,7 +92,7 @@ public class ItemService {
         }
 
         //2. 상점에 있는 모든 Item 정보 조회
-        List<Item> allItem = itemRepository.findAll();
+        List<Item> allItem = itemRepository.findAllExceptBasic();
         for (Item item : allItem) {
             ExistItemListDto.ItemListDto itemListDto = ExistItemListDto.ItemListDto.builder()
                     .itemId(item.getId())
