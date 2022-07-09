@@ -1,6 +1,5 @@
-package com.hanghae.todoli.todo;
+package com.hanghae.todoli.todo.dto;
 
-import com.hanghae.todoli.matching.MatchingStatePartnerDto;
 import com.hanghae.todoli.matching.MatchingStateResponseDto;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -9,7 +8,9 @@ import java.util.List;
 
 @Getter
 @AllArgsConstructor
-public class PairTodoResponseDto {
-    List<MatchingStatePartnerDto> member;
+public class TodoResponseDto {
+    //  매칭 상태 List
+    List<MatchingStateResponseDto> member;
+    //  Todo List
     List<TodoInfoDto> todos;
 }

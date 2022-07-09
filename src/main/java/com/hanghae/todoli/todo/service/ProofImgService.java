@@ -1,4 +1,4 @@
-package com.hanghae.todoli.todo;
+package com.hanghae.todoli.todo.service;
 
 import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.model.CannedAccessControlList;
@@ -14,6 +14,9 @@ import com.hanghae.todoli.matching.MatchingRepository;
 import com.hanghae.todoli.member.Member;
 import com.hanghae.todoli.member.MemberRepository;
 import com.hanghae.todoli.security.UserDetailsImpl;
+import com.hanghae.todoli.todo.model.Todo;
+import com.hanghae.todoli.todo.repository.TodoRepository;
+import com.hanghae.todoli.todo.dto.ProofImgRequestDto;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;

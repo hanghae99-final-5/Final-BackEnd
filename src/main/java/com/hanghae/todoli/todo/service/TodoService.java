@@ -1,4 +1,4 @@
-package com.hanghae.todoli.todo;
+package com.hanghae.todoli.todo.service;
 
 
 import com.hanghae.todoli.alarm.Alarm;
@@ -13,6 +13,9 @@ import com.hanghae.todoli.matching.MatchingStateResponseDto;
 import com.hanghae.todoli.member.Member;
 import com.hanghae.todoli.member.MemberRepository;
 import com.hanghae.todoli.security.UserDetailsImpl;
+import com.hanghae.todoli.todo.model.Todo;
+import com.hanghae.todoli.todo.repository.TodoRepository;
+import com.hanghae.todoli.todo.dto.*;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;

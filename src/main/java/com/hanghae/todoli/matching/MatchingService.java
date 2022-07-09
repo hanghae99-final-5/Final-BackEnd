@@ -12,7 +12,7 @@ import com.hanghae.todoli.item.ItemRepository;
 import com.hanghae.todoli.member.Member;
 import com.hanghae.todoli.member.MemberRepository;
 import com.hanghae.todoli.security.UserDetailsImpl;
-import com.hanghae.todoli.todo.TodoRepository;
+import com.hanghae.todoli.todo.repository.TodoRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;

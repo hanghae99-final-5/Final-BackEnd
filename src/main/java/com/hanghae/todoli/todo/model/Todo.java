@@ -1,4 +1,4 @@
-package com.hanghae.todoli.todo;
+package com.hanghae.todoli.todo.model;
 
 import com.hanghae.todoli.member.Member;
 import com.hanghae.todoli.utils.Timestamped;
