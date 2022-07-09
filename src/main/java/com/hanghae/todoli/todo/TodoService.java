@@ -8,6 +8,7 @@ import com.hanghae.todoli.exception.CustomException;
 import com.hanghae.todoli.exception.ErrorCode;
 import com.hanghae.todoli.matching.Matching;
 import com.hanghae.todoli.matching.MatchingRepository;
+import com.hanghae.todoli.matching.MatchingStatePartnerDto;
 import com.hanghae.todoli.matching.MatchingStateResponseDto;
 import com.hanghae.todoli.member.Member;
 import com.hanghae.todoli.member.MemberRepository;
@@ -61,7 +62,7 @@ public class TodoService {
     public void registerTodo(TodoRegisterDto registerDto, UserDetailsImpl userDetails) {
 
         //매칭 아닐때 매칭투두 작성 에러처리
-        if (!userDetails.getMember().getMatchingState() && registerDto.getTodoType() ==2) {
+        if (!userDetails.getMember().getMatchingState() && registerDto.getTodoType() == 2) {
             throw new CustomException(ErrorCode.NOT_MATCHED_MEMBER);
         }
 
@@ -97,7 +98,7 @@ public class TodoService {
                 () -> new CustomException(ErrorCode.NOT_FOUND_MATCHING));
 
         Long partnerId = userId.equals(matching.getRequesterId()) ? matching.getRespondentId() : matching.getRequesterId();
-        
+
         if (!todo.getWriter().getId().equals(partnerId)) {
             throw new CustomException(ErrorCode.FORBIDDEN_ACCESS);
         }
@@ -193,26 +194,39 @@ public class TodoService {
     }
 
     //상대방 투두 조회
-    public TodoResponseDto getPairTodos(Long memberId, UserDetailsImpl userDetails) {
+    //  TODO : 2022-07-08 파트너 투두 조회 수정( 수정 완료 / 테스트 완료 )
+    //      1. 로그인한 유저의 매칭 상태 검사
+    //      2. 매칭중이 아니라면 매칭중이지 않다는 에러 메시지
+    //      3. 매칭중이라면 매칭중인 파트너 아이디 조회
+    //      4. 투두에 저장되어있는 작정자가 파트너 아이디인 투두 조회
+    public PairTodoResponseDto getPairTodos(UserDetailsImpl userDetails) {
+        // 로그인 중인 사용자의 Long id
         Long id = userDetails.getMember().getId();
-        Matching matching = matchingRepository.getMatching(id).orElseThrow(
-                () -> new CustomException(ErrorCode.NOT_FOUND_MATCHING));
 
-        Long partnerId = id.equals(matching.getRequesterId()) ? matching.getRespondentId() : matching.getRequesterId();
-        if (!memberId.equals(partnerId)) {
-            throw new CustomException(ErrorCode.NOT_MATCHING_PARTNER);
-        }
+        // 로그인 중인 사용자의 매칭 여부 판단
+        Matching matching = matchingRepository.getMatching(id).orElseThrow(
+                () -> new CustomException(ErrorCode.NOT_FOUND_MATCHING)
+        );
+
+        // 나의 매칭 상태 조회
         Member member = memberRepository.findById(id).orElseThrow(
-                ()-> new CustomException(ErrorCode.NOT_FOUND_MEMBER));
+                ()-> new CustomException(ErrorCode.NOT_FOUND_MEMBER)
+        );
 
         Boolean matchingState = member.getMatchingState();
 
-        List<MatchingStateResponseDto> matchingStateDto = new ArrayList<>();
-        MatchingStateResponseDto matchingStateResponseDto = new MatchingStateResponseDto(matchingState);
-        matchingStateDto.add(matchingStateResponseDto);
+        // 매칭중인 파트너의 Long id
+        Long partnerId = id.equals(matching.getRequesterId()) ? matching.getRespondentId() : matching.getRequesterId();
 
+        // 나의 매칭 상태, 파트너 id를 담는 List 생성
+        List<MatchingStatePartnerDto> matchingStatePartnerDtos = new ArrayList<>();
+        MatchingStatePartnerDto matchingStatePartnerDto = new MatchingStatePartnerDto(matchingState, partnerId);
+
+        matchingStatePartnerDtos.add(matchingStatePartnerDto);
+
+        // 파트너의 투두 내용 List 생성
         List<TodoInfoDto> todoInfoDtoList = new ArrayList<>();
-        List<Todo> todos = todoRepository.findAllByWriterId(memberId);
+        List<Todo> todos = todoRepository.findAllByWriterId(partnerId);
         for (Todo todo : todos) {
             TodoInfoDto todoInfoDto = TodoInfoDto.builder()
                     .todoId(todo.getId())
@@ -229,7 +243,9 @@ public class TodoService {
                     .build();
             todoInfoDtoList.add(todoInfoDto);
         }
-        return new TodoResponseDto(matchingStateDto, todoInfoDtoList);
+
+        // 생성된 List 반환
+        return new PairTodoResponseDto(matchingStatePartnerDtos, todoInfoDtoList);
     }
 
     // 내 투두 목록 조회
@@ -295,15 +311,15 @@ public class TodoService {
     private void validator(TodoRegisterDto registerDto) {
         LocalDate now = LocalDate.parse(LocalDate.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd")));
 
-        if(registerDto.getStartDate() == null)
+        if (registerDto.getStartDate() == null)
             throw new CustomException(ErrorCode.NO_INPUT_START_DATE);
-        if(registerDto.getEndDate() == null)
+        if (registerDto.getEndDate() == null)
             throw new CustomException(ErrorCode.NO_INPUT_END_DATE);
-        if(registerDto.getContent() == null)
+        if (registerDto.getContent() == null)
             throw new CustomException(ErrorCode.NO_INPUT_CONTENT);
-        if(registerDto.getDifficulty() == 0)
+        if (registerDto.getDifficulty() == 0)
             throw new CustomException(ErrorCode.NO_INPUT_DIFFICULTY);
-        if(registerDto.getTodoType() ==0)
+        if (registerDto.getTodoType() == 0)
             throw new CustomException(ErrorCode.NO_INPUT_TODO_TYPE);
         if (registerDto.getStartDate().isBefore(now))
             throw new CustomException(ErrorCode.FORBIDDEN_START_DATE);
