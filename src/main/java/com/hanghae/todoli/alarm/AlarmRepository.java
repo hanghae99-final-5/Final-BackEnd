@@ -8,8 +8,7 @@ import java.util.List;
 
 public interface AlarmRepository extends JpaRepository<Alarm, Long> {
 
-
-    List<Alarm> findAllByMemberId(Long id);
+    List<Alarm> findAllByMemberIdOrderByIdDesc(Long id);
     void deleteAllByMemberId(Long id);
 
     //매칭 수락

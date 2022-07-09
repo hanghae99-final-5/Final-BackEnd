@@ -33,4 +33,9 @@ public class EquipItem {
         this.clothId = clothId;
     }
 
+    public EquipItem(Long accessoryId, Long hairId, Long clothId) {
+        this.accessoryId = accessoryId;
+        this.hairId = hairId;
+        this.clothId = clothId;
+    }
 }
