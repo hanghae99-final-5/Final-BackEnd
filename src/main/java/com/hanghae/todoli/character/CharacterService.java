@@ -43,8 +43,7 @@ public class CharacterService {
     //@Transactional
     public CharResponseDto getPartnerState(UserDetailsImpl userDetails) {
         Long userId = userDetails.getMember().getId();
-        Matching matching = matchingRepository.getMatching(userId).orElseThrow(
-                () -> new CustomException(ErrorCode.NOT_FOUND_MATCHING));
+        Matching matching = getMatching(userId);
 
         //파트너 아이디 구하기
         Long partnerId = userId.equals(matching.getRequesterId()) ? matching.getRespondentId() : matching.getRequesterId();
@@ -53,6 +52,8 @@ public class CharacterService {
 
         return getCharResponseDto(partner);
     }
+
+
 
     private CharResponseDto getCharResponseDto(Member member) {
         Character c = member.getCharacter();
@@ -101,8 +102,7 @@ public class CharacterService {
         Member myInfo = memberRepository.findById(myId).orElseThrow(
                 () -> new CustomException(ErrorCode.NOT_FOUND_MEMBER));
 
-        Matching matching = matchingRepository.getMatching(myId).orElseThrow(
-                () -> new CustomException(ErrorCode.NOT_FOUND_MATCHING));
+        Matching matching = getMatching(myId);
 
         Long partnerId = myId.equals(matching.getRequesterId()) ? matching.getRespondentId() : matching.getRequesterId();
         Member partnerInfo = memberRepository.findById(partnerId).orElseThrow(
@@ -156,5 +156,12 @@ public class CharacterService {
             itemListDto.setCategory(item.getCategory());
         }
         return itemListDto;
+    }
+
+    //matching 검사
+    private Matching getMatching(Long userId) {
+        Matching matching = matchingRepository.getMatching(userId).orElseThrow(
+                () -> new CustomException(ErrorCode.NOT_FOUND_MATCHING));
+        return matching;
     }
 }

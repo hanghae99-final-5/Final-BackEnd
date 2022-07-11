@@ -69,22 +69,11 @@ public class TodoService {
             throw new CustomException(ErrorCode.NOT_MATCHED_MEMBER);
         }
 
-        // 작성자 정보
         Member member = userDetails.getMember();
+        validator(registerDto);
 
         // 새로운 투두
-        Todo todo = new Todo();
-
-        validator(registerDto);
-        // 투두 데이터
-        todo.setWriter(member);
-        todo.setContent(registerDto.getContent());
-        todo.setStartDate(registerDto.getStartDate());
-        todo.setEndDate(registerDto.getEndDate());
-        todo.setDifficulty(registerDto.getDifficulty());
-        todo.setConfirmDate(registerDto.getEndDate());
-        todo.setTodoType(registerDto.getTodoType());
-
+        Todo todo = new Todo(member, registerDto);
         todoRepository.save(todo);
     }
 
@@ -92,13 +81,11 @@ public class TodoService {
     //투두 인증해주기
     @Transactional
     public TodoConfirmDto confirmTodo(Long todoId, UserDetailsImpl userDetails) {
-        Todo todo = todoRepository.findById(todoId).orElseThrow(
-                () -> new CustomException(ErrorCode.NOT_FOUND_TODO));
+        Todo todo = getTodo(todoId);
 
         //파트너 아이디 구하기
         Long userId = userDetails.getMember().getId();
-        Matching matching = matchingRepository.getMatching(userId).orElseThrow(
-                () -> new CustomException(ErrorCode.NOT_FOUND_MATCHING));
+        Matching matching = getMatching(userId);
 
         Long partnerId = userId.equals(matching.getRequesterId()) ? matching.getRespondentId() : matching.getRequesterId();
 
@@ -130,13 +117,25 @@ public class TodoService {
 
     }
 
+    private Matching getMatching(Long userId) {
+        Matching matching = matchingRepository.getMatching(userId).orElseThrow(
+                () -> new CustomException(ErrorCode.NOT_FOUND_MATCHING));
+        return matching;
+    }
+
+    private Todo getTodo(Long todoId) {
+        Todo todo = todoRepository.findById(todoId).orElseThrow(
+                () -> new CustomException(ErrorCode.NOT_FOUND_TODO));
+        return todo;
+    }
+
     //투두 완료
     @Transactional
     public TodoCompletionDto completionTodo(Long todoId, UserDetailsImpl userDetails) {
         Long memberId = userDetails.getMember().getId();
 
-        Todo todo = todoRepository.findById(todoId).orElseThrow(() -> new CustomException(ErrorCode.NOT_FOUND_TODO));
-        Member member = memberRepository.findById(memberId).orElseThrow(() -> new CustomException(ErrorCode.NOT_FOUND_MEMBER));
+        Todo todo = getTodo(todoId);
+        Member member = getMember(memberId);
 
         // 투두 완료
         if (!todo.getCompletionState() && todo.getConfirmState()) {
@@ -188,7 +187,7 @@ public class TodoService {
     public void deleteTodo(Long id, UserDetailsImpl userDetails) {
         // 로그인 유저와 작성자가 일치?
         // 불일치시 메시지
-        Todo todo = todoRepository.findById(id).orElseThrow(() -> new CustomException(ErrorCode.NOT_FOUND_TODO));
+        Todo todo = getTodo(id);
 
         if (!todo.getWriter().getId().equals(userDetails.getMember().getId())) {
             throw new CustomException(ErrorCode.NOT_TODO_WRITER);
@@ -207,14 +206,11 @@ public class TodoService {
         Long id = userDetails.getMember().getId();
 
         // 로그인 중인 사용자의 매칭 여부 판단
-        Matching matching = matchingRepository.getMatching(id).orElseThrow(
-                () -> new CustomException(ErrorCode.NOT_FOUND_MATCHING)
-        );
+        Matching matching = getMatching(id);
 
         // 나의 매칭 상태 조회
-        Member member = memberRepository.findById(id).orElseThrow(
-                () -> new CustomException(ErrorCode.NOT_FOUND_MEMBER)
-        );
+
+        Member member = getMember(id);
 
         Boolean matchingState = member.getMatchingState();
 
@@ -228,27 +224,19 @@ public class TodoService {
         matchingStatePartnerDtos.add(matchingStatePartnerDto);
 
         // 파트너의 투두 내용 List 생성
-        List<TodoInfoDto> todoInfoDtoList = new ArrayList<>();
-        List<Todo> todos = todoRepository.findAllByWriterIdOrderByIdDesc(partnerId);
-        for (Todo todo : todos) {
-            TodoInfoDto todoInfoDto = TodoInfoDto.builder()
-                    .todoId(todo.getId())
-                    .content(todo.getContent())
-                    .proofImg(todo.getProofImg())
-                    .startDate(todo.getStartDate())
-                    .endDate(todo.getEndDate())
-                    .confirmDate(todo.getConfirmDate())
-                    .difficulty(todo.getDifficulty())
-                    .confirmState(todo.getConfirmState())
-                    .completionState(todo.getCompletionState())
-                    .todoType(todo.getTodoType())
-                    .createdAt(todo.getCreatedAt())
-                    .build();
-            todoInfoDtoList.add(todoInfoDto);
-        }
+        List<TodoInfoDto> todoInfoDtoList = getTodoInfoDtos(partnerId);
 
         // 생성된 List 반환
         return new PairTodoResponseDto(matchingStatePartnerDtos, todoInfoDtoList);
+    }
+
+
+
+    private Member getMember(Long id) {
+        Member member = memberRepository.findById(id).orElseThrow(
+                ()-> new CustomException(ErrorCode.NOT_FOUND_MEMBER)
+        );
+        return member;
     }
 
     // 내 투두 목록 조회
@@ -267,48 +255,25 @@ public class TodoService {
         matchingStates.add(stateResponseDto);
 
         // 로그인중인 사용자 id로 작성한 투두 조회
-        List<TodoInfoDto> todoInfoList = new ArrayList<>();
-        List<Todo> todos = todoRepository.findAllByWriterIdOrderByIdDesc(myId);
-        for (Todo todo : todos) {
-            TodoInfoDto todoInfoDto = TodoInfoDto.builder()
-                    .todoId(todo.getId())
-                    .content(todo.getContent())
-                    .proofImg(todo.getProofImg())
-                    .startDate(todo.getStartDate())
-                    .endDate(todo.getEndDate())
-                    .difficulty(todo.getDifficulty())
-                    .confirmState(todo.getConfirmState())
-                    .completionState(todo.getCompletionState())
-                    .confirmDate(todo.getConfirmDate())
-                    .todoType(todo.getTodoType())
-                    .createdAt(todo.getCreatedAt())
-                    .build();
-            todoInfoList.add(todoInfoDto);
-        }
-        return new TodoResponseDto(matchingStates, todoInfoList);
+        List<TodoInfoDto> todoInfoDtoList = getTodoInfoDtos(myId);
+        return new TodoResponseDto(matchingStates, todoInfoDtoList);
     }
 
     // 투두 수정
     @Transactional
     public void todoModify(Long todoId, TodoRegisterDto registerDto, UserDetailsImpl userDetails) {
         // 투두 유무 확인
-        Todo todo = todoRepository.findById(todoId).orElseThrow(() -> new CustomException(ErrorCode.NOT_FOUND_TODO));
+        Todo todo = getTodo(todoId);
 
         // 로그인중인 사용자 id 가져오기
         Long myId = userDetails.getMember().getId();
-        Member member = memberRepository.findById(myId).orElseThrow(() -> new CustomException(ErrorCode.NOT_FOUND_MEMBER));
+        Member member = getMember(myId);
 
         if (!todo.getWriter().getId().equals(myId)) {
             throw new CustomException(ErrorCode.NOT_TODO_WRITER);
         }
-        // 투두 데이터
-        todo.setWriter(member);
-        todo.setContent(registerDto.getContent());
-        todo.setStartDate(registerDto.getStartDate());
-        todo.setEndDate(registerDto.getEndDate());
-        todo.setDifficulty(registerDto.getDifficulty());
-        todo.setConfirmDate(registerDto.getEndDate());
-        todo.setTodoType(registerDto.getTodoType());
+        //투두 데이터
+        todo.update(member, registerDto);
     }
 
     private void validator(TodoRegisterDto registerDto) {
@@ -328,5 +293,27 @@ public class TodoService {
             throw new CustomException(ErrorCode.FORBIDDEN_START_DATE);
         if (registerDto.getEndDate().isBefore(registerDto.getStartDate()))
             throw new CustomException(ErrorCode.FORBIDDEN_END_DATE);
+    }
+
+    private List<TodoInfoDto> getTodoInfoDtos(Long partnerId) {
+        List<TodoInfoDto> todoInfoDtoList = new ArrayList<>();
+        List<Todo> todos = todoRepository.findAllByWriterIdOrderByIdDesc(partnerId);
+        for (Todo todo : todos) {
+            TodoInfoDto todoInfoDto = TodoInfoDto.builder()
+                    .todoId(todo.getId())
+                    .content(todo.getContent())
+                    .proofImg(todo.getProofImg())
+                    .startDate(todo.getStartDate())
+                    .endDate(todo.getEndDate())
+                    .confirmDate(todo.getConfirmDate())
+                    .difficulty(todo.getDifficulty())
+                    .confirmState(todo.getConfirmState())
+                    .completionState(todo.getCompletionState())
+                    .todoType(todo.getTodoType())
+                    .createdAt(todo.getCreatedAt())
+                    .build();
+            todoInfoDtoList.add(todoInfoDto);
+        }
+        return todoInfoDtoList;
     }
 }
