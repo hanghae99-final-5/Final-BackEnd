@@ -1,8 +1,8 @@
 package com.hanghae.todoli.utils;
 
-import com.hanghae.todoli.models.Character;
-import com.hanghae.todoli.models.Todo;
-import com.hanghae.todoli.repository.TodoRepository;
+import com.hanghae.todoli.character.Character;
+import com.hanghae.todoli.todo.model.Todo;
+import com.hanghae.todoli.todo.repository.TodoRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
