@@ -1,10 +1,7 @@
 package com.hanghae.todoli.security.jwt;
 
 import com.hanghae.todoli.security.UserDetailsServiceImpl;
-import io.jsonwebtoken.Claims;
-import io.jsonwebtoken.Jws;
-import io.jsonwebtoken.Jwts;
-import io.jsonwebtoken.SignatureAlgorithm;
+import io.jsonwebtoken.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -33,7 +30,7 @@ public class JwtTokenProvider {
         secretKey = Base64.getEncoder().encodeToString(secretKey.getBytes());
     }
 
-    private static final long tokenValidTime = 1000L * 60 * 60 * 10;
+    private static final long tokenValidTime = 1000L * 10;
 
     //JWT 생성
     public String createToken(String username,String nickname) {
@@ -60,9 +57,23 @@ public class JwtTokenProvider {
         try {
             Jws<Claims> claims = Jwts.parser().setSigningKey(secretKey).parseClaimsJws(token);
             return !claims.getBody().getExpiration().before(new Date());
-        } catch (Exception e) {
-            return false;
+        } catch (SignatureException e) {
+//            logger.error("Invalid JWT signature: {}", e.getMessage());
+            System.out.println("Invalid JWT signature");
+        } catch (MalformedJwtException e) {
+//            logger.error("Invalid JWT token: {}", e.getMessage());
+            System.out.println("Invalid JWT token");
+        } catch (ExpiredJwtException e) {
+//            logger.error("JWT token is expired: {}", e.getMessage());
+            System.out.println("JWT token is expired");
+        } catch (UnsupportedJwtException e) {
+//            logger.error("JWT token is unsupported: {}", e.getMessage());
+            System.out.println("JWT token is unsupported");
+        } catch (IllegalArgumentException e) {
+//            logger.error("JWT claims string is empty: {}", e.getMessage());
+            System.out.println("JWT claims string is empty");
         }
+        return false;
     }
 
     //JWT 에서 인증 정보 조회

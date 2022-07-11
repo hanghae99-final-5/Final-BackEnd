@@ -1,6 +1,7 @@
 package com.hanghae.todoli.security;
 
 import com.hanghae.todoli.security.jwt.JwtAuthenticationFilter;
+import com.hanghae.todoli.security.jwt.JwtEntryPoint;
 import com.hanghae.todoli.security.jwt.JwtTokenProvider;
 import lombok.RequiredArgsConstructor;
 import org.springframework.boot.autoconfigure.security.servlet.PathRequest;
@@ -23,6 +24,7 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
     private final JwtTokenProvider jwtTokenProvider;
+    private final JwtEntryPoint jwtEntryPoint;
 
     @Bean   // 비밀번호 암호화
     public BCryptPasswordEncoder encodePassword() {
@@ -55,10 +57,11 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .antMatchers("/h2-console/**").permitAll()
                 // 그 외 모든 요청은 인증과정 필요
                 .anyRequest().authenticated()
-                .and()
+                 .and()
                 // 토큰을 활용하면 세션이 필요 없으므로 STATELESS로 설정하여 Session을 사용하지 않는다.
                 .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
                 .and()
+                .exceptionHandling().authenticationEntryPoint(jwtEntryPoint).and()
                 .addFilterBefore(new JwtAuthenticationFilter(jwtTokenProvider), UsernamePasswordAuthenticationFilter.class);
     }
 }
