@@ -56,6 +56,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .antMatchers("/api/users/signup").permitAll()
                 .antMatchers("/api/users/login").permitAll()
                 .antMatchers("/api/users/login/google").permitAll()
+                .antMatchers("/api/login/oauth2/code/google/callback").permitAll()
                 .antMatchers("/h2-console/**").permitAll()
                 // 그 외 모든 요청은 인증과정 필요
                 .anyRequest().authenticated()
