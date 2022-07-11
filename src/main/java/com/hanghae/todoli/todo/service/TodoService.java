@@ -229,7 +229,7 @@ public class TodoService {
 
         // 파트너의 투두 내용 List 생성
         List<TodoInfoDto> todoInfoDtoList = new ArrayList<>();
-        List<Todo> todos = todoRepository.findAllByWriterId(partnerId);
+        List<Todo> todos = todoRepository.findAllByWriterIdOrderByIdDesc(partnerId);
         for (Todo todo : todos) {
             TodoInfoDto todoInfoDto = TodoInfoDto.builder()
                     .todoId(todo.getId())
@@ -268,7 +268,7 @@ public class TodoService {
 
         // 로그인중인 사용자 id로 작성한 투두 조회
         List<TodoInfoDto> todoInfoList = new ArrayList<>();
-        List<Todo> todos = todoRepository.findAllByWriterId(myId);
+        List<Todo> todos = todoRepository.findAllByWriterIdOrderByIdDesc(myId);
         for (Todo todo : todos) {
             TodoInfoDto todoInfoDto = TodoInfoDto.builder()
                     .todoId(todo.getId())
