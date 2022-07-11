@@ -106,7 +106,7 @@ public class TodoService {
             throw new CustomException(ErrorCode.FORBIDDEN_ACCESS);
         }
 
-        if (!todo.getProofImg().isEmpty() && todo.getTodoType() == 1) {
+        if (!todo.getProofImg().isEmpty() && todo.getTodoType() == 2) {
             if (todo.getConfirmState()) {
                 throw new CustomException(ErrorCode.CONFIRMED_TODO);
             }
@@ -213,7 +213,7 @@ public class TodoService {
 
         // 나의 매칭 상태 조회
         Member member = memberRepository.findById(id).orElseThrow(
-                ()-> new CustomException(ErrorCode.NOT_FOUND_MEMBER)
+                () -> new CustomException(ErrorCode.NOT_FOUND_MEMBER)
         );
 
         Boolean matchingState = member.getMatchingState();
