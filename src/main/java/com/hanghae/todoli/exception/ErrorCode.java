@@ -23,9 +23,6 @@ public enum ErrorCode {
     CONFIRMED_TODO(HttpStatus.BAD_REQUEST, "이미 인증된 Todo입니다."),
     NOT_CONFIRMED_TODO(HttpStatus.BAD_REQUEST, "인증된 Todo가 아닙니다."),
 
-    INVALID_TOKEN(HttpStatus.BAD_REQUEST, "토큰이 유효하지 않습니다"),
-    PERMISSION_DENIED(HttpStatus.BAD_REQUEST,"토큰이 유효하지 않습니다."),
-
     /* validator 400 BAD_REQUEST, 403 FORBIDDEN */
     NO_INPUT_START_DATE(HttpStatus.BAD_REQUEST, "시작날짜를 선택해주세요"),
     NO_INPUT_END_DATE(HttpStatus.BAD_REQUEST, "종료날짜를 선택해주세요"),

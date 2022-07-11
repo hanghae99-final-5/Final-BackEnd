@@ -3,6 +3,7 @@ package com.hanghae.todoli.security.jwt;
 import com.hanghae.todoli.security.UserDetailsServiceImpl;
 import io.jsonwebtoken.*;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -17,6 +18,7 @@ import java.util.Date;
 
 @Component
 @RequiredArgsConstructor
+@Slf4j
 public class JwtTokenProvider {
 
     private final UserDetailsServiceImpl userDetailsService;
@@ -30,7 +32,7 @@ public class JwtTokenProvider {
         secretKey = Base64.getEncoder().encodeToString(secretKey.getBytes());
     }
 
-    private static final long tokenValidTime = 1000L * 10;
+    private static final long tokenValidTime = 1000L * 60 * 60 * 10;
 
     //JWT 생성
     public String createToken(String username,String nickname) {
@@ -58,20 +60,15 @@ public class JwtTokenProvider {
             Jws<Claims> claims = Jwts.parser().setSigningKey(secretKey).parseClaimsJws(token);
             return !claims.getBody().getExpiration().before(new Date());
         } catch (SignatureException e) {
-//            logger.error("Invalid JWT signature: {}", e.getMessage());
-            System.out.println("Invalid JWT signature");
+            log.error("Invalid JWT signature");
         } catch (MalformedJwtException e) {
-//            logger.error("Invalid JWT token: {}", e.getMessage());
-            System.out.println("Invalid JWT token");
+            log.error("Invalid JWT token");
         } catch (ExpiredJwtException e) {
-//            logger.error("JWT token is expired: {}", e.getMessage());
-            System.out.println("JWT token is expired");
+            log.error("JWT token is expired");
         } catch (UnsupportedJwtException e) {
-//            logger.error("JWT token is unsupported: {}", e.getMessage());
-            System.out.println("JWT token is unsupported");
+            log.error("JWT token is unsupported");
         } catch (IllegalArgumentException e) {
-//            logger.error("JWT claims string is empty: {}", e.getMessage());
-            System.out.println("JWT claims string is empty");
+            log.error("JWT claims string is empty");
         }
         return false;
     }

@@ -119,9 +119,7 @@ public class ItemService {
         Character character = member.getCharacter();
 
         //구매했다면
-        Inventory exist = inventoryRepository.findByCharacterAndItem(character, buyItem).orElseThrow(
-                () -> new CustomException(ErrorCode.NOT_FOUND_ITEM)
-        );
+        Inventory exist = inventoryRepository.findByCharacterAndItem(character, buyItem).orElse(null);
 
         if (exist == null) {
             //계산

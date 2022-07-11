@@ -106,7 +106,7 @@ public class TodoService {
             throw new CustomException(ErrorCode.FORBIDDEN_ACCESS);
         }
 
-        if (!todo.getProofImg().isEmpty() && todo.getTodoType() == 1) {
+        if (!todo.getProofImg().isEmpty() && todo.getTodoType() == 2) {
             if (todo.getConfirmState()) {
                 throw new CustomException(ErrorCode.CONFIRMED_TODO);
             }

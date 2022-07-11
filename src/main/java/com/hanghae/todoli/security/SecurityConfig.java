@@ -52,8 +52,10 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .cors();
         http.authorizeRequests()
                 // api 요청 접근허용
-                .antMatchers("**").permitAll()
-                .antMatchers("/api/**").permitAll()
+                .antMatchers("/api/items").permitAll()
+                .antMatchers("/api/users/signup").permitAll()
+                .antMatchers("/api/users/login").permitAll()
+                .antMatchers("/api/users/login/google").permitAll()
                 .antMatchers("/h2-console/**").permitAll()
                 // 그 외 모든 요청은 인증과정 필요
                 .anyRequest().authenticated()
@@ -61,7 +63,8 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 // 토큰을 활용하면 세션이 필요 없으므로 STATELESS로 설정하여 Session을 사용하지 않는다.
                 .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
                 .and()
-                .exceptionHandling().authenticationEntryPoint(jwtEntryPoint).and()
+                .exceptionHandling().authenticationEntryPoint(jwtEntryPoint)
+                .and()
                 .addFilterBefore(new JwtAuthenticationFilter(jwtTokenProvider), UsernamePasswordAuthenticationFilter.class);
     }
 }
