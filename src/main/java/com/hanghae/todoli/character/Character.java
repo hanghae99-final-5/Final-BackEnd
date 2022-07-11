@@ -73,6 +73,7 @@ public class Character {
         if (this.exp >= 100) {
             this.level++;
             this.exp = this.exp - 100;
+            this.hp = 100;
         }
     }
 
