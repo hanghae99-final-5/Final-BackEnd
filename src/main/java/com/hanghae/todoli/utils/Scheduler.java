@@ -47,4 +47,11 @@ public class Scheduler {
             }
         }
     }
+
+    @Scheduled(cron = "0 0 0 * * *")        // *은 상관없다는 뜻 저 코드는 새벽 12시에 매번 실행
+    public void updateRanking() throws InterruptedException {
+        System.out.println("랭킹 업데이트 실행");
+
+
+    }
 }

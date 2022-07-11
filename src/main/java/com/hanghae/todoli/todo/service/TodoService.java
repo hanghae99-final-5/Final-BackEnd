@@ -98,8 +98,12 @@ public class TodoService {
                 throw new CustomException(ErrorCode.CONFIRMED_TODO);
             }
             todo.setConfirmState(true);
-            Alarm byTodoId = alarmRepository.findByTodoId(todoId);
-            byTodoId.setAlarmState(1L);
+
+            List<Alarm> byTodoId = alarmRepository.findAllByTodoId(todoId);
+
+            for(Alarm a : byTodoId){
+                a.setAlarmState(1L);
+            }
 
             //알림 보내기 추후에 추가기능으로 열 수 있음
 //            Alarm alarm = new Alarm();
@@ -118,15 +122,13 @@ public class TodoService {
     }
 
     private Matching getMatching(Long userId) {
-        Matching matching = matchingRepository.getMatching(userId).orElseThrow(
+        return matchingRepository.getMatching(userId).orElseThrow(
                 () -> new CustomException(ErrorCode.NOT_FOUND_MATCHING));
-        return matching;
     }
 
     private Todo getTodo(Long todoId) {
-        Todo todo = todoRepository.findById(todoId).orElseThrow(
+        return todoRepository.findById(todoId).orElseThrow(
                 () -> new CustomException(ErrorCode.NOT_FOUND_TODO));
-        return todo;
     }
 
     //투두 완료
