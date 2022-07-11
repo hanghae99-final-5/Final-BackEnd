@@ -63,12 +63,15 @@ public class MemberController {
      * @return SNS Login 요청 결과로 받은 Json 형태의 java 객체 (access_token, jwt_token, user_num 등)
      */
 
-    @GetMapping("/api/login/oauth2/code/{socialLoginType}")
+    @GetMapping("/api/login/oauth2/code/{socialLoginType}/callback")
     public GetSocialOAuthRes callback(
             @PathVariable(name = "socialLoginType") String socialLoginPath,
-            @RequestParam(name = "code") String code) throws IOException {
+            @RequestParam(name = "code") String code,HttpServletResponse response) throws IOException {
         System.out.println(">> 소셜 로그인 API 서버로부터 받은 code :" + code);
         SocialLoginType socialLoginType = SocialLoginType.valueOf(socialLoginPath.toUpperCase());
-        return oAuthService.oAuthLogin(socialLoginType, code);
+        GetSocialOAuthRes getSocialOAuthRes = oAuthService.oAuthLogin(socialLoginType, code);
+        String token = getSocialOAuthRes.getAuthorization();
+        response.addHeader("Authorization",token);
+        return getSocialOAuthRes;
     }
 }
