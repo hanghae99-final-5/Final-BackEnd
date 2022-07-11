@@ -57,7 +57,9 @@ public class ProofImgService {
     @Transactional
     public void imgRegister(Long id, ProofImgRequestDto imgRequestDto, UserDetailsImpl userDetails) {
         // 개시글 조회
-        Todo todo = todoRepository.findById(id).orElseThrow(() -> new CustomException(ErrorCode.NOT_FOUND_TODO));
+        Todo todo = todoRepository.findById(id).orElseThrow(
+                () -> new CustomException(ErrorCode.NOT_FOUND_TODO)
+        );
 
         // 로그인 사용자 가져와서 작성자와 일치하는지 확인
         Long myId = userDetails.getMember().getId();
@@ -71,10 +73,8 @@ public class ProofImgService {
         // url이  not null 일 때
         if (todo.getProofImg() != null) {
             // S3에서 기존 이미지 삭제
-//          https://twodo-li.s3.ap-northeast-2.amazonaws.com/
             String imgUrl = todo.getProofImg();
             String imgName = imgUrl.substring(49);
-
             // S3 저장된 기존 이미지 삭제
             deleteFile(imgName);
         }
@@ -93,7 +93,7 @@ public class ProofImgService {
 
         // TODO : 2022-07-08 AlarmService로 옮겨서 리팩토링해도 될듯
         //자신이 매칭되어 있고, 매칭투두일때
-        if (myInfo.getMatchingState() && todo.getTodoType()==1) {
+        if (myInfo.getMatchingState() && todo.getTodoType()==2) {
             Matching matching =matchingRepository.getMatching(myId).orElseThrow(
                     ()->new CustomException(ErrorCode.NOT_FOUND_MATCHING));
 

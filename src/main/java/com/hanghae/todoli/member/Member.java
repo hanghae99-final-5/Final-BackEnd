@@ -31,7 +31,7 @@ public class Member {
     @Column
     private Boolean matchingState;
 
-    @OneToOne(fetch = FetchType.LAZY)
+    @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     private Character character;
 
     @OneToMany

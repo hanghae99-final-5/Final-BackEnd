@@ -42,10 +42,10 @@ public class Character {
     private int money;
 
     @JsonManagedReference
-    @OneToMany(mappedBy = "character", orphanRemoval = true)
+    @OneToMany(mappedBy = "character", orphanRemoval = true, cascade = CascadeType.ALL)
     private List<Inventory> inventory = new ArrayList<>();
 
-    @OneToOne(fetch = FetchType.LAZY)
+    @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     private EquipItem equipItem;
 
 

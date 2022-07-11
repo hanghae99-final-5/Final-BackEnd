@@ -1,6 +1,7 @@
 package com.hanghae.todoli.todo.model;
 
 import com.hanghae.todoli.member.Member;
+import com.hanghae.todoli.todo.dto.TodoRegisterDto;
 import com.hanghae.todoli.utils.Timestamped;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -63,6 +64,15 @@ public class Todo extends Timestamped {
     @JoinColumn(name = "MEMBER_ID")
     private Member writer;
 
+    public Todo(Member member, TodoRegisterDto registerDto) {
+        this.writer = member;
+        this.content = registerDto.getContent();
+        this.startDate = registerDto.getStartDate();
+        this.endDate = registerDto.getEndDate();
+        this.todoType = registerDto.getTodoType();
+        this.difficulty = registerDto.getDifficulty();
+    }
+
     public void completionState(){
         this.completionState = true;
     }
@@ -106,5 +116,15 @@ public class Todo extends Timestamped {
 
     public void setTodoType(int todoType) {
         this.todoType = todoType;
+    }
+
+    public void update(Member member, TodoRegisterDto registerDto) {
+        this.writer = member;
+        this.content = registerDto.getContent();
+        this.startDate = registerDto.getStartDate();
+        this.endDate = registerDto.getEndDate();
+        this.todoType = registerDto.getTodoType();
+        this.difficulty = registerDto.getDifficulty();
+        this.confirmDate = registerDto.getEndDate();
     }
 }
