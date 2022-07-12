@@ -10,7 +10,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 @EnableScheduling
 @SpringBootApplication
 public class TodoliApplication {
-    //테스트101
+    //테스트1010101
     public static void main(String[] args) {
         SpringApplication.run(TodoliApplication.class, args);
     }
