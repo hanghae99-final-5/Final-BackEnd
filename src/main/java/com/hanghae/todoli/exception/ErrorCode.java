@@ -15,7 +15,7 @@ public enum ErrorCode {
     WRONG_PATTERN_EMAIL(HttpStatus.BAD_REQUEST, "이메일 형식이 아닙니다."),
     NOT_MATCHING_PARTNER(HttpStatus.BAD_REQUEST,"매칭되어있는 상대가 아닙니다."),
     MATCHED_PARTNER(HttpStatus.BAD_REQUEST, "상대방이 이미 매칭 중입니다."),
-    MATCHED_MEMBER(HttpStatus.BAD_REQUEST, "자신이 이미 매칭 중입니다."),
+    MATCHED_MEMBER(HttpStatus.BAD_REQUEST, "매칭 상태가 아닙니다."),
     NOT_MATCHED_MEMBER(HttpStatus.BAD_REQUEST, "자신이 매칭되어있지 않습니다."),
     NOT_ENOUGH_MONEY(HttpStatus.BAD_REQUEST, "금액이 부족합니다."),
     ALREADY_GOT_ITEM(HttpStatus.BAD_REQUEST, "이미 구매하신 물품입니다."),

@@ -82,6 +82,10 @@ public class CharacterService {
 
         List<EquipItemDto> itemList = new ArrayList<>();
 
+        if (clothId != null) {
+            EquipItemDto cloth = addItem(clothId);
+            itemList.add(cloth);
+        }
         if (hairId != null) {
             EquipItemDto hair = addItem(hairId);
             itemList.add(hair);
@@ -89,10 +93,6 @@ public class CharacterService {
         if (accessoryId != null) {
             EquipItemDto accessory = addItem(accessoryId);
             itemList.add(accessory);
-        }
-        if (clothId != null) {
-            EquipItemDto cloth = addItem(clothId);
-            itemList.add(cloth);
         }
         return itemList;
     }
@@ -128,15 +128,15 @@ public class CharacterService {
         Long hairId = myEquipItem.getHairId();
         Long clothId = myEquipItem.getClothId();
         Long accessoryId = myEquipItem.getAccessoryId();
-        if (hairId != null) {
-            Item hair = itemRepository.findById(hairId).orElse(null);
-            ThumbnailDto thumbnailDto1 = new ThumbnailDto(hair.getId(),hair.getThumbnailImg(),hair.getCategory());
-            myEquipItemList.add(thumbnailDto1);
-        }
         if (clothId != null) {
             Item cloth = itemRepository.findById(clothId).orElse(null);
             ThumbnailDto thumbnailDto2 = new ThumbnailDto(cloth.getId(),cloth.getThumbnailImg(),cloth.getCategory());
             myEquipItemList.add(thumbnailDto2);
+        }
+        if (hairId != null) {
+            Item hair = itemRepository.findById(hairId).orElse(null);
+            ThumbnailDto thumbnailDto1 = new ThumbnailDto(hair.getId(),hair.getThumbnailImg(),hair.getCategory());
+            myEquipItemList.add(thumbnailDto1);
         }
         if (accessoryId != null) {
             Item accessory = itemRepository.findById(accessoryId).orElse(null);
