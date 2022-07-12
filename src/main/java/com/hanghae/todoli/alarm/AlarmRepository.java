@@ -16,5 +16,5 @@ public interface AlarmRepository extends JpaRepository<Alarm, Long> {
     List<Alarm> findAllByAlarm(@Param("memberId")Long memberId);
 
     //인증해주기
-    Alarm findByTodoId(Long todoId);
+    List<Alarm> findAllByTodoId(Long todoId);
 }

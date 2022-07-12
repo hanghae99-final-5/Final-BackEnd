@@ -50,9 +50,10 @@ public class MemberController {
 
     //구글 로그인
     @GetMapping("/api/users/login/{socialLoginType}") //GOOGLE이 들어올 것이다.
-    public void socialLoginRedirect(@PathVariable(name = "socialLoginType") String SocialLoginPath) throws IOException {
+    public String socialLoginRedirect(@PathVariable(name = "socialLoginType") String SocialLoginPath,HttpServletResponse response) throws IOException {
         SocialLoginType socialLoginType = SocialLoginType.valueOf(SocialLoginPath.toUpperCase());
-        oAuthService.request(socialLoginType);
+
+        return oAuthService.request(socialLoginType);
     }
 
     /**

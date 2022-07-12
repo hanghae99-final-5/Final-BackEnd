@@ -98,8 +98,12 @@ public class TodoService {
                 throw new CustomException(ErrorCode.CONFIRMED_TODO);
             }
             todo.setConfirmState(true);
-            Alarm byTodoId = alarmRepository.findByTodoId(todoId);
-            byTodoId.setAlarmState(1L);
+
+            List<Alarm> byTodoId = alarmRepository.findAllByTodoId(todoId);
+
+            for(Alarm a : byTodoId){
+                a.setAlarmState(1L);
+            }
 
             //알림 보내기 추후에 추가기능으로 열 수 있음
 //            Alarm alarm = new Alarm();
@@ -118,15 +122,13 @@ public class TodoService {
     }
 
     private Matching getMatching(Long userId) {
-        Matching matching = matchingRepository.getMatching(userId).orElseThrow(
+        return matchingRepository.getMatching(userId).orElseThrow(
                 () -> new CustomException(ErrorCode.NOT_FOUND_MATCHING));
-        return matching;
     }
 
     private Todo getTodo(Long todoId) {
-        Todo todo = todoRepository.findById(todoId).orElseThrow(
+        return todoRepository.findById(todoId).orElseThrow(
                 () -> new CustomException(ErrorCode.NOT_FOUND_TODO));
-        return todo;
     }
 
     //투두 완료
@@ -136,46 +138,51 @@ public class TodoService {
 
         Todo todo = getTodo(todoId);
         Member member = getMember(memberId);
-
-        // 투두 완료
-        if (!todo.getCompletionState() && todo.getConfirmState()) {
+        if (todo.getTodoType() == 1) {
             todo.completionState();
-            //todoRepository.save(todo);    // 테스트 필요
-        } else {
-            throw new CustomException(ErrorCode.NOT_CONFIRMED_TODO);
-        }
+            return TodoCompletionDto.builder()
+                    .todoId(todo.getId())
+                    .completionState(todo.getCompletionState())
+                    .build();
 
-        Character character = member.getCharacter();
-        int exp = 0;
+        }else if (todo.getTodoType() == 2) {
+            if (!todo.getCompletionState() && todo.getConfirmState()) {
+                todo.completionState();
+            }else if(!todo.getConfirmState()){
+                throw new CustomException(ErrorCode.NOT_CONFIRMED_TODO);
+            }else throw new CustomException(ErrorCode.CONFIRMED_TODO);
 
-        //난이도별 보상, 레벨업
-        int difficulty = todo.getDifficulty();
-        switch (difficulty) {
-            case 1:
-                character.setMoney(10);
-                //characterRepository.save(character); // 테스트 해보기
-                exp = 5;
-                break;
-            case 2:
-                character.setMoney(20);
-                exp = 10;
-                break;
-            case 3:
-                character.setMoney(30);
-                exp = 15;
-                break;
-            case 4:
-                character.setMoney(40);
-                exp = 20;
-                break;
-        }
+            Character character = member.getCharacter();
+            int exp = 0;
 
-        calcLevelAndExp(character, exp);
+            //난이도별 보상, 레벨업
+            int difficulty = todo.getDifficulty();
+            switch (difficulty) {
+                case 1:
+                    character.setMoney(10);
+                    exp = 5;
+                    break;
+                case 2:
+                    character.setMoney(20);
+                    exp = 10;
+                    break;
+                case 3:
+                    character.setMoney(30);
+                    exp = 15;
+                    break;
+                case 4:
+                    character.setMoney(40);
+                    exp = 20;
+                    break;
+            }
 
-        return TodoCompletionDto.builder()
-                .todoId(todo.getId())
-                .completionState(todo.getCompletionState())
-                .build();
+            calcLevelAndExp(character, exp);
+
+            return TodoCompletionDto.builder()
+                    .todoId(todo.getId())
+                    .completionState(todo.getCompletionState())
+                    .build();
+        } else throw new CustomException(ErrorCode.FORBIDDEN_ACCESS);
     }
 
     private void calcLevelAndExp(Character character, int exp) {
@@ -233,10 +240,9 @@ public class TodoService {
 
 
     private Member getMember(Long id) {
-        Member member = memberRepository.findById(id).orElseThrow(
+        return memberRepository.findById(id).orElseThrow(
                 ()-> new CustomException(ErrorCode.NOT_FOUND_MEMBER)
         );
-        return member;
     }
 
     // 내 투두 목록 조회

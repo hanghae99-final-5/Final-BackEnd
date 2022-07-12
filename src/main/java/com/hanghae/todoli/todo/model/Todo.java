@@ -46,8 +46,8 @@ public class Todo extends Timestamped {
 
     /*
     투두가 개인투두인지, 매칭투두인지 체크
-    0: 개인
-    1: 매칭
+    1: 개인
+    2: 매칭
     */
     @Column
     private int todoType;

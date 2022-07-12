@@ -33,7 +33,7 @@ public class OAuthService {
     private final ItemRepository itemRepository;
     private final InventoryRepository inventoryRepository;
 
-    public void request(SocialLoginType socialLoginType) throws IOException {
+    public String  request(SocialLoginType socialLoginType) throws IOException {
         String redirectURL;
         switch (socialLoginType) {
             case GOOGLE: {
@@ -45,7 +45,8 @@ public class OAuthService {
                 throw new IllegalArgumentException("알 수 없는 소셜 로그인 형식입니다.");
             }
         }
-        response.sendRedirect(redirectURL);
+//        response.sendRedirect(redirectURL);
+        return redirectURL;
     }
 
     public GetSocialOAuthRes oAuthLogin(SocialLoginType socialLoginType, String code) throws IOException {
