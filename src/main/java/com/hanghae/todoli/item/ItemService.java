@@ -34,16 +34,13 @@ public class ItemService {
     private final EquipItemRepository equipItemRepository;
     private final MemberRepository memberRepository;
 
-    private final Logger logger = LoggerFactory.getLogger("!!!!!ItemService 의 로그!!!!!");
-
     //가지고있는 아이템들 조회
     @Transactional
     public List<ExistItemListDto> getExistItemList(UserDetailsImpl userDetails) {
         Long memberId = userDetails.getMember().getId();
-        Member member = memberRepository.findById(memberId).orElseThrow(
-                () -> new CustomException(ErrorCode.NOT_FOUND_MEMBER));
-        Character c = member.getCharacter();
-        return existItemList(c);
+        Member member = getMember(memberId);
+        Character character = member.getCharacter();
+        return existItemList(character);
     }
 
     //가지고 있는 아이템의 정보들을 리턴(가지고 있는 아이템 조회에서 쓰인다.)
@@ -78,13 +75,12 @@ public class ItemService {
 
         //1. 가지고 있는 ItemId 조회
         Long memberId = userDetails.getMember().getId();
-        Member member = memberRepository.findById(memberId).orElseThrow(
-                () -> new CustomException(ErrorCode.NOT_FOUND_MEMBER));
+        Member member = getMember(memberId);
 
-        List<Inventory> inventory = member.getCharacter().getInventory();
+        List<Inventory> getInventory = member.getCharacter().getInventory();
 
-        for (Inventory i : inventory) {
-            Long itemId = i.getItem().getId();
+        for (Inventory inventory : getInventory) {
+            Long itemId = inventory.getItem().getId();
             ExistItemListDto.ExistInventoriesDto existInventoriesDto = ExistItemListDto.ExistInventoriesDto.builder()
                     .itemId(itemId)
                     .build();
@@ -113,15 +109,12 @@ public class ItemService {
         Item buyItem = findItem(itemId);
 
         Long memberId = userDetails.getMember().getId();
-        Member member = memberRepository.findById(memberId).orElseThrow(
-                () -> new CustomException(ErrorCode.NOT_FOUND_MEMBER));
+        Member member = getMember(memberId);
 
         Character character = member.getCharacter();
 
         //구매했다면
-        Inventory exist = inventoryRepository.findByCharacterAndItem(character, buyItem).orElseThrow(
-                () -> new CustomException(ErrorCode.NOT_FOUND_ITEM)
-        );
+        Inventory exist = inventoryRepository.findByCharacterAndItem(character, buyItem).orElse(null);
 
         if (exist == null) {
             //계산
@@ -146,8 +139,7 @@ public class ItemService {
     @Transactional
     public EquipItemDto equipItem(Long itemId, UserDetailsImpl userDetails) {
         Long memberId = userDetails.getMember().getId();
-        Member member = memberRepository.findById(memberId).orElseThrow(
-                () -> new CustomException(ErrorCode.NOT_FOUND_MEMBER));
+        Member member = getMember(memberId);
         Character character = member.getCharacter();
         Item item = findItem(itemId);
 
@@ -157,11 +149,7 @@ public class ItemService {
 
         EquipItem equipItem = character.getEquipItem();
         Category category = item.getCategory();
-
-        logger.warn(String.valueOf(equipItem.getAccessoryId()));
-        logger.warn(String.valueOf(equipItem.getClothId()));
-        logger.warn(String.valueOf(equipItem.getHairId()));
-
+        
         switch (category) {
             case HAIR:
                 equipItem.updateHair(itemId);
@@ -174,10 +162,6 @@ public class ItemService {
                 break;
         }
         equipItemRepository.save(equipItem);          //save 안해줘도 되나?
-
-        logger.warn(String.valueOf(equipItem.getAccessoryId()));
-        logger.warn(String.valueOf(equipItem.getClothId()));
-        logger.warn(String.valueOf(equipItem.getHairId()));
 
         return getEquipItemDto(item);
     }
@@ -219,5 +203,12 @@ public class ItemService {
 
         Item item = new Item(itemRequestDto);
         itemRepository.save(item);
+    }
+
+//member 찾기
+    private Member getMember(Long memberId) {
+        Member member = memberRepository.findById(memberId).orElseThrow(
+                () -> new CustomException(ErrorCode.NOT_FOUND_MEMBER));
+        return member;
     }
 }

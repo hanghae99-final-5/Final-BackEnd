@@ -50,9 +50,10 @@ public class MemberController {
 
     //구글 로그인
     @GetMapping("/api/users/login/{socialLoginType}") //GOOGLE이 들어올 것이다.
-    public void socialLoginRedirect(@PathVariable(name = "socialLoginType") String SocialLoginPath) throws IOException {
+    public String socialLoginRedirect(@PathVariable(name = "socialLoginType") String SocialLoginPath,HttpServletResponse response) throws IOException {
         SocialLoginType socialLoginType = SocialLoginType.valueOf(SocialLoginPath.toUpperCase());
-        oAuthService.request(socialLoginType);
+
+        return oAuthService.request(socialLoginType);
     }
 
     /**
@@ -63,12 +64,15 @@ public class MemberController {
      * @return SNS Login 요청 결과로 받은 Json 형태의 java 객체 (access_token, jwt_token, user_num 등)
      */
 
-    @GetMapping("/api/login/oauth2/code/{socialLoginType}")
+    @GetMapping("/api/login/oauth2/code/{socialLoginType}/callback")
     public GetSocialOAuthRes callback(
             @PathVariable(name = "socialLoginType") String socialLoginPath,
-            @RequestParam(name = "code") String code) throws IOException {
+            @RequestParam(name = "code") String code,HttpServletResponse response) throws IOException {
         System.out.println(">> 소셜 로그인 API 서버로부터 받은 code :" + code);
         SocialLoginType socialLoginType = SocialLoginType.valueOf(socialLoginPath.toUpperCase());
-        return oAuthService.oAuthLogin(socialLoginType, code);
+        GetSocialOAuthRes getSocialOAuthRes = oAuthService.oAuthLogin(socialLoginType, code);
+        String token = getSocialOAuthRes.getAuthorization();
+        response.addHeader("Authorization",token);
+        return getSocialOAuthRes;
     }
 }

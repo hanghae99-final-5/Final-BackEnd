@@ -6,6 +6,10 @@ import com.hanghae.todoli.equipitem.EquipItem;
 import com.hanghae.todoli.equipitem.EquipItemRepository;
 import com.hanghae.todoli.exception.CustomException;
 import com.hanghae.todoli.exception.ErrorCode;
+import com.hanghae.todoli.inventory.Inventory;
+import com.hanghae.todoli.inventory.InventoryRepository;
+import com.hanghae.todoli.item.Item;
+import com.hanghae.todoli.item.ItemRepository;
 import com.hanghae.todoli.member.Member;
 import com.hanghae.todoli.member.MemberRepository;
 import com.hanghae.todoli.security.jwt.JwtTokenProvider;
@@ -26,8 +30,10 @@ public class OAuthService {
     private final JwtTokenProvider jwtTokenProvider;
     private final CharacterRepository characterRepository;
     private final EquipItemRepository equipItemRepository;
+    private final ItemRepository itemRepository;
+    private final InventoryRepository inventoryRepository;
 
-    public void request(SocialLoginType socialLoginType) throws IOException {
+    public String  request(SocialLoginType socialLoginType) throws IOException {
         String redirectURL;
         switch (socialLoginType) {
             case GOOGLE: {
@@ -39,7 +45,8 @@ public class OAuthService {
                 throw new IllegalArgumentException("알 수 없는 소셜 로그인 형식입니다.");
             }
         }
-        response.sendRedirect(redirectURL);
+//        response.sendRedirect(redirectURL);
+        return redirectURL;
     }
 
     public GetSocialOAuthRes oAuthLogin(SocialLoginType socialLoginType, String code) throws IOException {
@@ -63,10 +70,26 @@ public class OAuthService {
                     String password = UUID.randomUUID().toString();
 
                     //멤버생성과 동시에 캐릭터, 장착아이템 같이 생성
-                    EquipItem equipItem = new EquipItem();
+                    Item basicAccessory = itemRepository.findById(1L).orElseThrow(
+                            () -> new CustomException(ErrorCode.NO_ITEM)
+                    );
+                    Item basicHair = itemRepository.findById(2L).orElseThrow(
+                            () -> new CustomException(ErrorCode.NO_ITEM)
+                    );
+                    Item basicCloth = itemRepository.findById(3L).orElseThrow(
+                            () -> new CustomException(ErrorCode.NO_ITEM)
+                    );
+                    EquipItem equipItem = new EquipItem(1L,2L,3L);
                     equipItemRepository.save(equipItem);
                     Character character = new Character(equipItem);
                     characterRepository.save(character);
+                    Inventory addAccessory = new Inventory(basicAccessory, character);
+                    inventoryRepository.save(addAccessory);
+                    Inventory addHair = new Inventory(basicHair, character);
+                    inventoryRepository.save(addHair);
+                    Inventory addCloth = new Inventory(basicCloth, character);
+                    inventoryRepository.save(addCloth);
+
                     Member Member = new Member(username, nickname, password, false, character);
                     memberRepository.save(Member);
                 }
@@ -75,9 +98,9 @@ public class OAuthService {
                     Member member = memberRepository.findByUsername(username).orElseThrow(
                             ()-> new CustomException(ErrorCode.NOT_FOUND_MEMBER));
                     //서버에 user가 존재하면 앞으로 회원 인가 처리를 위한 jwtToken을 발급한다.
-                    String jwtToken = jwtTokenProvider.createToken(username,member.getNickname());
-                    //액세스 토큰과 jwtToken, 이외 정보들이 담긴 자바 객체를 다시 전송한다.
-                    return new GetSocialOAuthRes(jwtToken, username, oAuthToken.getAccess_token(), oAuthToken.getToken_type());
+                    String Authorization = jwtTokenProvider.createToken(username,member.getNickname());
+                    //액세스 토큰과 Authorization, 이외 정보들이 담긴 자바 객체를 다시 전송한다.
+                    return new GetSocialOAuthRes(Authorization, username, oAuthToken.getAccess_token(), oAuthToken.getToken_type());
                 } else {
                     throw new IllegalArgumentException("계정이 존재하지 않습니다.");
                 }

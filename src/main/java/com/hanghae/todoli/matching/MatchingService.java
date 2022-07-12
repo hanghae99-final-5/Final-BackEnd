@@ -50,8 +50,7 @@ public class MatchingService {
         Member target = memberRepository.findByUsername(username).orElseThrow(
                 () -> new CustomException(ErrorCode.NOT_FOUND_SEARCHED_MEMBER));
 
-        Matching matching =matchingRepository.getMatching(target.getId()).orElseThrow(
-                ()-> new CustomException(ErrorCode.NOT_FOUND_MATCHING));
+        Matching matching = matchingRepository.getMatching(target.getId()).orElse(null);
 
         String searchedUserPartnerName = "";
         if (matching != null) {

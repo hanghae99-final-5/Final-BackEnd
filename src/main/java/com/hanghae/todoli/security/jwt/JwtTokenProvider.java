@@ -1,11 +1,9 @@
 package com.hanghae.todoli.security.jwt;
 
 import com.hanghae.todoli.security.UserDetailsServiceImpl;
-import io.jsonwebtoken.Claims;
-import io.jsonwebtoken.Jws;
-import io.jsonwebtoken.Jwts;
-import io.jsonwebtoken.SignatureAlgorithm;
+import io.jsonwebtoken.*;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -20,6 +18,7 @@ import java.util.Date;
 
 @Component
 @RequiredArgsConstructor
+@Slf4j
 public class JwtTokenProvider {
 
     private final UserDetailsServiceImpl userDetailsService;
@@ -60,9 +59,18 @@ public class JwtTokenProvider {
         try {
             Jws<Claims> claims = Jwts.parser().setSigningKey(secretKey).parseClaimsJws(token);
             return !claims.getBody().getExpiration().before(new Date());
-        } catch (Exception e) {
-            return false;
+        } catch (SignatureException e) {
+            log.error("Invalid JWT signature");
+        } catch (MalformedJwtException e) {
+            log.error("Invalid JWT token");
+        } catch (ExpiredJwtException e) {
+            log.error("JWT token is expired");
+        } catch (UnsupportedJwtException e) {
+            log.error("JWT token is unsupported");
+        } catch (IllegalArgumentException e) {
+            log.error("JWT claims string is empty");
         }
+        return false;
     }
 
     //JWT 에서 인증 정보 조회
