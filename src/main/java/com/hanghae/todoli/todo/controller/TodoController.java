@@ -2,10 +2,10 @@ package com.hanghae.todoli.todo.controller;
 
 
 import com.hanghae.todoli.security.UserDetailsImpl;
-import com.hanghae.todoli.todo.service.TodoService;
 import com.hanghae.todoli.todo.dto.PairTodoResponseDto;
 import com.hanghae.todoli.todo.dto.TodoRegisterDto;
 import com.hanghae.todoli.todo.dto.TodoResponseDto;
+import com.hanghae.todoli.todo.service.TodoService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -89,7 +89,7 @@ public class TodoController {
     //      3. 매칭중이라면 매칭중인 파트너 아이디 조회
     //      4. 투두에 저장되어있는 작정자가 파트너 아이디인 투두 조회
     @GetMapping("/todos/pair")
-    public PairTodoResponseDto getPairTodos(@AuthenticationPrincipal UserDetailsImpl userDetails){
+    public PairTodoResponseDto getPairTodos(@AuthenticationPrincipal UserDetailsImpl userDetails) {
         return todoService.getPairTodos(userDetails);
     }
 //    @GetMapping("/todos/pair")

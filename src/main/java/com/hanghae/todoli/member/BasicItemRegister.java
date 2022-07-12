@@ -11,7 +11,9 @@ import com.hanghae.todoli.inventory.InventoryRepository;
 import com.hanghae.todoli.item.Item;
 import com.hanghae.todoli.item.ItemRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Component;
 
+@Component
 @RequiredArgsConstructor
 public class BasicItemRegister {
     private final MemberRepository memberRepository;
