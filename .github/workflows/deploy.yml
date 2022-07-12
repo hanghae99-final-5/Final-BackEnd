@@ -60,7 +60,7 @@ jobs:
         uses: samin/mysql-action@v1
         with:
           character set server: 'utf8'
-          mysql database: 'final'
+          mysql database: 'jdbc:mysql://database-junsj119.ceshh2bs97if.ap-northeast-2.rds.amazonaws.com/final'
           mysql user: 'junsj119'
           mysql password: ${{ secrets.MYSQL_PASSWORD }}
 
