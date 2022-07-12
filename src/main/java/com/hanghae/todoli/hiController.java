@@ -8,6 +8,6 @@ import org.springframework.web.bind.annotation.RestController;
 public class hiController {
     @GetMapping("/health")
     public String abc(){
-        return "OKOKOKOKOKOKOK";
+        return "NONONONONOONO";
     }
 }
