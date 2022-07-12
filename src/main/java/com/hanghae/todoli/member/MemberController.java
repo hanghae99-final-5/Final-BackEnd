@@ -27,6 +27,11 @@ public class MemberController {
 
     private final JwtTokenProvider jwtTokenProvider;
 
+    @GetMapping("/health")
+    public String healthcheck() {
+        return "OK";
+    }
+
     //회원가입
     @PostMapping("/api/users/signup")
     public void signup(@RequestBody SignupRequestDto signupRequestDto) {
