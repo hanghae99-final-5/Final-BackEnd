@@ -7,11 +7,9 @@ import com.amazonaws.services.s3.AmazonS3ClientBuilder;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.stereotype.Component;
 
-@Component
+@Configuration
 public class S3Config {
-
 
     @Value("${cloud.aws.credentials.access-key}")
     private String accessKey;
@@ -21,7 +19,6 @@ public class S3Config {
 
     @Value("${cloud.aws.region.static}")
     private String region;
-
 
     @Bean
     public AmazonS3Client amazonS3Client() {
