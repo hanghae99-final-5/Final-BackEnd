@@ -64,7 +64,7 @@ public class Character {
         this.money -= price;
     }
 
-    public void setMoney(int money){
+    public void setMoney(int money) {
         this.money += money;
     }
 
@@ -77,17 +77,17 @@ public class Character {
         }
     }
 
-    public void minHpAndLv(){
+    public void minHpAndLv() {
         this.hp -= 10;
 
         //0 아래로 내려가거나, 레벨이 1초과인 경우만 레벨을 뺀 후 hp를 100으로 돌려놓는다.
-        if(this.level > 1 && hp <= 0){
+        if (this.level > 1 && hp <= 0) {
             this.level--;
             this.hp = 100;
         }
 
         //음수 방지
-        if(hp < 0){
+        if (hp < 0) {
             hp = 0;
         }
     }
