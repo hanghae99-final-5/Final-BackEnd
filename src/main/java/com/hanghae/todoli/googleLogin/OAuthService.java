@@ -1,15 +1,8 @@
 package com.hanghae.todoli.googleLogin;
 
-import com.hanghae.todoli.character.Character;
-import com.hanghae.todoli.character.CharacterRepository;
-import com.hanghae.todoli.equipitem.EquipItem;
-import com.hanghae.todoli.equipitem.EquipItemRepository;
 import com.hanghae.todoli.exception.CustomException;
 import com.hanghae.todoli.exception.ErrorCode;
-import com.hanghae.todoli.inventory.Inventory;
-import com.hanghae.todoli.inventory.InventoryRepository;
-import com.hanghae.todoli.item.Item;
-import com.hanghae.todoli.item.ItemRepository;
+import com.hanghae.todoli.member.BasicItemRegister;
 import com.hanghae.todoli.member.Member;
 import com.hanghae.todoli.member.MemberRepository;
 import com.hanghae.todoli.security.jwt.JwtTokenProvider;
@@ -28,10 +21,7 @@ public class OAuthService {
     private final HttpServletResponse response;
     private final MemberRepository memberRepository;
     private final JwtTokenProvider jwtTokenProvider;
-    private final CharacterRepository characterRepository;
-    private final EquipItemRepository equipItemRepository;
-    private final ItemRepository itemRepository;
-    private final InventoryRepository inventoryRepository;
+    private final BasicItemRegister basicItemRegister;
 
     public void request(SocialLoginType socialLoginType) throws IOException {
         String redirectURL;
@@ -68,29 +58,9 @@ public class OAuthService {
                     String nickname = googleUser.getName();
                     String password = UUID.randomUUID().toString();
 
+                    // TODO : 2022/07/12 refactoring - 종석
                     //멤버생성과 동시에 캐릭터, 장착아이템 같이 생성
-                    Item basicAccessory = itemRepository.findById(1L).orElseThrow(
-                            () -> new CustomException(ErrorCode.NO_ITEM)
-                    );
-                    Item basicHair = itemRepository.findById(2L).orElseThrow(
-                            () -> new CustomException(ErrorCode.NO_ITEM)
-                    );
-                    Item basicCloth = itemRepository.findById(3L).orElseThrow(
-                            () -> new CustomException(ErrorCode.NO_ITEM)
-                    );
-                    EquipItem equipItem = new EquipItem(1L, 2L, 3L);
-                    equipItemRepository.save(equipItem);
-                    Character character = new Character(equipItem);
-                    characterRepository.save(character);
-                    Inventory addAccessory = new Inventory(basicAccessory, character);
-                    inventoryRepository.save(addAccessory);
-                    Inventory addHair = new Inventory(basicHair, character);
-                    inventoryRepository.save(addHair);
-                    Inventory addCloth = new Inventory(basicCloth, character);
-                    inventoryRepository.save(addCloth);
-
-                    Member Member = new Member(username, nickname, password, false, character);
-                    memberRepository.save(Member);
+                    basicItemRegister.basicItem(username, nickname, password);
                 }
 
                 if (username != null) {

@@ -1,5 +1,6 @@
-package com.hanghae.todoli.item;
+package com.hanghae.todoli.item.Dto;
 
+import com.hanghae.todoli.item.Category;
 import lombok.*;
 
 @NoArgsConstructor

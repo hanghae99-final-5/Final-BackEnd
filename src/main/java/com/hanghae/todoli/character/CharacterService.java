@@ -29,7 +29,6 @@ public class CharacterService {
     private final MatchingRepository matchingRepository;
     private final MemberRepository memberRepository;
     private final ItemRepository itemRepository;
-
     private final ThumbnailDtoList thumbnailDtoList;
 
     //캐릭터 상태 조회
@@ -109,6 +108,7 @@ public class CharacterService {
         Member partnerInfo = memberRepository.findById(partnerId).orElseThrow(
                 () -> new CustomException(ErrorCode.NOT_FOUND_PARTNER));
 
+        // TODO : 2022/07/12 refactoring - 종석
         List<ThumbnailDto> myEquipItemList = thumbnailDtoList.getThumbnailDtos(myInfo);
         List<ThumbnailDto> partnerEquipItemList = thumbnailDtoList.getThumbnailDtos(partnerInfo);
 

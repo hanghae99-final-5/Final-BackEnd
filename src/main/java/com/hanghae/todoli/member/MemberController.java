@@ -9,9 +9,6 @@ import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletResponse;
@@ -66,12 +63,12 @@ public class MemberController {
     @GetMapping("/api/login/oauth2/code/{socialLoginType}/callback")
     public GetSocialOAuthRes callback(
             @PathVariable(name = "socialLoginType") String socialLoginPath,
-            @RequestParam(name = "code") String code,HttpServletResponse response) throws IOException {
+            @RequestParam(name = "code") String code, HttpServletResponse response) throws IOException {
         System.out.println(">> 소셜 로그인 API 서버로부터 받은 code :" + code);
         SocialLoginType socialLoginType = SocialLoginType.valueOf(socialLoginPath.toUpperCase());
         GetSocialOAuthRes getSocialOAuthRes = oAuthService.oAuthLogin(socialLoginType, code);
         String token = getSocialOAuthRes.getAuthorization();
-        response.addHeader("Authorization",token);
+        response.addHeader("Authorization", token);
         return getSocialOAuthRes;
     }
 }

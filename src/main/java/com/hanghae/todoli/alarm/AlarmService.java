@@ -5,7 +5,6 @@ import com.hanghae.todoli.character.Dto.ThumbnailDto;
 import com.hanghae.todoli.character.Dto.ThumbnailDtoList;
 import com.hanghae.todoli.exception.CustomException;
 import com.hanghae.todoli.exception.ErrorCode;
-import com.hanghae.todoli.item.ItemRepository;
 import com.hanghae.todoli.member.Member;
 import com.hanghae.todoli.member.MemberRepository;
 import com.hanghae.todoli.security.UserDetailsImpl;
@@ -21,9 +20,7 @@ import java.util.List;
 public class AlarmService {
 
     private final AlarmRepository alarmRepository;
-    private final ItemRepository itemRepository;
     private final MemberRepository memberRepository;
-
     private final ThumbnailDtoList thumbnailDtoList;
 
     //전체 알람조회
@@ -38,6 +35,7 @@ public class AlarmService {
             Long senderId = alarm.getSenderId();
             Member sender = memberRepository.findById(senderId).orElseThrow(() -> new CustomException(ErrorCode.NOT_FOUND_MEMBER));
 
+            // TODO : 2022/07/12 refactoring - 종석
             List<ThumbnailDto> senderEquipItems = thumbnailDtoList.getThumbnailDtos(sender);
 
             AlarmResponseDto alarmResponseDto = AlarmResponseDto.builder().alarmId(alarm.getId()).alarmState(alarm.getAlarmState()).message(alarm.getMessage()).alarmDate(alarm.getAlarmDate()).alarmType(alarm.getAlarmType()).senderId(alarm.getSenderId()).thumbnailCharImg(new CharacterImg().getThumbnailCharImg()).senderEquipItems(senderEquipItems).build();
