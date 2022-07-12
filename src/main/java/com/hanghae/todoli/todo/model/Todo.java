@@ -7,8 +7,6 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
-import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.NotNull;
 import java.time.LocalDate;
 
 @Getter
@@ -73,7 +71,7 @@ public class Todo extends Timestamped {
         this.difficulty = registerDto.getDifficulty();
     }
 
-    public void completionState(){
+    public void completionState() {
         this.completionState = true;
     }
 

@@ -1,4 +1,4 @@
-package com.hanghae.todoli.item;
+package com.hanghae.todoli.item.Dto;
 
 import lombok.*;
 

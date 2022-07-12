@@ -1,4 +1,4 @@
-package com.hanghae.todoli.character;
+package com.hanghae.todoli.character.Dto;
 
 import com.hanghae.todoli.item.Category;
 import lombok.AllArgsConstructor;
