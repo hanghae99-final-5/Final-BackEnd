@@ -9,6 +9,7 @@ import org.springframework.scheduling.annotation.EnableScheduling;
 @EnableScheduling
 @SpringBootApplication
 public class TodoliApplication {
+    //테스트
     public static void main(String[] args) {
         SpringApplication.run(TodoliApplication.class, args);
     }
