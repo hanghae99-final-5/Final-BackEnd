@@ -3,7 +3,8 @@ package com.hanghae.todoli.matching;
 import com.hanghae.todoli.alarm.Alarm;
 import com.hanghae.todoli.alarm.AlarmRepository;
 import com.hanghae.todoli.character.CharacterImg;
-import com.hanghae.todoli.character.ThumbnailDto;
+import com.hanghae.todoli.character.Dto.ThumbnailDto;
+import com.hanghae.todoli.character.Dto.ThumbnailDtoList;
 import com.hanghae.todoli.equipitem.EquipItem;
 import com.hanghae.todoli.exception.CustomException;
 import com.hanghae.todoli.exception.ErrorCode;
@@ -36,6 +37,8 @@ public class MatchingService {
     private final MatchingRepository matchingRepository;
     private final TodoRepository todoRepository;
 
+    private final ThumbnailDtoList thumbnailDtoList;
+
     //상대방 찾기
     @Transactional
     public MatchingResponseDto searchMember(String username, UserDetailsImpl userDetails) {
@@ -50,8 +53,7 @@ public class MatchingService {
         Member target = memberRepository.findByUsername(username).orElseThrow(
                 () -> new CustomException(ErrorCode.NOT_FOUND_SEARCHED_MEMBER));
 
-        Matching matching =matchingRepository.getMatching(target.getId()).orElseThrow(
-                ()-> new CustomException(ErrorCode.NOT_FOUND_MATCHING));
+        Matching matching =matchingRepository.getMatching(target.getId()).orElse(null);
 
         String searchedUserPartnerName = "";
         if (matching != null) {
@@ -63,7 +65,7 @@ public class MatchingService {
 
             searchedUserPartnerName = partner.getUsername();
         }
-        List<ThumbnailDto> targetThumbnailDtos = getThumbnailDtos(target);
+        List<ThumbnailDto> targetThumbnailDtos = thumbnailDtoList.getThumbnailDtos(target);
 
         return MatchingResponseDto.builder()
                 .myMatchingState(myInfo.getMatchingState())
@@ -153,30 +155,4 @@ public class MatchingService {
         Matching matching = new Matching(senderId, member.getId());
         matchingRepository.save(matching);
     }
-
-    //아이템 리스트dto에 추가
-    private List<ThumbnailDto> getThumbnailDtos(Member Info) {
-        List<ThumbnailDto> myEquipItemList = new ArrayList<>();
-        EquipItem myEquipItem = Info.getCharacter().getEquipItem();
-        Long hairId = myEquipItem.getHairId();
-        Long clothId = myEquipItem.getClothId();
-        Long accessoryId = myEquipItem.getAccessoryId();
-        if (hairId != null) {
-            Item hair = itemRepository.findById(hairId).orElse(null);
-            ThumbnailDto thumbnailDto1 = new ThumbnailDto(hair.getId(),hair.getThumbnailImg(),hair.getCategory());
-            myEquipItemList.add(thumbnailDto1);
-        }
-        if (clothId != null) {
-            Item cloth = itemRepository.findById(clothId).orElse(null);
-            ThumbnailDto thumbnailDto2 = new ThumbnailDto(cloth.getId(),cloth.getThumbnailImg(),cloth.getCategory());
-            myEquipItemList.add(thumbnailDto2);
-        }
-        if (accessoryId != null) {
-            Item accessory = itemRepository.findById(accessoryId).orElse(null);
-            ThumbnailDto thumbnailDto3 = new ThumbnailDto(accessory.getId(),accessory.getThumbnailImg(),accessory.getCategory());
-            myEquipItemList.add(thumbnailDto3);
-        }
-        return myEquipItemList;
-    }
-
 }

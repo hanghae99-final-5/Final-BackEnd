@@ -13,8 +13,6 @@ import com.hanghae.todoli.member.Member;
 import com.hanghae.todoli.member.MemberRepository;
 import com.hanghae.todoli.security.UserDetailsImpl;
 import lombok.RequiredArgsConstructor;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -29,7 +27,6 @@ public class ItemService {
 
     private final ItemRepository itemRepository;
     private final InventoryRepository inventoryRepository;
-
     private final CharacterRepository characterRepository;
     private final EquipItemRepository equipItemRepository;
     private final MemberRepository memberRepository;
@@ -149,7 +146,7 @@ public class ItemService {
 
         EquipItem equipItem = character.getEquipItem();
         Category category = item.getCategory();
-        
+
         switch (category) {
             case HAIR:
                 equipItem.updateHair(itemId);
@@ -205,10 +202,9 @@ public class ItemService {
         itemRepository.save(item);
     }
 
-//member 찾기
+    //member 찾기
     private Member getMember(Long memberId) {
-        Member member = memberRepository.findById(memberId).orElseThrow(
+        return memberRepository.findById(memberId).orElseThrow(
                 () -> new CustomException(ErrorCode.NOT_FOUND_MEMBER));
-        return member;
     }
 }
