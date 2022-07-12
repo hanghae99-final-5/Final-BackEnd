@@ -14,9 +14,9 @@ import com.hanghae.todoli.matching.MatchingRepository;
 import com.hanghae.todoli.member.Member;
 import com.hanghae.todoli.member.MemberRepository;
 import com.hanghae.todoli.security.UserDetailsImpl;
+import com.hanghae.todoli.todo.dto.ProofImgRequestDto;
 import com.hanghae.todoli.todo.model.Todo;
 import com.hanghae.todoli.todo.repository.TodoRepository;
-import com.hanghae.todoli.todo.dto.ProofImgRequestDto;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
@@ -83,24 +83,32 @@ public class ProofImgService {
         String proofImgUrl = getImgUrl(imgRequestDto.getProofImg());
 
         /**
+         *
          * 인증 가능 날짜 = 종료일 + 3
          * 이미 url이 존재 하는 경우에는 증가 X
          * url 초기 등록시만 +3
+         *
          */
-        if (todo.getProofImg() == null){
+        if (todo.getProofImg() == null) {
             todo.setConfirmDate(todo.getEndDate().plusDays(3));
         }
 
+        ConfirmRequest(todo, myId, myInfo);
+
+        // 이미지 url 저장
+        todo.setProofImg(proofImgUrl);
+    }
+
+    private void ConfirmRequest(Todo todo, Long myId, Member myInfo) {
         // TODO : 2022-07-08 AlarmService로 옮겨서 리팩토링해도 될듯
         //자신이 매칭되어 있고, 매칭투두일때
-        if (myInfo.getMatchingState() && todo.getTodoType()==2) {
-            Matching matching =matchingRepository.getMatching(myId).orElseThrow(
-                    ()->new CustomException(ErrorCode.NOT_FOUND_MATCHING));
+        if (myInfo.getMatchingState() && todo.getTodoType() == 2) {
+            Matching matching = matchingRepository.getMatching(myId).orElseThrow(
+                    () -> new CustomException(ErrorCode.NOT_FOUND_MATCHING));
 
             Long partnerId = myId.equals(matching.getRequesterId()) ? matching.getRespondentId() : matching.getRequesterId();
             Member partner = memberRepository.findById(partnerId).orElseThrow(
                     () -> new CustomException(ErrorCode.NOT_FOUND_PARTNER));
-
 
             //현재 날짜 출력
             LocalDate now = LocalDate.parse(LocalDate.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd")));
@@ -116,9 +124,6 @@ public class ProofImgService {
 
             alarmRepository.save(alarm);
         }
-
-        // 이미지 url 저장
-        todo.setProofImg(proofImgUrl);
     }
 
     private String getImgUrl(MultipartFile imageUrl) {
@@ -148,6 +153,7 @@ public class ProofImgService {
         }
     }
 
+    // S3 이미지 삭제
     public String deleteFile(String fileName) {
         DeleteObjectRequest request = new DeleteObjectRequest(bucket, fileName);
         amazonS3.deleteObject(request);

@@ -1,4 +1,4 @@
-package com.hanghae.todoli.character;
+package com.hanghae.todoli.character.Dto;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
