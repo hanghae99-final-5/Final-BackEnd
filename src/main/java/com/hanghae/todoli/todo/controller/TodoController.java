@@ -42,6 +42,7 @@ public class TodoController {
 
     private final TodoService todoService;
 
+
     // 투두 등록
     @PostMapping("/todos")
     public void todoRegister(@RequestBody TodoRegisterDto registerDto, @AuthenticationPrincipal UserDetailsImpl userDetails) {
