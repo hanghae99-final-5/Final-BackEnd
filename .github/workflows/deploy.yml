@@ -16,8 +16,6 @@ env:
   S3_BUCKET_NAME: gatesttest
   CODE_DEPLOY_APPLICATION_NAME: my-codedeploy-app
   CODE_DEPLOY_DEPLOYMENT_GROUP_NAME: my-codedeploy-deployment-proup
-  cloud.aws.credentials.access-key : ${{secrets.S3_AWS}}
-  #CLOUD.AWS.CREDENTIALS.ACCESS-KEY
   
 jobs:
   build:
@@ -30,6 +28,13 @@ jobs:
         uses: actions/setup-java@v1
         with:
           java-version: 11
+          
+      # create application.properties
+      - name: make application.properties
+#         if: contains(github.ref, 'main') # branch가 main 일 때, 나머지는 위와 동일
+        run: cd ./src/main/resources touch ./application.properties echo "${{ secrets.PROPERTIES_PROD }}" > ./application.properties
+        shell: bash
+          
           
       - name: Grant execute permission for gradlew
         run: chmod +x ./gradlew
@@ -57,6 +62,14 @@ jobs:
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-region: ${{ secrets.AWS_REGION }}
+          
+
+          
+          
+          
+          
+          
+          
           
 #       - name: Setup MySQL
 #         uses: samin/mysql-action@v1
