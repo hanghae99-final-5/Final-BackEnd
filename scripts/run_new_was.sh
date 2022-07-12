@@ -1,7 +1,7 @@
-#!/bin/bash
+
 # run_new_was.sh
 
-
+#!/bin/bash
 
 CURRENT_PORT=$(cat /home/ubuntu/service_url.inc | grep -Po '[0-9]+' | tail -1)
 TARGET_PORT=0

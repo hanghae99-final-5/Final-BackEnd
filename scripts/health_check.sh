@@ -1,7 +1,7 @@
-#!/bin/bash
+
 # health_check.sh
 
-
+#!/bin/bash
 
 # Crawl current connected port of WAS
 CURRENT_PORT=$(cat /home/ubuntu/service_url.inc | grep -Po '[0-9]+' | tail -1)
