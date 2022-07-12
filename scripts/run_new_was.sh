@@ -2,15 +2,16 @@
 # run_new_was.sh
 
 
+
 CURRENT_PORT=$(cat /home/ubuntu/service_url.inc | grep -Po '[0-9]+' | tail -1)
 TARGET_PORT=0
 
 echo "> Current port of running WAS is ${CURRENT_PORT}."
 
-if [ ${CURRENT_PORT} -eq 8080 ]; then
-  TARGET_PORT=8081
-elif [ ${CURRENT_PORT} -eq 8081 ]; then
-  TARGET_PORT=8080
+if [ ${CURRENT_PORT} -eq 8090 ]; then
+  TARGET_PORT=8091
+elif [ ${CURRENT_PORT} -eq 8091 ]; then
+  TARGET_PORT=8090
 else
   echo "> No WAS is connected to nginx"
 fi
