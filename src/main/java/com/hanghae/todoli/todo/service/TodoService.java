@@ -314,4 +314,15 @@ public class TodoService {
         }
         return todoInfoDtoList;
     }
+
+    public TodoModifyDto getModifyTodo(Long todoId) {
+        Todo todo = getTodo(todoId);
+
+        return TodoModifyDto.builder()
+                .content(todo.getContent())
+                .difficulty(todo.getDifficulty())
+                .todoType(todo.getTodoType())
+                .build();
+
+    }
 }

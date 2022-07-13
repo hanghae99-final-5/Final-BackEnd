@@ -3,6 +3,7 @@ package com.hanghae.todoli.todo.controller;
 
 import com.hanghae.todoli.security.UserDetailsImpl;
 import com.hanghae.todoli.todo.dto.PairTodoResponseDto;
+import com.hanghae.todoli.todo.dto.TodoModifyDto;
 import com.hanghae.todoli.todo.dto.TodoRegisterDto;
 import com.hanghae.todoli.todo.dto.TodoResponseDto;
 import com.hanghae.todoli.todo.service.TodoService;
@@ -52,6 +53,12 @@ public class TodoController {
     @GetMapping("/mytodos")
     public TodoResponseDto getMyTodos(@AuthenticationPrincipal UserDetailsImpl userDetails) {
         return todoService.getMyTodos(userDetails);
+    }
+
+    // 투두 수정 조회
+    @GetMapping("/todos/{todoId}")
+    public TodoModifyDto getModifyTodo(@PathVariable Long todoId, @AuthenticationPrincipal UserDetailsImpl userDetails) {
+        return todoService.getModifyTodo(todoId);
     }
 
     // 투두 수정
