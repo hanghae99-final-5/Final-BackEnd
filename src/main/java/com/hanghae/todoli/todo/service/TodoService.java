@@ -255,6 +255,10 @@ public class TodoService {
             throw new CustomException(ErrorCode.NOT_MATCHED_MEMBER);
         }
 
+        if (registerDto.getContent() == null || registerDto.getContent().equals("")) {
+            throw new CustomException(ErrorCode.NO_INPUT_CONTENT);
+        }
+
         //투두 데이터
         todo.update(member, registerDto);
     }
