@@ -239,7 +239,7 @@ public class TodoService {
 
     // 투두 수정
     @Transactional
-    public void todoModify(Long todoId, TodoRegisterDto registerDto, UserDetailsImpl userDetails) {
+    public void todoModify(Long todoId, TodoModifyDto registerDto, UserDetailsImpl userDetails) {
         // 투두 유무 확인
         Todo todo = getTodo(todoId);
 
@@ -250,8 +250,25 @@ public class TodoService {
         if (!todo.getWriter().getId().equals(myId)) {
             throw new CustomException(ErrorCode.NOT_TODO_WRITER);
         }
+
+        if (!member.getMatchingState() && registerDto.getTodoType() == 2) {
+            throw new CustomException(ErrorCode.NOT_MATCHED_MEMBER);
+        }
+
         //투두 데이터
         todo.update(member, registerDto);
+    }
+
+    // 투두 수정 조회
+    public TodoModifyDto getModifyTodo(Long todoId) {
+        Todo todo = getTodo(todoId);
+
+        return TodoModifyDto.builder()
+                .content(todo.getContent())
+                .difficulty(todo.getDifficulty())
+                .todoType(todo.getTodoType())
+                .build();
+
     }
 
     private Matching getMatching(Long userId) {
@@ -277,20 +294,30 @@ public class TodoService {
     private void validator(TodoRegisterDto registerDto) {
         LocalDate now = LocalDate.parse(LocalDate.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd")));
 
-        if (registerDto.getStartDate() == null)
+        if (registerDto.getStartDate() == null) {
             throw new CustomException(ErrorCode.NO_INPUT_START_DATE);
-        if (registerDto.getEndDate() == null)
+        }
+        if (registerDto.getEndDate() == null) {
             throw new CustomException(ErrorCode.NO_INPUT_END_DATE);
-        if (registerDto.getContent() == null)
+        }
+        if (registerDto.getContent() == null) {
             throw new CustomException(ErrorCode.NO_INPUT_CONTENT);
-        if (registerDto.getDifficulty() == 0)
+        }
+        if (registerDto.getContent().equals("")) {
+            throw new CustomException(ErrorCode.NO_INPUT_CONTENT);
+        }
+        if (registerDto.getDifficulty() == 0) {
             throw new CustomException(ErrorCode.NO_INPUT_DIFFICULTY);
-        if (registerDto.getTodoType() == 0)
+        }
+        if (registerDto.getTodoType() == 0) {
             throw new CustomException(ErrorCode.NO_INPUT_TODO_TYPE);
-        if (registerDto.getStartDate().isBefore(now))
+        }
+        if (registerDto.getStartDate().isBefore(now)) {
             throw new CustomException(ErrorCode.FORBIDDEN_START_DATE);
-        if (registerDto.getEndDate().isBefore(registerDto.getStartDate()))
+        }
+        if (registerDto.getEndDate().isBefore(registerDto.getStartDate())) {
             throw new CustomException(ErrorCode.FORBIDDEN_END_DATE);
+        }
     }
 
     private List<TodoInfoDto> getTodoInfoDtos(Long partnerId) {
@@ -313,16 +340,5 @@ public class TodoService {
             todoInfoDtoList.add(todoInfoDto);
         }
         return todoInfoDtoList;
-    }
-
-    public TodoModifyDto getModifyTodo(Long todoId) {
-        Todo todo = getTodo(todoId);
-
-        return TodoModifyDto.builder()
-                .content(todo.getContent())
-                .difficulty(todo.getDifficulty())
-                .todoType(todo.getTodoType())
-                .build();
-
     }
 }

@@ -64,7 +64,7 @@ public class TodoController {
     // 투두 수정
     @PatchMapping(value = "/todos/{todoId}")
     public void todoModify(@PathVariable Long todoId,
-                           @RequestBody TodoRegisterDto registerDto,
+                           @RequestBody TodoModifyDto registerDto,
                            @AuthenticationPrincipal UserDetailsImpl userDetails) {
         todoService.todoModify(todoId, registerDto, userDetails);
     }
