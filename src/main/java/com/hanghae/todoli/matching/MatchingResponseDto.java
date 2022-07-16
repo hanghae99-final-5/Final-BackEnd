@@ -1,7 +1,6 @@
 package com.hanghae.todoli.matching;
 
-import com.hanghae.todoli.character.ThumbnailDto;
-import com.hanghae.todoli.equipitem.EquipItemDto;
+import com.hanghae.todoli.character.Dto.ThumbnailDto;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
