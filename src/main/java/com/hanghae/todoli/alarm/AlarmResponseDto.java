@@ -1,6 +1,6 @@
 package com.hanghae.todoli.alarm;
 
-import com.hanghae.todoli.character.ThumbnailDto;
+import com.hanghae.todoli.character.Dto.ThumbnailDto;
 import lombok.Builder;
 import lombok.Getter;
 

@@ -1,4 +1,4 @@
-package com.hanghae.todoli.character;
+package com.hanghae.todoli.character.Dto;
 
 import com.hanghae.todoli.equipitem.EquipItemDto;
 import lombok.*;
@@ -7,7 +7,8 @@ import java.util.List;
 
 @NoArgsConstructor
 @AllArgsConstructor
-@Getter @Setter
+@Getter
+@Setter
 @Builder
 public class CharResponseDto {
     private Boolean matchingState;

@@ -1,8 +1,8 @@
 package com.hanghae.todoli.todo.controller;
 
 import com.hanghae.todoli.security.UserDetailsImpl;
-import com.hanghae.todoli.todo.service.ProofImgService;
 import com.hanghae.todoli.todo.dto.ProofImgRequestDto;
+import com.hanghae.todoli.todo.service.ProofImgService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -25,7 +25,7 @@ public class ProofImgController {
     private final ProofImgService imgService;
 
     @PatchMapping("/proofimgs/{todoId}")
-    public void proofImgRegister(@PathVariable Long todoId, ProofImgRequestDto imgRequestDto, @AuthenticationPrincipal UserDetailsImpl userDetails){
+    public void proofImgRegister(@PathVariable Long todoId, ProofImgRequestDto imgRequestDto, @AuthenticationPrincipal UserDetailsImpl userDetails) {
         imgService.imgRegister(todoId, imgRequestDto, userDetails);
     }
 }

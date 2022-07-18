@@ -1,5 +1,7 @@
 package com.hanghae.todoli.character;
 
+import com.hanghae.todoli.character.Dto.CharResponseDto;
+import com.hanghae.todoli.character.Dto.FooterResponseDto;
 import com.hanghae.todoli.security.UserDetailsImpl;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -16,13 +18,13 @@ public class CharacterController {
 
     //캐릭터 상태 조회
     @GetMapping("/api/characters")
-    public CharResponseDto getCharState(@AuthenticationPrincipal UserDetailsImpl userDetails){
+    public CharResponseDto getCharState(@AuthenticationPrincipal UserDetailsImpl userDetails) {
         return characterService.getCharState(userDetails);
     }
 
     //상대방 캐릭터 상태
     @GetMapping("/api/characters/partners")
-    public CharResponseDto getPartnerState(@AuthenticationPrincipal UserDetailsImpl userDetails){
+    public CharResponseDto getPartnerState(@AuthenticationPrincipal UserDetailsImpl userDetails) {
         return characterService.getPartnerState(userDetails);
     }
 

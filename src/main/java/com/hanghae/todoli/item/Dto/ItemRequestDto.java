@@ -1,10 +1,12 @@
-package com.hanghae.todoli.item;
+package com.hanghae.todoli.item.Dto;
 
+import com.hanghae.todoli.item.Category;
 import lombok.*;
 
 @NoArgsConstructor
 @AllArgsConstructor
-@Getter @Setter
+@Getter
+@Setter
 @Builder
 public class ItemRequestDto {
     private String name;

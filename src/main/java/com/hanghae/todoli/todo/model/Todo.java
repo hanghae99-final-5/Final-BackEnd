@@ -1,14 +1,13 @@
 package com.hanghae.todoli.todo.model;
 
 import com.hanghae.todoli.member.Member;
+import com.hanghae.todoli.todo.dto.TodoModifyDto;
 import com.hanghae.todoli.todo.dto.TodoRegisterDto;
 import com.hanghae.todoli.utils.Timestamped;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
-import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.NotNull;
 import java.time.LocalDate;
 
 @Getter
@@ -71,60 +70,29 @@ public class Todo extends Timestamped {
         this.endDate = registerDto.getEndDate();
         this.todoType = registerDto.getTodoType();
         this.difficulty = registerDto.getDifficulty();
+        this.confirmDate = registerDto.getEndDate();
     }
 
-    public void completionState(){
+    public void completionState() {
         this.completionState = true;
     }
-
     // Setter
     public void setProofImg(String proofImg) {
         this.proofImg = proofImg;
-    }
-
-    public void setContent(String content) {
-        this.content = content;
-    }
-
-    public void setStartDate(LocalDate startDate) {
-        this.startDate = startDate;
-    }
-
-    public void setEndDate(LocalDate endDate) {
-        this.endDate = endDate;
     }
 
     public void setConfirmDate(LocalDate confirmDate) {
         this.confirmDate = confirmDate;
     }
 
-    public void setDifficulty(int difficulty) {
-        this.difficulty = difficulty;
-    }
-
     public void setConfirmState(Boolean confirmState) {
         this.confirmState = confirmState;
     }
 
-    public void setCompletionState(Boolean completionState) {
-        this.completionState = completionState;
-    }
-
-    public void setWriter(Member writer) {
-        this.writer = writer;
-    }
-
-    public void setTodoType(int todoType) {
-        this.todoType = todoType;
-    }
-
-    public void update(Member member, TodoRegisterDto registerDto) {
+    public void update(Member member, TodoModifyDto registerDto) {
         this.writer = member;
         this.content = registerDto.getContent();
-        this.startDate = registerDto.getStartDate();
-        this.endDate = registerDto.getEndDate();
         this.todoType = registerDto.getTodoType();
         this.difficulty = registerDto.getDifficulty();
-        this.confirmDate = registerDto.getEndDate();
     }
 }
