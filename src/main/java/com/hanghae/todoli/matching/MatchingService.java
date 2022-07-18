@@ -119,8 +119,8 @@ public class MatchingService {
         member.changeMatchingState(member);
         targetMember.changeMatchingState(targetMember);
         //멤버의 투두리스트 삭제
-        todoRepository.deleteAllByWriterIdAndTodoType(member.getId(), 1);
-        todoRepository.deleteAllByWriterIdAndTodoType(targetMember.getId(), 1);
+        todoRepository.deleteAllByWriterIdAndTodoType(member.getId(), 2);
+        todoRepository.deleteAllByWriterIdAndTodoType(targetMember.getId(), 2);
     }
 
     //매칭 수락
