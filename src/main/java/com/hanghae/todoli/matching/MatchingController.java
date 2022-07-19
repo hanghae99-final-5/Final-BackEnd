@@ -2,11 +2,11 @@ package com.hanghae.todoli.matching;
 
 import com.hanghae.todoli.exception.CustomException;
 import com.hanghae.todoli.exception.ErrorCode;
+import com.hanghae.todoli.matching.dto.MatchingResponseDto;
+import com.hanghae.todoli.matching.dto.MatchingStateResponseDto;
 import com.hanghae.todoli.security.UserDetailsImpl;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
@@ -19,7 +19,7 @@ public class MatchingController {
 
     //사용자 검색
     @GetMapping("/api/users/{username}")
-    public MatchingResponseDto searchMember(@PathVariable String username,@AuthenticationPrincipal UserDetailsImpl userDetails) {
+    public MatchingResponseDto searchMember(@PathVariable String username, @AuthenticationPrincipal UserDetailsImpl userDetails) {
         return matchingService.searchMember(username,userDetails);
     }
 

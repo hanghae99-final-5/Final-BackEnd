@@ -3,6 +3,8 @@ package com.hanghae.todoli.member;
 import com.hanghae.todoli.googleLogin.GetSocialOAuthRes;
 import com.hanghae.todoli.googleLogin.OAuthService;
 import com.hanghae.todoli.googleLogin.SocialLoginType;
+import com.hanghae.todoli.member.dto.LoginRequestDto;
+import com.hanghae.todoli.member.dto.SignupRequestDto;
 import com.hanghae.todoli.security.jwt.JwtTokenProvider;
 import com.nimbusds.oauth2.sdk.ErrorResponse;
 import io.swagger.annotations.ApiOperation;
