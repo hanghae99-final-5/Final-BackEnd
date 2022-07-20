@@ -1,4 +1,4 @@
-package com.hanghae.todoli.matching;
+package com.hanghae.todoli.matching.dto;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
