@@ -5,7 +5,6 @@ import com.hanghae.todoli.googleLogin.OAuthService;
 import com.hanghae.todoli.googleLogin.SocialLoginType;
 import com.hanghae.todoli.member.dto.LoginRequestDto;
 import com.hanghae.todoli.member.dto.SignupRequestDto;
-import com.hanghae.todoli.security.jwt.JwtTokenProvider;
 import com.nimbusds.oauth2.sdk.ErrorResponse;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiResponse;
@@ -24,8 +23,6 @@ public class MemberController {
 
     private final OAuthService oAuthService;
 
-    private final JwtTokenProvider jwtTokenProvider;
-
     //회원가입
     @PostMapping("/api/users/signup")
     public void signup(@RequestBody SignupRequestDto signupRequestDto) {
@@ -41,10 +38,7 @@ public class MemberController {
     @ApiOperation(value = "로그인 메소드", notes = "성공시 jwt 토큰을 헤더에 넣어서 반환합니다.")
     @PostMapping("/api/users/login")
     public void login(HttpServletResponse response, @RequestBody LoginRequestDto loginRequestDto) {
-        Member member = memberService.login(loginRequestDto);
-        String token = jwtTokenProvider.createToken(member.getUsername(), member.getNickname());
-        response.addHeader("Authorization", token);
-        System.out.println(token);
+        memberService.login(loginRequestDto,response);
     }
 
     //구글 로그인
