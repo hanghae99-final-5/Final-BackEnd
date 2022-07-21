@@ -15,6 +15,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import springfox.documentation.annotations.ApiIgnore;
 
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
@@ -30,6 +31,11 @@ public class MemberController {
     private final JwtTokenProvider jwtTokenProvider;
 
     //회원가입
+    @ApiResponses({
+            @ApiResponse(code=201, message="회원가입 성공"),
+            @ApiResponse(code=400, message="실패")
+    })
+    @ApiOperation(value = "회원가입 메소드", notes = "회원가입 api 입니다.")
     @PostMapping("/api/users/signup")
     public void signup(@RequestBody SignupRequestDto signupRequestDto) {
         memberService.signup(signupRequestDto);
@@ -38,7 +44,7 @@ public class MemberController {
 
     //로그인
     @ApiResponses({
-            @ApiResponse(code=200, message="성공"),
+            @ApiResponse(code=200, message="로그인 성공"),
             @ApiResponse(code=400, message="실패")
     })
     @ApiOperation(value = "로그인 메소드", notes = "성공시 jwt 토큰을 헤더에 넣어서 반환합니다.")
@@ -51,6 +57,7 @@ public class MemberController {
     }
 
     //구글 로그인
+    @ApiIgnore  //swagger에서 api 숨기기
     @GetMapping("/api/users/login/{socialLoginType}") //GOOGLE이 들어올 것이다.
     public void socialLoginRedirect(@PathVariable(name = "socialLoginType") String SocialLoginPath) throws IOException {
         SocialLoginType socialLoginType = SocialLoginType.valueOf(SocialLoginPath.toUpperCase());
@@ -65,6 +72,11 @@ public class MemberController {
      * @return SNS Login 요청 결과로 받은 Json 형태의 java 객체 (access_token, jwt_token, user_num 등)
      */
 
+    @ApiResponses({
+            @ApiResponse(code=201, message="회원가입 성공"),
+            @ApiResponse(code=400, message="실패")
+    })
+    @ApiOperation(value = "OAtuh 메소드", notes = "구글 회원가입 api 입니다.")
     @GetMapping("/api/login/oauth2/code/{socialLoginType}")
     public GetSocialOAuthRes callback(
             @PathVariable(name = "socialLoginType") String socialLoginPath,
