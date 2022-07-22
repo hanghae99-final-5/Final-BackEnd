@@ -21,7 +21,7 @@ public interface TodoRepository extends JpaRepository<Todo, Long> {
     @Query("select new com.hanghae.todoli.todo.dto.TodoDetailsResponseDto(count(t), sum(t.difficulty)) " +
             "from Todo t join t.writer m " +
             "where t.completionState = true and m.id =:id and " +
-            "t.createdAt between :start and :now " +
+            "t.completionDate between :start and :now " +
             "group by t.createdAt")
     List<TodoDetailsResponseDto> findTodoCntAndExp(@Param("start") LocalDate start,
                                              @Param("now") LocalDate now,

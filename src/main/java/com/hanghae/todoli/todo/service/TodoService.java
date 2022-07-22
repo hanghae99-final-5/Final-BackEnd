@@ -170,7 +170,11 @@ public class TodoService {
             }
 
             calcLevelAndExp(character, exp);
-
+            
+            //완료 날짜 삽입
+            LocalDate now = LocalDate.parse(LocalDate.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd")));
+            todo.setCompletionDate(now);
+            
             return TodoCompletionDto.builder()
                     .todoId(todo.getId())
                     .completionState(todo.getCompletionState())
