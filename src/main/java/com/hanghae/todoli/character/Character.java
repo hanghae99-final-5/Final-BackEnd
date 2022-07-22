@@ -41,6 +41,11 @@ public class Character {
     @Column
     private int money;
 
+    @Column
+    private int dailyExp;
+//    @Column
+//    private int stackedExp;
+
     @JsonManagedReference
     @OneToMany(mappedBy = "character", orphanRemoval = true, cascade = CascadeType.ALL)
     private List<Inventory> inventory = new ArrayList<>();
@@ -70,6 +75,7 @@ public class Character {
 
     public void editExp(int exp) {
         this.exp += exp;
+        this.dailyExp += exp;
         if (this.exp >= 100) {
             this.level++;
             this.exp = this.exp - 100;
@@ -91,5 +97,13 @@ public class Character {
             hp = 0;
         }
     }
+
+//    public void setDailyExp(int exp){           //일간 변동량
+//        this.dailyExp = exp;
+//    }
+//
+//    public void setStackedExp(int exp){       //누적
+//        this.stackedExp = exp;
+//    }
 
 }

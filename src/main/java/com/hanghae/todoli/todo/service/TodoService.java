@@ -18,6 +18,9 @@ import com.hanghae.todoli.todo.model.Todo;
 import com.hanghae.todoli.todo.repository.TodoRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
@@ -25,6 +28,7 @@ import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 @Slf4j
 @Service
@@ -344,5 +348,64 @@ public class TodoService {
             todoInfoDtoList.add(todoInfoDto);
         }
         return todoInfoDtoList;
+    }
+
+    //통계
+    @Transactional
+    public StatisticsResponseDto getStatistics(Long memberId) {
+        LocalDate rNow = LocalDate.parse(LocalDate.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd")));
+        LocalDate now = LocalDate.parse(LocalDate.now().minusDays(1).format(DateTimeFormatter.ofPattern("yyyy-MM-dd")));
+        LocalDate start = now.minusDays(6);
+
+        Pageable pageable = PageRequest.of(0, 7, Sort.Direction.DESC, "createdAt");
+        StatisticsResponseDto responseDto = new StatisticsResponseDto();
+
+        //오늘 기준으로 7일 전까지 데이터 삽입
+        List<LocalDate>date = new ArrayList<>();
+        for(int i = 1; i < 7; i++){
+            LocalDate d = rNow.minusDays(i);
+            date.add(d);
+        }
+        responseDto.setPeriod(date);
+
+        //내 매칭상태 조회
+        Member member = getMember(memberId);
+        Boolean matchingState = member.getMatchingState();
+        responseDto.setMyMatchingState(matchingState);
+
+
+        //내 투두 갯수
+        List<Long>cntList = new ArrayList<>();
+        List<Long>expList = new ArrayList<>();
+
+        List<TodoDetailsResponseDto> todoCntAndExp = todoRepository.findTodoCntAndExp(start, now, memberId, pageable);
+        for (TodoDetailsResponseDto dto : todoCntAndExp) {
+            cntList.add(dto.getCnt());
+            expList.add(dto.getExp() * 5);
+        }
+        responseDto.setMyAchievement(cntList);
+        responseDto.setMyExpChanges(expList);
+
+
+
+        //친구 투두 갯수
+        Matching matching = matchingRepository.getMatching(memberId).orElse(null);
+        if (matching != null) {
+            Long searchedUserPartnerId = memberId.equals(matching.getRequesterId()) ? matching.getRespondentId() : matching.getRequesterId();
+            Member partner = memberRepository.findById(searchedUserPartnerId).orElseThrow(
+                    () -> new CustomException(ErrorCode.NOT_FOUND_PARTNER));
+            Long partnerId = partner.getId();
+
+            List<Long>pCnt = new ArrayList<>();
+            List<Long>pExp = new ArrayList<>();
+            List<TodoDetailsResponseDto> partnerTodoCntAndExp = todoRepository.findTodoCntAndExp(start, now, partnerId, pageable);
+            for (TodoDetailsResponseDto t : partnerTodoCntAndExp) {
+                pCnt.add(t.getCnt());
+                pExp.add(t.getExp() * 5);
+            }
+            responseDto.setFriendAchievement(pCnt);
+            responseDto.setFriendExpChanges(pExp);
+        }
+    return responseDto;
     }
 }
