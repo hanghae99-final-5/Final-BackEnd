@@ -4,15 +4,19 @@ import com.hanghae.todoli.member.Member;
 import com.hanghae.todoli.todo.dto.TodoModifyDto;
 import com.hanghae.todoli.todo.dto.TodoRegisterDto;
 import com.hanghae.todoli.utils.Timestamped;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 import javax.persistence.*;
 import java.time.LocalDate;
 
 @Getter
+@Setter
 @Entity
 @NoArgsConstructor
+@AllArgsConstructor
 public class Todo extends Timestamped {
 
     @Id

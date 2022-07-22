@@ -3,6 +3,7 @@ package com.hanghae.todoli.character;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.hanghae.todoli.equipitem.EquipItem;
 import com.hanghae.todoli.inventory.Inventory;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -13,6 +14,7 @@ import java.util.List;
 @Entity
 @Getter
 @NoArgsConstructor
+@AllArgsConstructor
 @Table(name = "Characters")
 public class Character {
 
