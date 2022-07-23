@@ -47,7 +47,9 @@ public class CharacterService {
         Matching matching = getMatching(userId);
 
         //파트너 아이디 구하기
-        Long partnerId = userId.equals(matching.getRequesterId()) ? matching.getRespondentId() : matching.getRequesterId();
+        Long partnerId = userId.equals(matching.getRequesterId())
+                ? matching.getRespondentId()
+                : matching.getRequesterId();
         Member partner = memberRepository.findById(partnerId).orElseThrow(
                 () -> new CustomException(ErrorCode.NOT_FOUND_PARTNER));
 
@@ -97,6 +99,7 @@ public class CharacterService {
         return itemList;
     }
 
+    //푸터용 캐릭터 조회
     public FooterResponseDto getCharacterInFooter(UserDetailsImpl userDetails) {
         Long myId = userDetails.getMember().getId();
         Member myInfo = memberRepository.findById(myId).orElseThrow(
@@ -124,7 +127,7 @@ public class CharacterService {
     }
 
     //장착된 아이템에서 원하는 정보만 가져오기
-    public EquipItemDto addItem(Long itemId) {
+    private EquipItemDto addItem(Long itemId) {
         EquipItemDto itemListDto = new EquipItemDto();
         if (itemId != null) {
             Item item = itemRepository.findById(itemId).orElse(null);
@@ -137,8 +140,7 @@ public class CharacterService {
 
     //matching 검사
     private Matching getMatching(Long userId) {
-        Matching matching = matchingRepository.getMatching(userId).orElseThrow(
+        return matchingRepository.getMatching(userId).orElseThrow(
                 () -> new CustomException(ErrorCode.NOT_FOUND_MATCHING));
-        return matching;
     }
 }

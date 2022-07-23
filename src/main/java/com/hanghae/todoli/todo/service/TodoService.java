@@ -325,10 +325,10 @@ public class TodoService {
             throw new CustomException(ErrorCode.NO_INPUT_TODO_TYPE);
         }
         if (registerDto.getStartDate().isBefore(now)) {
-            throw new CustomException(ErrorCode.FORBIDDEN_START_DATE);
+            throw new CustomException(ErrorCode.BAD_REQUEST_START_DATE);
         }
         if (registerDto.getEndDate().isBefore(registerDto.getStartDate())) {
-            throw new CustomException(ErrorCode.FORBIDDEN_END_DATE);
+            throw new CustomException(ErrorCode.BAD_REQUEST_END_DATE);
         }
     }
 
