@@ -26,10 +26,7 @@ import org.springframework.stereotype.Service;
 import javax.transaction.Transactional;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 @Slf4j
 @Service
@@ -386,10 +383,10 @@ public class TodoService {
 
 
         //Map 초기화
-        Map<String, Long> myDateAndTodoCntMap = new HashMap<>();
-        Map<String, Integer> myDateAndDifSumMap = new HashMap<>();
-        Map<String, Long> partnerDateAndTodoCntMap = new HashMap<>();
-        Map<String, Integer> partnerDateAndTodoDifSumMap = new HashMap<>();
+        Map<String, Long> myDateAndTodoCntMap = new LinkedHashMap<>();
+        Map<String, Integer> myDateAndDifSumMap = new LinkedHashMap<>();
+        Map<String, Long> partnerDateAndTodoCntMap = new LinkedHashMap<>();
+        Map<String, Integer> partnerDateAndTodoDifSumMap = new LinkedHashMap<>();
         for (int i = 7; i >= 1; i--) {
             LocalDate d = rNow.minusDays(i);
             myDateAndTodoCntMap.put(String.valueOf(d), 0L);
@@ -461,10 +458,10 @@ public class TodoService {
         responseDto.setMyMatchingState(matchingState);
 
         //Map 초기화
-        Map<String, Long> myDateAndTodoCntMap = new HashMap<>();
-        Map<String, Integer> myDateAndDifSumMap = new HashMap<>();
-        Map<String, Long> partnerDateAndTodoCntMap = new HashMap<>();
-        Map<String, Integer> partnerDateAndTodoDifSumMap = new HashMap<>();
+        Map<String, Long> myDateAndTodoCntMap = new LinkedHashMap<>();
+        Map<String, Integer> myDateAndDifSumMap = new LinkedHashMap<>();
+        Map<String, Long> partnerDateAndTodoCntMap = new LinkedHashMap<>();
+        Map<String, Integer> partnerDateAndTodoDifSumMap = new LinkedHashMap<>();
         for (int i = 6; i >= 1; i--) {
             String month = LocalDate.now().minusMonths(i).format(DateTimeFormatter.ofPattern("M"));
             myDateAndTodoCntMap.put(month, 0L);
