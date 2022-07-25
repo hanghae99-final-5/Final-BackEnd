@@ -39,6 +39,11 @@ public class Todo extends Timestamped {
     @Column
     private LocalDate confirmDate;
 
+    // 완료 날짜
+    @Column
+    private LocalDate completionDate;
+
+
     // 투두 난이도
     @Column
     private int difficulty;
@@ -87,6 +92,10 @@ public class Todo extends Timestamped {
 
     public void setConfirmState(Boolean confirmState) {
         this.confirmState = confirmState;
+    }
+
+    public void setCompletionDate(LocalDate completionDate){
+        this.completionDate = completionDate;
     }
 
     public void update(Member member, TodoModifyDto registerDto) {

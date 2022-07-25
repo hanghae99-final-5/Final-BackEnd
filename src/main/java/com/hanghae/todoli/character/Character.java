@@ -41,6 +41,10 @@ public class Character {
     @Column
     private int money;
 
+    @Column
+    private int dailyExp;
+
+
     @JsonManagedReference
     @OneToMany(mappedBy = "character", orphanRemoval = true, cascade = CascadeType.ALL)
     private List<Inventory> inventory = new ArrayList<>();
@@ -70,6 +74,7 @@ public class Character {
 
     public void editExp(int exp) {
         this.exp += exp;
+        this.dailyExp += exp;
         if (this.exp >= 100) {
             this.level++;
             this.exp = this.exp - 100;
@@ -91,5 +96,6 @@ public class Character {
             hp = 0;
         }
     }
+
 
 }

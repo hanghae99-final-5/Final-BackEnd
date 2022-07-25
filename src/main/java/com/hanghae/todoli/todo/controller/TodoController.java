@@ -2,10 +2,7 @@ package com.hanghae.todoli.todo.controller;
 
 
 import com.hanghae.todoli.security.UserDetailsImpl;
-import com.hanghae.todoli.todo.dto.PairTodoResponseDto;
-import com.hanghae.todoli.todo.dto.TodoModifyDto;
-import com.hanghae.todoli.todo.dto.TodoRegisterDto;
-import com.hanghae.todoli.todo.dto.TodoResponseDto;
+import com.hanghae.todoli.todo.dto.*;
 import com.hanghae.todoli.todo.service.TodoService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -103,4 +100,12 @@ public class TodoController {
 //    public TodoResponseDto getPairTodos(@PathVariable Long memberId, @AuthenticationPrincipal UserDetailsImpl userDetails) {
 //        return todoService.getPairTodos(memberId, userDetails);
 //    }
+
+    //통계
+    @GetMapping("/statistics")
+    public StatisticsResponseDto getStatistics(@AuthenticationPrincipal UserDetailsImpl userDetails){
+        Long memberId = userDetails.getMember().getId();
+        return todoService.getStatistics(memberId);
+    }
+
 }
