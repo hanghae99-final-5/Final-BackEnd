@@ -5,6 +5,7 @@ import com.hanghae.todoli.member.Member;
 import com.hanghae.todoli.security.MockSpringSecurityFilter;
 import com.hanghae.todoli.security.SecurityConfig;
 import com.hanghae.todoli.security.UserDetailsImpl;
+import com.hanghae.todoli.todo.controller.ProofImgController;
 import com.hanghae.todoli.todo.dto.ProofImgRequestDto;
 import com.hanghae.todoli.todo.service.ProofImgService;
 import org.junit.jupiter.api.BeforeEach;
