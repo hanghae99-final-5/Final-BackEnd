@@ -3,8 +3,10 @@ package com.hanghae.todoli.character;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.hanghae.todoli.equipitem.EquipItem;
 import com.hanghae.todoli.inventory.Inventory;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 import javax.persistence.*;
 import java.util.ArrayList;
@@ -12,7 +14,9 @@ import java.util.List;
 
 @Entity
 @Getter
+@Setter
 @NoArgsConstructor
+@AllArgsConstructor
 @Table(name = "Characters")
 public class Character {
 
@@ -40,6 +44,10 @@ public class Character {
 
     @Column
     private int money;
+
+    @Column
+    private int dailyExp;
+
 
     @JsonManagedReference
     @OneToMany(mappedBy = "character", orphanRemoval = true, cascade = CascadeType.ALL)
@@ -70,6 +78,7 @@ public class Character {
 
     public void editExp(int exp) {
         this.exp += exp;
+        this.dailyExp += exp;
         if (this.exp >= 100) {
             this.level++;
             this.exp = this.exp - 100;
@@ -91,5 +100,6 @@ public class Character {
             hp = 0;
         }
     }
+
 
 }

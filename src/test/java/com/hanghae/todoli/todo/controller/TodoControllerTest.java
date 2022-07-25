@@ -26,6 +26,10 @@ import org.springframework.web.context.WebApplicationContext;
 import java.security.Principal;
 import java.time.LocalDate;
 
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyLong;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
 import static org.springframework.security.test.web.servlet.setup.SecurityMockMvcConfigurers.springSecurity;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
@@ -95,6 +99,9 @@ class TodoControllerTest {
                 )
                 .andExpect(status().isOk())
                 .andDo(print());
+
+        verify(todoService,times(1))
+                .registerTodo(any(TodoRegisterDto.class),any(UserDetailsImpl.class));
     }
 
     @Test
@@ -110,6 +117,9 @@ class TodoControllerTest {
                 )
                 .andExpect(status().isOk())
                 .andDo(print());
+
+        verify(todoService,times(1))
+                .getMyTodos(any(UserDetailsImpl.class));
     }
 
     @Test
@@ -126,6 +136,9 @@ class TodoControllerTest {
                 )
                 .andExpect(status().isOk())
                 .andDo(print());
+
+        verify(todoService,times(1))
+                .getModifyTodo(anyLong());
     }
 
     @Test
@@ -153,6 +166,9 @@ class TodoControllerTest {
                 )
                 .andExpect(status().isOk())
                 .andDo(print());
+
+        verify(todoService,times(1))
+                .todoModify(anyLong(),any(TodoModifyDto.class),any(UserDetailsImpl.class));
     }
 
     @Test
@@ -169,6 +185,9 @@ class TodoControllerTest {
                 )
                 .andExpect(status().isOk())
                 .andDo(print());
+
+        verify(todoService,times(1))
+                .confirmTodo(anyLong(),any(UserDetailsImpl.class));
     }
 
     @Test
@@ -185,6 +204,9 @@ class TodoControllerTest {
                 )
                 .andExpect(status().isOk())
                 .andDo(print());
+
+        verify(todoService,times(1))
+                .completionTodo(anyLong(),any(UserDetailsImpl.class));
     }
 
     @Test
@@ -201,6 +223,9 @@ class TodoControllerTest {
                 )
                 .andExpect(status().isOk())
                 .andDo(print());
+
+        verify(todoService,times(1))
+                .deleteTodo(anyLong(),any(UserDetailsImpl.class));
     }
 
     @Test
@@ -216,5 +241,8 @@ class TodoControllerTest {
                 )
                 .andExpect(status().isOk())
                 .andDo(print());
+
+        verify(todoService,times(1))
+                .getPairTodos(any(UserDetailsImpl.class));
     }
 }

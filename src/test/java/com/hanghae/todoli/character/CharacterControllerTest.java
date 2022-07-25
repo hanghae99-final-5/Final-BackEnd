@@ -21,6 +21,9 @@ import org.springframework.web.context.WebApplicationContext;
 
 import java.security.Principal;
 
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
 import static org.springframework.security.test.web.servlet.setup.SecurityMockMvcConfigurers.springSecurity;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
@@ -73,6 +76,9 @@ class CharacterControllerTest {
                         .principal(mockPrincipal))
                 .andExpect(status().isOk())
                 .andDo(print());
+
+        verify(characterService,times(1))
+                .getCharState(any(UserDetailsImpl.class));
     }
 
     @Test
@@ -84,6 +90,9 @@ class CharacterControllerTest {
                         .principal(mockPrincipal))
                 .andExpect(status().isOk())
                 .andDo(print());
+
+        verify(characterService,times(1))
+                .getPartnerState(any(UserDetailsImpl.class));
     }
 
     @Test
@@ -95,5 +104,8 @@ class CharacterControllerTest {
                         .principal(mockPrincipal))
                 .andExpect(status().isOk())
                 .andDo(print());
+
+        verify(characterService,times(1))
+                .getCharacterInFooter(any(UserDetailsImpl.class));
     }
 }

@@ -76,7 +76,7 @@ public class MatchingService {
 
     //상대방 초대
     @Transactional
-    public void inviteMatching(Long memberId, UserDetailsImpl userDetails) {
+    public Alarm inviteMatching(Long memberId, UserDetailsImpl userDetails) {
         if (userDetails.getMember().getMatchingState()) {
             throw new CustomException(ErrorCode.MATCHED_MEMBER);
         }
@@ -100,6 +100,8 @@ public class MatchingService {
                 .build();
 
         alarmRepository.save(alarm);
+
+        return alarm;
     }
 
     //매칭 취소

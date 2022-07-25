@@ -16,15 +16,21 @@ import com.hanghae.todoli.security.UserDetailsImpl;
 import com.hanghae.todoli.todo.dto.*;
 import com.hanghae.todoli.todo.model.Todo;
 import com.hanghae.todoli.todo.repository.TodoRepository;
+import com.hanghae.todoli.todo.repository.TodoRepositoryImpl;
+import com.querydsl.jpa.impl.JPAQueryFactory;
+import io.swagger.models.auth.In;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import net.bytebuddy.asm.Advice;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 
 @Slf4j
 @Service
@@ -62,7 +68,7 @@ public class TodoService {
 
     // 투두 등록
     @Transactional
-    public void registerTodo(TodoRegisterDto registerDto, UserDetailsImpl userDetails) {
+    public String registerTodo(TodoRegisterDto registerDto, UserDetailsImpl userDetails) {
 
         //매칭 아닐때 매칭투두 작성 에러처리
         if (!userDetails.getMember().getMatchingState() && registerDto.getTodoType() == 2) {
@@ -75,6 +81,7 @@ public class TodoService {
         // 새로운 투두
         Todo todo = new Todo(member, registerDto);
         todoRepository.save(todo);
+        return "투두 등록 성공";
     }
 
 
@@ -114,7 +121,10 @@ public class TodoService {
 //            alarm.setMessage(userDetails.getMember().getNickname() + "님이 인증하셨습니다.");
 //            alarmRepository.save(alarm);
 
-            return TodoConfirmDto.builder().todoId(todo.getId()).confirmState(todo.getConfirmState()).build();
+            return TodoConfirmDto.builder()
+                    .todoId(todo.getId())
+                    .confirmState(todo.getConfirmState())
+                    .build();
         } else {
             throw new CustomException(ErrorCode.FORBIDDEN_ACCESS);
         }
@@ -166,7 +176,11 @@ public class TodoService {
             }
 
             calcLevelAndExp(character, exp);
-
+            
+            //완료 날짜 삽입
+            LocalDate now = LocalDate.parse(LocalDate.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd")));
+            todo.setCompletionDate(now);
+            
             return TodoCompletionDto.builder()
                     .todoId(todo.getId())
                     .completionState(todo.getCompletionState())
@@ -176,7 +190,7 @@ public class TodoService {
 
     // 투두 삭제
     @Transactional
-    public void deleteTodo(Long id, UserDetailsImpl userDetails) {
+    public String deleteTodo(Long id, UserDetailsImpl userDetails) {
         // 로그인 유저와 작성자가 일치?
         // 불일치시 메시지
         Todo todo = getTodo(id);
@@ -185,6 +199,8 @@ public class TodoService {
             throw new CustomException(ErrorCode.NOT_TODO_WRITER);
         }
         todoRepository.deleteById(id);
+
+        return "투두 삭제 성공";
     }
 
     //상대방 투두 조회
@@ -239,7 +255,7 @@ public class TodoService {
 
     // 투두 수정
     @Transactional
-    public void todoModify(Long todoId, TodoModifyDto registerDto, UserDetailsImpl userDetails) {
+    public Todo todoModify(Long todoId, TodoModifyDto registerDto, UserDetailsImpl userDetails) {
         // 투두 유무 확인
         Todo todo = getTodo(todoId);
 
@@ -261,6 +277,8 @@ public class TodoService {
 
         //투두 데이터
         todo.update(member, registerDto);
+
+        return todo;
     }
 
     // 투두 수정 조회
@@ -317,16 +335,16 @@ public class TodoService {
             throw new CustomException(ErrorCode.NO_INPUT_TODO_TYPE);
         }
         if (registerDto.getStartDate().isBefore(now)) {
-            throw new CustomException(ErrorCode.FORBIDDEN_START_DATE);
+            throw new CustomException(ErrorCode.BAD_REQUEST_START_DATE);
         }
         if (registerDto.getEndDate().isBefore(registerDto.getStartDate())) {
-            throw new CustomException(ErrorCode.FORBIDDEN_END_DATE);
+            throw new CustomException(ErrorCode.BAD_REQUEST_END_DATE);
         }
     }
 
-    private List<TodoInfoDto> getTodoInfoDtos(Long partnerId) {
+    private List<TodoInfoDto> getTodoInfoDtos(Long id) {
         List<TodoInfoDto> todoInfoDtoList = new ArrayList<>();
-        List<Todo> todos = todoRepository.findAllByWriterIdOrderByIdDesc(partnerId);
+        List<Todo> todos = todoRepository.findAllByWriterIdOrderByIdDesc(id);
         for (Todo todo : todos) {
             TodoInfoDto todoInfoDto = TodoInfoDto.builder()
                     .todoId(todo.getId())
@@ -344,5 +362,74 @@ public class TodoService {
             todoInfoDtoList.add(todoInfoDto);
         }
         return todoInfoDtoList;
+    }
+
+    //통계
+    @Transactional
+    public StatisticsResponseDto getStatistics(Long memberId) {
+        LocalDate rNow = LocalDate.parse(LocalDate.now().minusDays(1).format(DateTimeFormatter.ofPattern("yyyy-MM-dd")));
+        LocalDate now = LocalDate.parse(LocalDate.now().minusDays(1).format(DateTimeFormatter.ofPattern("yyyy-MM-dd")));
+        LocalDate start = now.minusDays(6);
+
+        Pageable pageable = PageRequest.of(0, 7, Sort.Direction.ASC, "completionDate");
+        StatisticsResponseDto responseDto = new StatisticsResponseDto();
+
+        //내 매칭상태 조회
+        Member member = getMember(memberId);
+        Boolean matchingState = member.getMatchingState();
+        responseDto.setMyMatchingState(matchingState);
+
+
+        //Map 초기화
+        Map<LocalDate, Long>myDateAndTodoCntMap = new HashMap<>();
+        Map<LocalDate, Integer>myDateAndDifSumMap = new HashMap<>();
+        Map<LocalDate, Long>partnerDateAndTodoCntMap = new HashMap<>();
+        Map<LocalDate, Integer>partnerDateAndTodoDifSumMap = new HashMap<>();
+        for(int i = 7; i >= 1; i--){
+            LocalDate d = rNow.minusDays(i);
+            myDateAndTodoCntMap.put(d, 0L);
+            myDateAndDifSumMap.put(d, 0);
+            partnerDateAndTodoCntMap.put(d, 0L);
+            partnerDateAndTodoDifSumMap.put(d, 0);
+        }
+
+        //내 투두 갯수 및 날짜
+        List<TodoDetailsResponseDto> todoDetailsList = todoRepository.findTodoDetails(start, now, memberId, pageable);
+        for (TodoDetailsResponseDto dto : todoDetailsList) {
+            LocalDate date = dto.getDate();
+            Long cnt = dto.getCnt();
+            int exp = dto.getExp();
+
+            myDateAndTodoCntMap.put(date, cnt);
+            myDateAndDifSumMap.put(date, exp);
+        }
+        responseDto.setMyAchievement(myDateAndTodoCntMap);
+        responseDto.setMyExpChanges(myDateAndDifSumMap);
+
+
+        //파트너 정보
+        Matching matching = matchingRepository.getMatching(memberId).orElse(null);
+        if (matching != null) {
+            Long searchedUserPartnerId = memberId.equals(matching.getRequesterId()) ? matching.getRespondentId() : matching.getRequesterId();
+            Member partner = memberRepository.findById(searchedUserPartnerId).orElseThrow(
+                    () -> new CustomException(ErrorCode.NOT_FOUND_PARTNER));
+            Long partnerId = partner.getId();
+
+            //파트너 투두 갯수 및 날짜
+            List<TodoDetailsResponseDto> partnerTodoDetailsList = todoRepository.findTodoDetails(start, now, partnerId, pageable);
+            for (TodoDetailsResponseDto dto : partnerTodoDetailsList) {
+                LocalDate date = dto.getDate();
+                Long cnt = dto.getCnt();
+                int exp = dto.getExp();
+
+                partnerDateAndTodoCntMap.put(date, cnt);
+                partnerDateAndTodoDifSumMap.put(date, exp);
+            }
+
+            responseDto.setFriendAchievement(partnerDateAndTodoCntMap);
+            responseDto.setFriendExpChanges(partnerDateAndTodoDifSumMap);
+        }
+        
+    return responseDto;
     }
 }

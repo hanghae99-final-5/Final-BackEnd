@@ -25,7 +25,7 @@ public class MemberService {
 
     //회원가입
     @Transactional
-    public void signup(SignupRequestDto signupRequestDto) {
+    public String signup(SignupRequestDto signupRequestDto) {
         String username = signupRequestDto.getUsername();
         String nickname = signupRequestDto.getNickname();
 
@@ -33,13 +33,15 @@ public class MemberService {
 
         String password = passwordEncoder.encode(signupRequestDto.getPassword());
 
-        // TODO : 2022/07/12 refactoring - 종석
         //멤버생성과 동시에 캐릭터, 장착아이템 같이 생성, 기본아이템 제공 및 장착까지
-        basicItemRegister.basicItem(username, nickname, password);
+        Member member = basicItemRegister.basicItem(username, nickname, password);
+        memberRepository.save(member);
+
+        return "회원가입 완료";
     }
 
     @Transactional
-    public void login(LoginRequestDto loginRequestDto, HttpServletResponse response) {
+    public Member login(LoginRequestDto loginRequestDto, HttpServletResponse response) {
         String username = loginRequestDto.getUsername();
         Member member = memberRepository.findByUsername(username).orElseThrow(
                 () -> new CustomException(ErrorCode.NOT_FOUND_MEMBER)
@@ -54,6 +56,8 @@ public class MemberService {
         String token = jwtTokenProvider.createToken(member.getUsername(), member.getNickname());
         response.addHeader("Authorization", token);
         System.out.println(token);
+
+        return member;
     }
 
     //아이디 중복확인

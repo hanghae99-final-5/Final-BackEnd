@@ -14,7 +14,7 @@ public enum ErrorCode {
     WRONG_PATTERN_EMAIL(HttpStatus.BAD_REQUEST, "이메일 형식이 아닙니다."),
     NOT_MATCHING_PARTNER(HttpStatus.BAD_REQUEST, "매칭되어있는 상대가 아닙니다."),
     MATCHED_PARTNER(HttpStatus.BAD_REQUEST, "상대방이 이미 매칭 중입니다."),
-    MATCHED_MEMBER(HttpStatus.BAD_REQUEST, "매칭 상태가 아닙니다."),
+    MATCHED_MEMBER(HttpStatus.BAD_REQUEST, "자신이 매칭 중 입니다."),
     NOT_MATCHED_MEMBER(HttpStatus.BAD_REQUEST, "자신이 매칭되어있지 않습니다."),
     NOT_ENOUGH_MONEY(HttpStatus.BAD_REQUEST, "금액이 부족합니다."),
     ALREADY_GOT_ITEM(HttpStatus.BAD_REQUEST, "이미 구매하신 물품입니다."),
@@ -28,8 +28,8 @@ public enum ErrorCode {
     NO_INPUT_CONTENT(HttpStatus.BAD_REQUEST, "Todo 내용을 입력해주세요"),
     NO_INPUT_DIFFICULTY(HttpStatus.BAD_REQUEST, "난이도를 선택해주세요"),
     NO_INPUT_TODO_TYPE(HttpStatus.BAD_REQUEST, "Todo 타입을 선택해주세요"),
-    FORBIDDEN_START_DATE(HttpStatus.FORBIDDEN, "시작날짜를 현재날짜 이후로 설정해주세요."),
-    FORBIDDEN_END_DATE(HttpStatus.FORBIDDEN, "종료날짜를 시작날짜 이후로 설정해주세요."),
+    BAD_REQUEST_START_DATE(HttpStatus.BAD_REQUEST, "시작날짜를 현재날짜 이후로 설정해주세요."),
+    BAD_REQUEST_END_DATE(HttpStatus.BAD_REQUEST, "종료날짜를 시작날짜 이후로 설정해주세요."),
     /* 403 FORBIDDEN : 잘못된 접근 */
     FORBIDDEN_ACCESS(HttpStatus.FORBIDDEN, "잘못된 접근입니다."),
 

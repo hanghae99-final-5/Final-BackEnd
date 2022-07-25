@@ -21,6 +21,9 @@ import org.springframework.web.context.WebApplicationContext;
 
 import java.security.Principal;
 
+import static org.mockito.ArgumentMatchers.*;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
 import static org.springframework.security.test.web.servlet.setup.SecurityMockMvcConfigurers.springSecurity;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
@@ -73,6 +76,9 @@ class MatchingControllerTest {
                         .principal(mockPrincipal))
                 .andExpect(status().isOk())
                 .andDo(print());
+
+        verify(matchingService,times(1))
+                .searchMember(anyString(),any(UserDetailsImpl.class));
     }
 
     @Test
@@ -85,6 +91,9 @@ class MatchingControllerTest {
                         .principal(mockPrincipal))
                 .andExpect(status().isOk())
                 .andDo(print());
+
+        verify(matchingService,times(1))
+                .inviteMatching(anyLong(),any(UserDetailsImpl.class));
     }
 
     @Test
@@ -97,6 +106,9 @@ class MatchingControllerTest {
                         .principal(mockPrincipal))
                 .andExpect(status().isOk())
                 .andDo(print());
+
+        verify(matchingService,times(1))
+                .cancelMatching(anyLong(),any(UserDetailsImpl.class));
     }
 
     @Test
@@ -109,6 +121,9 @@ class MatchingControllerTest {
                         .principal(mockPrincipal))
                 .andExpect(status().isOk())
                 .andDo(print());
+
+        verify(matchingService,times(1))
+                .acceptMatching(anyLong(),any(UserDetailsImpl.class));
     }
 
     @Test
