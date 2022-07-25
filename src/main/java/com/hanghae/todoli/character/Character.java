@@ -43,8 +43,7 @@ public class Character {
 
     @Column
     private int dailyExp;
-//    @Column
-//    private int stackedExp;
+
 
     @JsonManagedReference
     @OneToMany(mappedBy = "character", orphanRemoval = true, cascade = CascadeType.ALL)
@@ -98,12 +97,5 @@ public class Character {
         }
     }
 
-//    public void setDailyExp(int exp){           //일간 변동량
-//        this.dailyExp = exp;
-//    }
-//
-//    public void setStackedExp(int exp){       //누적
-//        this.stackedExp = exp;
-//    }
 
 }

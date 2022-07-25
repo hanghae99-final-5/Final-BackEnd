@@ -4,6 +4,7 @@ import lombok.*;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Map;
 
 @NoArgsConstructor
 @AllArgsConstructor
@@ -11,11 +12,11 @@ import java.util.List;
 @Builder
 public class StatisticsResponseDto {
     Boolean myMatchingState;
-    List<LocalDate>period;
 
-    List<Long>myAchievement;
-    List<Long>friendAchievement;
 
-    List<Long>myExpChanges;
-    List<Long>friendExpChanges;
+    Map<LocalDate, Long>myAchievement;
+    Map<LocalDate, Long>friendAchievement;
+
+    Map<LocalDate, Integer>myExpChanges;
+    Map<LocalDate, Integer>friendExpChanges;
 }
