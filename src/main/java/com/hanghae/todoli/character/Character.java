@@ -45,10 +45,6 @@ public class Character {
     @Column
     private int money;
 
-    @Column
-    private int dailyExp;
-
-
     @JsonManagedReference
     @OneToMany(mappedBy = "character", orphanRemoval = true, cascade = CascadeType.ALL)
     private List<Inventory> inventory = new ArrayList<>();

@@ -12,6 +12,7 @@ import com.hanghae.todoli.security.UserDetailsImpl;
 import com.hanghae.todoli.todo.dto.*;
 import com.hanghae.todoli.todo.model.Todo;
 import com.hanghae.todoli.todo.repository.TodoRepository;
+import com.hanghae.todoli.todo.service.TodoService;
 import org.junit.jupiter.api.*;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
