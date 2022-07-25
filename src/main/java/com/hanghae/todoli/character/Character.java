@@ -74,7 +74,6 @@ public class Character {
 
     public void editExp(int exp) {
         this.exp += exp;
-        this.dailyExp += exp;
         if (this.exp >= 100) {
             this.level++;
             this.exp = this.exp - 100;

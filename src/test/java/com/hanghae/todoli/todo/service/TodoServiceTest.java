@@ -91,14 +91,16 @@ class TodoServiceTest {
     Todo existTodo1 = new Todo(
             1L, "imgUrl", "todoContent",
             now, LocalDate.now().plusDays(2), LocalDate.now().plusDays(2),
-            3, 2, false, false, existMember
+            LocalDate.now().plusDays(2), 3, 2,
+            false, false, existMember
     );
 
     //2번이 작성
     Todo existTodo2 = new Todo(
             2L, "imgUrl", "todoContent",
             now, LocalDate.now().plusDays(2), LocalDate.now().plusDays(2),
-            3, 2, false, false, existMember2
+            LocalDate.now().plusDays(2), 3, 2,
+            false, false, existMember2
     );
 
     UserDetailsImpl userDetails = new UserDetailsImpl(existMember);
@@ -606,10 +608,11 @@ class TodoServiceTest {
 
             //when
             CustomException exception = Assertions.assertThrows(CustomException.class,
-                    ()->todoService.todoModify(id, todoModifyDto, userDetails));
+                    () -> todoService.todoModify(id, todoModifyDto, userDetails));
             //then
-            Assertions.assertEquals("Todo 작성자가 아닙니다.",exception.getErrorCode().getMessage());
+            Assertions.assertEquals("Todo 작성자가 아닙니다.", exception.getErrorCode().getMessage());
         }
+
         @Test
         @DisplayName("투두 수정 실패 - 수정 투두 내용없음")
         void todoModifyFail2() {
@@ -626,9 +629,9 @@ class TodoServiceTest {
 
             //when
             CustomException exception = Assertions.assertThrows(CustomException.class,
-                    ()->todoService.todoModify(id, todoModifyDto, userDetails));
+                    () -> todoService.todoModify(id, todoModifyDto, userDetails));
             //then
-            Assertions.assertEquals("Todo 내용을 입력해주세요",exception.getErrorCode().getMessage());
+            Assertions.assertEquals("Todo 내용을 입력해주세요", exception.getErrorCode().getMessage());
         }
     }
 
@@ -645,9 +648,9 @@ class TodoServiceTest {
             //when
             TodoModifyDto modifyTodo = todoService.getModifyTodo(existTodo1.getId());
             //then
-            Assertions.assertEquals("todoContent",modifyTodo.getContent());
-            Assertions.assertEquals(3,modifyTodo.getDifficulty());
-            Assertions.assertEquals(2,modifyTodo.getTodoType());
+            Assertions.assertEquals("todoContent", modifyTodo.getContent());
+            Assertions.assertEquals(3, modifyTodo.getDifficulty());
+            Assertions.assertEquals(2, modifyTodo.getTodoType());
         }
     }
 
