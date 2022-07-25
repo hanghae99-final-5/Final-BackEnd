@@ -102,7 +102,7 @@ public class TodoController {
 //    }
 
     //통계
-    @GetMapping("/statistics")
+    @GetMapping("/statistics/daily")
     public StatisticsResponseDto getStatistics(@AuthenticationPrincipal UserDetailsImpl userDetails){
         Long memberId = userDetails.getMember().getId();
         return todoService.getStatistics(memberId);
