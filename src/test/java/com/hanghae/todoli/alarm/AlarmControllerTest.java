@@ -21,6 +21,9 @@ import org.springframework.web.context.WebApplicationContext;
 
 import java.security.Principal;
 
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
 import static org.springframework.security.test.web.servlet.setup.SecurityMockMvcConfigurers.springSecurity;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
@@ -74,6 +77,9 @@ class AlarmControllerTest {
                         .principal(mockPrincipal))
                 .andExpect(status().isOk())
                 .andDo(print());
+
+        verify(alarmService,times(1)).getAlarms(any(UserDetailsImpl.class));
+
     }
 
     @Test
@@ -85,5 +91,7 @@ class AlarmControllerTest {
                         .principal(mockPrincipal))
                 .andExpect(status().isOk())
                 .andDo(print());
+
+        verify(alarmService,times(1)).deleteAlarms(any(UserDetailsImpl.class));
     }
 }

@@ -23,6 +23,10 @@ import org.springframework.web.context.WebApplicationContext;
 
 import java.security.Principal;
 
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyLong;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
 import static org.springframework.security.test.web.servlet.setup.SecurityMockMvcConfigurers.springSecurity;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
@@ -75,6 +79,9 @@ class ItemControllerTest {
                         .principal(mockPrincipal))
                 .andExpect(status().isOk())
                 .andDo(print());
+
+        verify(itemService,times(1))
+                .getExistItemList(any(UserDetailsImpl.class));
     }
 
     @Test
@@ -86,6 +93,9 @@ class ItemControllerTest {
                         .principal(mockPrincipal))
                 .andExpect(status().isOk())
                 .andDo(print());
+
+        verify(itemService,times(1))
+                .getShopItemList(any(UserDetailsImpl.class));
     }
 
     @Test
@@ -98,6 +108,9 @@ class ItemControllerTest {
                         .principal(mockPrincipal))
                 .andExpect(status().isOk())
                 .andDo(print());
+
+        verify(itemService,times(1))
+                .buyItem(anyLong(),any(UserDetailsImpl.class));
     }
 
     @Test
@@ -110,6 +123,8 @@ class ItemControllerTest {
                         .principal(mockPrincipal))
                 .andExpect(status().isOk())
                 .andDo(print());
+        verify(itemService,times(1))
+                .equipItem(anyLong(),any(UserDetailsImpl.class));
     }
 
     @Test
@@ -135,5 +150,8 @@ class ItemControllerTest {
                 )
                 .andExpect(status().isOk())
                 .andDo(print());
+
+        verify(itemService,times(1))
+                .inputItem(any(ItemRequestDto.class));
     }
 }

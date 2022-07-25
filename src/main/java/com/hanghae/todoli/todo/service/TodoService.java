@@ -68,7 +68,7 @@ public class TodoService {
 
     // 투두 등록
     @Transactional
-    public void registerTodo(TodoRegisterDto registerDto, UserDetailsImpl userDetails) {
+    public String registerTodo(TodoRegisterDto registerDto, UserDetailsImpl userDetails) {
 
         //매칭 아닐때 매칭투두 작성 에러처리
         if (!userDetails.getMember().getMatchingState() && registerDto.getTodoType() == 2) {
@@ -81,6 +81,7 @@ public class TodoService {
         // 새로운 투두
         Todo todo = new Todo(member, registerDto);
         todoRepository.save(todo);
+        return "투두 등록 성공";
     }
 
 
@@ -120,7 +121,10 @@ public class TodoService {
 //            alarm.setMessage(userDetails.getMember().getNickname() + "님이 인증하셨습니다.");
 //            alarmRepository.save(alarm);
 
-            return TodoConfirmDto.builder().todoId(todo.getId()).confirmState(todo.getConfirmState()).build();
+            return TodoConfirmDto.builder()
+                    .todoId(todo.getId())
+                    .confirmState(todo.getConfirmState())
+                    .build();
         } else {
             throw new CustomException(ErrorCode.FORBIDDEN_ACCESS);
         }
@@ -186,7 +190,7 @@ public class TodoService {
 
     // 투두 삭제
     @Transactional
-    public void deleteTodo(Long id, UserDetailsImpl userDetails) {
+    public String deleteTodo(Long id, UserDetailsImpl userDetails) {
         // 로그인 유저와 작성자가 일치?
         // 불일치시 메시지
         Todo todo = getTodo(id);
@@ -195,6 +199,8 @@ public class TodoService {
             throw new CustomException(ErrorCode.NOT_TODO_WRITER);
         }
         todoRepository.deleteById(id);
+
+        return "투두 삭제 성공";
     }
 
     //상대방 투두 조회
@@ -249,7 +255,7 @@ public class TodoService {
 
     // 투두 수정
     @Transactional
-    public void todoModify(Long todoId, TodoModifyDto registerDto, UserDetailsImpl userDetails) {
+    public Todo todoModify(Long todoId, TodoModifyDto registerDto, UserDetailsImpl userDetails) {
         // 투두 유무 확인
         Todo todo = getTodo(todoId);
 
@@ -271,6 +277,8 @@ public class TodoService {
 
         //투두 데이터
         todo.update(member, registerDto);
+
+        return todo;
     }
 
     // 투두 수정 조회
@@ -327,16 +335,16 @@ public class TodoService {
             throw new CustomException(ErrorCode.NO_INPUT_TODO_TYPE);
         }
         if (registerDto.getStartDate().isBefore(now)) {
-            throw new CustomException(ErrorCode.FORBIDDEN_START_DATE);
+            throw new CustomException(ErrorCode.BAD_REQUEST_START_DATE);
         }
         if (registerDto.getEndDate().isBefore(registerDto.getStartDate())) {
-            throw new CustomException(ErrorCode.FORBIDDEN_END_DATE);
+            throw new CustomException(ErrorCode.BAD_REQUEST_END_DATE);
         }
     }
 
-    private List<TodoInfoDto> getTodoInfoDtos(Long partnerId) {
+    private List<TodoInfoDto> getTodoInfoDtos(Long id) {
         List<TodoInfoDto> todoInfoDtoList = new ArrayList<>();
-        List<Todo> todos = todoRepository.findAllByWriterIdOrderByIdDesc(partnerId);
+        List<Todo> todos = todoRepository.findAllByWriterIdOrderByIdDesc(id);
         for (Todo todo : todos) {
             TodoInfoDto todoInfoDto = TodoInfoDto.builder()
                     .todoId(todo.getId())

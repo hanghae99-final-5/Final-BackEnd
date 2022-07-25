@@ -25,6 +25,10 @@ import org.springframework.web.context.WebApplicationContext;
 
 import java.security.Principal;
 
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyLong;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
 import static org.springframework.security.test.web.servlet.setup.SecurityMockMvcConfigurers.springSecurity;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.patch;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
@@ -83,8 +87,6 @@ class ProofImgControllerTest {
 
         ProofImgRequestDto proofImgRequestDto = new ProofImgRequestDto(file);
 
-//        byte[] bytes = objectMapper.writeValueAsBytes(proofImgRequestDto);
-
         //when - then
         mvc.perform(
                 patch("/api/proofimgs/{todoId}",1)
@@ -94,5 +96,8 @@ class ProofImgControllerTest {
                 )
                 .andExpect(status().isOk())
                 .andDo(print());
+
+        verify(imgService,times(1))
+                .imgRegister(anyLong(),any(ProofImgRequestDto.class),any(UserDetailsImpl.class));
     }
 }

@@ -22,7 +22,7 @@ public class BasicItemRegister {
     private final ItemRepository itemRepository;
     private final InventoryRepository inventoryRepository;
 
-    public void basicItem(String username, String nickname, String password) {
+    public Member basicItem(String username, String nickname, String password) {
         Item basicAccessory = itemRepository.findById(1L).orElseThrow(
                 () -> new CustomException(ErrorCode.NO_ITEM)
         );
@@ -43,7 +43,6 @@ public class BasicItemRegister {
         Inventory addCloth = new Inventory(basicCloth, character);
         inventoryRepository.save(addCloth);
 
-        Member Member = new Member(username, nickname, password, false, character);
-        memberRepository.save(Member);
+        return new Member(username, nickname, password, false, character);
     }
 }
