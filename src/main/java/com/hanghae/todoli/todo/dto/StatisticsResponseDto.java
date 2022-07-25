@@ -14,9 +14,9 @@ public class StatisticsResponseDto {
     Boolean myMatchingState;
 
 
-    Map<LocalDate, Long>myAchievement;
-    Map<LocalDate, Long>friendAchievement;
+    Map<String, Long>myAchievement;
+    Map<String, Long>friendAchievement;
 
-    Map<LocalDate, Integer>myExpChanges;
-    Map<LocalDate, Integer>friendExpChanges;
+    Map<String, Integer>myExpChanges;
+    Map<String, Integer>friendExpChanges;
 }

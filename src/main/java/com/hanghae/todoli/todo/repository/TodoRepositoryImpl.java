@@ -2,7 +2,9 @@ package com.hanghae.todoli.todo.repository;
 
 import com.hanghae.todoli.member.QMember;
 import com.hanghae.todoli.todo.dto.QTodoDetailsResponseDto;
+import com.hanghae.todoli.todo.dto.QTodoDetailsResponseMonthlyDto;
 import com.hanghae.todoli.todo.dto.TodoDetailsResponseDto;
+import com.hanghae.todoli.todo.dto.TodoDetailsResponseMonthlyDto;
 import com.hanghae.todoli.todo.model.QTodo;
 import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.jpa.JPAExpressions;
@@ -13,6 +15,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.repository.query.Param;
 
 import java.time.LocalDate;
+import java.time.Month;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
 
@@ -45,6 +48,29 @@ public class TodoRepositoryImpl implements TodoRepositoryCustom{
                         todo.completionDate.between(start, now) // start : 현재 날짜 기준 - 7 , now : 현재 날짜 기준 - 1
                         )
                 .groupBy(todo.completionDate)
+                .fetch();
+    }
+
+    @Override
+    public List<TodoDetailsResponseMonthlyDto> findTodoDetailsMonthly(@Param("startMonth") LocalDate startMonth,
+                                                                      @Param("now") LocalDate lastMonth,
+                                                                      @Param("id")Long id,
+                                                                      Pageable pageable) {
+
+        return queryFactory
+                .select(new QTodoDetailsResponseMonthlyDto(
+                        todo.completionDate.month(),
+                        todo.count(),
+                        todo.difficulty.sum())
+                )
+                .from(todo)
+                .join(todo.writer, member)
+                .where(
+                        todo.completionState.eq(true),
+                        member.id.eq(id),
+                        todo.completionDate.between(startMonth, lastMonth)
+                )
+                .groupBy(todo.completionDate.month())
                 .fetch();
     }
 }

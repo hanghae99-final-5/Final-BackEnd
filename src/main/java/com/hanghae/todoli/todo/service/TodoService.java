@@ -29,6 +29,7 @@ import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
 import java.time.LocalDate;
+import java.time.Month;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
 
@@ -139,10 +140,15 @@ public class TodoService {
         Member member = getMember(memberId);
         if (todo.getTodoType() == 1) {
             todo.completionState();
+            //완료 날짜 삽입
+            LocalDate now = LocalDate.parse(LocalDate.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd")));
+            todo.setCompletionDate(now);
+
             return TodoCompletionDto.builder()
                     .todoId(todo.getId())
                     .completionState(todo.getCompletionState())
                     .build();
+
 
         } else if (todo.getTodoType() == 2) {
             if (!todo.getCompletionState() && todo.getConfirmState()) {
@@ -176,11 +182,11 @@ public class TodoService {
             }
 
             calcLevelAndExp(character, exp);
-            
+
             //완료 날짜 삽입
             LocalDate now = LocalDate.parse(LocalDate.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd")));
             todo.setCompletionDate(now);
-            
+
             return TodoCompletionDto.builder()
                     .todoId(todo.getId())
                     .completionState(todo.getCompletionState())
@@ -366,70 +372,145 @@ public class TodoService {
 
     //통계
     @Transactional
-    public StatisticsResponseDto getStatistics(Long memberId) {
-        LocalDate rNow = LocalDate.parse(LocalDate.now().minusDays(1).format(DateTimeFormatter.ofPattern("yyyy-MM-dd")));
-        LocalDate now = LocalDate.parse(LocalDate.now().minusDays(1).format(DateTimeFormatter.ofPattern("yyyy-MM-dd")));
-        LocalDate start = now.minusDays(6);
+//    public StatisticsResponseDto getStatistics(Long memberId) {
+//        LocalDate rNow = LocalDate.parse(LocalDate.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd")));
+//        LocalDate now = LocalDate.parse(LocalDate.now().minusDays(1).format(DateTimeFormatter.ofPattern("yyyy-MM-dd")));
+//        LocalDate start = now.minusDays(6);
+//
+//        Pageable pageable = PageRequest.of(0, 7, Sort.Direction.ASC, "completionDate");
+//        StatisticsResponseDto responseDto = new StatisticsResponseDto();
+//
+//        //내 매칭상태 조회
+//        Member member = getMember(memberId);
+//        Boolean matchingState = member.getMatchingState();
+//        responseDto.setMyMatchingState(matchingState);
+//
+//
+//        //Map 초기화
+//        Map<LocalDate, Long> myDateAndTodoCntMap = new HashMap<>();
+//        Map<LocalDate, Integer> myDateAndDifSumMap = new HashMap<>();
+//        Map<LocalDate, Long> partnerDateAndTodoCntMap = new HashMap<>();
+//        Map<LocalDate, Integer> partnerDateAndTodoDifSumMap = new HashMap<>();
+//        for (int i = 7; i >= 1; i--) {
+//            LocalDate d = rNow.minusDays(i);
+//            myDateAndTodoCntMap.put(d, 0L);
+//            myDateAndDifSumMap.put(d, 0);
+//            partnerDateAndTodoCntMap.put(d, 0L);
+//            partnerDateAndTodoDifSumMap.put(d, 0);
+//        }
+//
+//        //내 투두 갯수 및 날짜
+//        List<TodoDetailsResponseDto> todoDetailsList = todoRepository.findTodoDetails(start, now, memberId, pageable);
+//        for (TodoDetailsResponseDto dto : todoDetailsList) {
+//            LocalDate date = dto.getDate();
+//            Long cnt = dto.getCnt();
+//            int exp = dto.getExp();
+//
+//            myDateAndTodoCntMap.put(date, cnt);
+//            myDateAndDifSumMap.put(date, exp);
+//        }
+//        responseDto.setMyAchievement(myDateAndTodoCntMap);
+//        responseDto.setMyExpChanges(myDateAndDifSumMap);
+//
+//
+//        //파트너 정보
+//        Matching matching = matchingRepository.getMatching(memberId).orElse(null);
+//        if (matching != null) {
+//            Long searchedUserPartnerId = memberId.equals(matching.getRequesterId()) ? matching.getRespondentId() : matching.getRequesterId();
+//            Member partner = memberRepository.findById(searchedUserPartnerId).orElseThrow(
+//                    () -> new CustomException(ErrorCode.NOT_FOUND_PARTNER));
+//            Long partnerId = partner.getId();
+//
+//            //파트너 투두 갯수 및 날짜
+//            List<TodoDetailsResponseDto> partnerTodoDetailsList = todoRepository.findTodoDetails(start, now, partnerId, pageable);
+//            for (TodoDetailsResponseDto dto : partnerTodoDetailsList) {
+//                LocalDate date = dto.getDate();
+//                Long cnt = dto.getCnt();
+//                int exp = dto.getExp();
+//
+//                partnerDateAndTodoCntMap.put(date, cnt);
+//                partnerDateAndTodoDifSumMap.put(date, exp);
+//            }
+//
+//            responseDto.setFriendAchievement(partnerDateAndTodoCntMap);
+//            responseDto.setFriendExpChanges(partnerDateAndTodoDifSumMap);
+//        }
+//
+//        return responseDto;
+//    }
 
-        Pageable pageable = PageRequest.of(0, 7, Sort.Direction.ASC, "completionDate");
+    public StatisticsResponseDto getStatisticsMonthly(UserDetailsImpl userDetails) {
+
+        LocalDate startMonth = LocalDate.parse(LocalDate.now()
+                .minusMonths(7).withDayOfMonth(1)
+                .format(DateTimeFormatter.ofPattern("yyyy-MM-dd")));
+        LocalDate lastMonth = LocalDate.parse(LocalDate.now()
+                .minusMonths(1).withDayOfMonth(LocalDate.now().minusMonths(1).lengthOfMonth())
+                .format(DateTimeFormatter.ofPattern("yyyy-MM-dd")));
+
+        Pageable pageable = PageRequest.of(0, 6, Sort.Direction.ASC, "completionDate");
         StatisticsResponseDto responseDto = new StatisticsResponseDto();
 
         //내 매칭상태 조회
-        Member member = getMember(memberId);
+        Member member = getMember(userDetails.getMember().getId());
         Boolean matchingState = member.getMatchingState();
         responseDto.setMyMatchingState(matchingState);
 
-
         //Map 초기화
-        Map<LocalDate, Long>myDateAndTodoCntMap = new HashMap<>();
-        Map<LocalDate, Integer>myDateAndDifSumMap = new HashMap<>();
-        Map<LocalDate, Long>partnerDateAndTodoCntMap = new HashMap<>();
-        Map<LocalDate, Integer>partnerDateAndTodoDifSumMap = new HashMap<>();
-        for(int i = 7; i >= 1; i--){
-            LocalDate d = rNow.minusDays(i);
-            myDateAndTodoCntMap.put(d, 0L);
-            myDateAndDifSumMap.put(d, 0);
-            partnerDateAndTodoCntMap.put(d, 0L);
-            partnerDateAndTodoDifSumMap.put(d, 0);
+        Map<String, Long> myDateAndTodoCntMap = new HashMap<>();
+        Map<String, Integer> myDateAndDifSumMap = new HashMap<>();
+        Map<String, Long> partnerDateAndTodoCntMap = new HashMap<>();
+        Map<String, Integer> partnerDateAndTodoDifSumMap = new HashMap<>();
+        for (int i = 6; i >= 1; i--) {
+            String month = LocalDate.now().minusMonths(i).format(DateTimeFormatter.ofPattern("M"));
+            myDateAndTodoCntMap.put(month, 0L);
+            myDateAndDifSumMap.put(month, 0);
+            partnerDateAndTodoCntMap.put(month, 0L);
+            partnerDateAndTodoDifSumMap.put(month, 0);
         }
 
         //내 투두 갯수 및 날짜
-        List<TodoDetailsResponseDto> todoDetailsList = todoRepository.findTodoDetails(start, now, memberId, pageable);
-        for (TodoDetailsResponseDto dto : todoDetailsList) {
-            LocalDate date = dto.getDate();
+        List<TodoDetailsResponseMonthlyDto> todoDetailsList =
+                todoRepository.findTodoDetailsMonthly(startMonth, lastMonth, userDetails.getMember().getId(), pageable);
+        for (TodoDetailsResponseMonthlyDto dto : todoDetailsList) {
+            Integer date = dto.getDate();
             Long cnt = dto.getCnt();
             int exp = dto.getExp() * 5;
 
-            myDateAndTodoCntMap.put(date, cnt);
-            myDateAndDifSumMap.put(date, exp);
+            myDateAndTodoCntMap.put(String.valueOf(date), cnt);
+            myDateAndDifSumMap.put(String.valueOf(date), exp);
         }
         responseDto.setMyAchievement(myDateAndTodoCntMap);
         responseDto.setMyExpChanges(myDateAndDifSumMap);
 
 
         //파트너 정보
-        Matching matching = matchingRepository.getMatching(memberId).orElse(null);
+        Matching matching = matchingRepository.getMatching(userDetails.getMember().getId()).orElse(null);
         if (matching != null) {
-            Long searchedUserPartnerId = memberId.equals(matching.getRequesterId()) ? matching.getRespondentId() : matching.getRequesterId();
+            Long searchedUserPartnerId = userDetails.getMember().getId().equals(matching.getRequesterId())
+                    ? matching.getRespondentId()
+                    : matching.getRequesterId();
             Member partner = memberRepository.findById(searchedUserPartnerId).orElseThrow(
                     () -> new CustomException(ErrorCode.NOT_FOUND_PARTNER));
             Long partnerId = partner.getId();
 
             //파트너 투두 갯수 및 날짜
-            List<TodoDetailsResponseDto> partnerTodoDetailsList = todoRepository.findTodoDetails(start, now, partnerId, pageable);
-            for (TodoDetailsResponseDto dto : partnerTodoDetailsList) {
-                LocalDate date = dto.getDate();
+            List<TodoDetailsResponseMonthlyDto> partnerTodoDetailsList =
+                    todoRepository.findTodoDetailsMonthly(startMonth, lastMonth, partnerId, pageable);
+            for (TodoDetailsResponseMonthlyDto dto : partnerTodoDetailsList) {
+                Integer date = dto.getDate();
                 Long cnt = dto.getCnt();
                 int exp = dto.getExp() * 5;
 
-                partnerDateAndTodoCntMap.put(date, cnt);
-                partnerDateAndTodoDifSumMap.put(date, exp);
+                partnerDateAndTodoCntMap.put(String.valueOf(date), cnt);
+                partnerDateAndTodoDifSumMap.put(String.valueOf(date), exp);
             }
 
             responseDto.setFriendAchievement(partnerDateAndTodoCntMap);
             responseDto.setFriendExpChanges(partnerDateAndTodoDifSumMap);
         }
-        
-    return responseDto;
+
+        return responseDto;
+
     }
 }
