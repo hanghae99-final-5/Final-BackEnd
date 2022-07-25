@@ -102,11 +102,11 @@ public class TodoController {
 //    }
 
     //통계
-//    @GetMapping("/statistics/daily")
-//    public StatisticsResponseDto getStatistics(@AuthenticationPrincipal UserDetailsImpl userDetails){
-//        Long memberId = userDetails.getMember().getId();
-//        return todoService.getStatistics(memberId);
-//    }
+    @GetMapping("/statistics/daily")
+    public StatisticsResponseDto getStatistics(@AuthenticationPrincipal UserDetailsImpl userDetails){
+        Long memberId = userDetails.getMember().getId();
+        return todoService.getStatistics(memberId);
+    }
 
     @GetMapping("/statistics/monthly")
     public StatisticsResponseDto getStatisticsMonthly(@AuthenticationPrincipal UserDetailsImpl userDetails){
