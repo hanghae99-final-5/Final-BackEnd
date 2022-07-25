@@ -398,7 +398,7 @@ public class TodoService {
         for (TodoDetailsResponseDto dto : todoDetailsList) {
             LocalDate date = dto.getDate();
             Long cnt = dto.getCnt();
-            int exp = dto.getExp();
+            int exp = dto.getExp() * 5;
 
             myDateAndTodoCntMap.put(date, cnt);
             myDateAndDifSumMap.put(date, exp);
@@ -420,7 +420,7 @@ public class TodoService {
             for (TodoDetailsResponseDto dto : partnerTodoDetailsList) {
                 LocalDate date = dto.getDate();
                 Long cnt = dto.getCnt();
-                int exp = dto.getExp();
+                int exp = dto.getExp() * 5;
 
                 partnerDateAndTodoCntMap.put(date, cnt);
                 partnerDateAndTodoDifSumMap.put(date, exp);
