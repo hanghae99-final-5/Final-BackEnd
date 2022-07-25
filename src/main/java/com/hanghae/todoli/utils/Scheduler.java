@@ -1,12 +1,8 @@
 package com.hanghae.todoli.utils;
 
 import com.hanghae.todoli.character.Character;
-import com.hanghae.todoli.character.CharacterRepository;
-import com.hanghae.todoli.member.Member;
-import com.hanghae.todoli.member.MemberRepository;
 import com.hanghae.todoli.todo.model.Todo;
 import com.hanghae.todoli.todo.repository.TodoRepository;
-import com.hanghae.todoli.todo.service.TodoService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
@@ -14,18 +10,13 @@ import org.springframework.stereotype.Component;
 import javax.transaction.Transactional;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 
 @RequiredArgsConstructor
 @Component // 스프링이 필요 시 자동으로 생성하는 클래스 목록에 추가합니다.
 @Transactional  //save 해줘야 하나?
 public class Scheduler {
     private final TodoRepository todoRepository;
-    private final CharacterRepository characterRepository;
-    private final MemberRepository memberRepository;
-    private final TodoService todoService;
     // 초, 분, 시, 일, 월, 주 순서
     @Scheduled(cron = "0 0 0 * * *")        // *은 상관없다는 뜻 저 코드는 새벽 12시에 매번 실행
     public void updatePrice() throws InterruptedException {
@@ -54,14 +45,4 @@ public class Scheduler {
             }
         }
     }
-//    // 초, 분, 시, 일, 월, 주 순서
-//    @Scheduled(cron = "0 09 19 * * *")        // *은 상관없다는 뜻 저 코드는 새벽 12시에 매번 실행
-//    public void updateTable() throws InterruptedException {
-//        System.out.println("DB 업데이트 실행");
-//        LocalDate now = LocalDate.parse(LocalDate.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd")));
-//        for(int i = 7; i >= 1; i--){
-//            todoRepository.updateDate(now.minusDays(i));
-//        }
-//
-//    }
 }

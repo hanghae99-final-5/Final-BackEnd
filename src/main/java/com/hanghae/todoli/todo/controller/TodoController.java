@@ -86,32 +86,27 @@ public class TodoController {
         todoService.deleteTodo(id, userDetails);
     }
 
-    //상대방 투두 조회
-    //  TODO : 파트너 투두 조회
-    //      1. 로그인한 유저의 매칭 상태 검사
-    //      2. 매칭중이 아니라면 매칭중이지 않다는 에러 메시지
-    //      3. 매칭중이라면 매칭중인 파트너 아이디 조회
-    //      4. 투두에 저장되어있는 작정자가 파트너 아이디인 투두 조회
     @GetMapping("/todos/pair")
     public PairTodoResponseDto getPairTodos(@AuthenticationPrincipal UserDetailsImpl userDetails) {
         return todoService.getPairTodos(userDetails);
     }
-//    @GetMapping("/todos/pair")
-//    public TodoResponseDto getPairTodos(@PathVariable Long memberId, @AuthenticationPrincipal UserDetailsImpl userDetails) {
-//        return todoService.getPairTodos(memberId, userDetails);
-//    }
 
-    //통계
+    //일간 통계
     @GetMapping("/statistics/daily")
     public StatisticsResponseDto getStatistics(@AuthenticationPrincipal UserDetailsImpl userDetails){
-        Long memberId = userDetails.getMember().getId();
-        return todoService.getStatistics(memberId);
+        return todoService.getStatistics(userDetails);
     }
 
+    //월간 통계
     @GetMapping("/statistics/monthly")
     public StatisticsResponseDto getStatisticsMonthly(@AuthenticationPrincipal UserDetailsImpl userDetails){
-
         return todoService.getStatisticsMonthly(userDetails);
+    }
+
+    //주간 통계
+    @GetMapping("/statistics/weekly")
+    public StatisticsResponseDto getStatisticsWeekly(@AuthenticationPrincipal UserDetailsImpl userDetails){
+        return todoService.getStatisticsWeekly(userDetails);
     }
 
 }
