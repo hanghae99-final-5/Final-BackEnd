@@ -3,6 +3,8 @@ package com.hanghae.todoli.member;
 import com.hanghae.todoli.googleLogin.GetSocialOAuthRes;
 import com.hanghae.todoli.googleLogin.OAuthService;
 import com.hanghae.todoli.googleLogin.SocialLoginType;
+import com.hanghae.todoli.member.dto.LoginRequestDto;
+import com.hanghae.todoli.member.dto.SignupRequestDto;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;

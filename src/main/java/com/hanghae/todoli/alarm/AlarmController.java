@@ -1,8 +1,6 @@
-package com.hanghae.todoli.controller;
+package com.hanghae.todoli.alarm;
 
 
-import com.hanghae.todoli.alarm.AlarmResponseDto;
-import com.hanghae.todoli.alarm.AlarmService;
 import com.hanghae.todoli.security.UserDetailsImpl;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiResponse;
