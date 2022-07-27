@@ -35,7 +35,8 @@ public class TodoRepositoryImpl implements TodoRepositoryCustom {
                 .where(
                         todo.completionState.eq(true),
                         member.id.eq(id),
-                        todo.completionDate.between(start, now) // start : 현재 날짜 기준 - 7 , now : 현재 날짜 기준 - 1
+                        todo.completionDate.between(start, now), // start : 현재 날짜 기준 - 7 , now : 현재 날짜 기준 - 1
+                        todo.todoType.eq(2)
                 )
                 .groupBy(todo.completionDate)
                 .fetch();
@@ -58,7 +59,8 @@ public class TodoRepositoryImpl implements TodoRepositoryCustom {
                 .where(
                         todo.completionState.eq(true),
                         member.id.eq(id),
-                        todo.completionDate.between(startMonth, lastMonth)
+                        todo.completionDate.between(startMonth, lastMonth),
+                        todo.todoType.eq(2)
                 )
                 .groupBy(todo.completionDate.month())
                 .fetch();
@@ -76,7 +78,8 @@ public class TodoRepositoryImpl implements TodoRepositoryCustom {
                 .where(
                         todo.completionState.eq(true),
                         member.id.eq(id),
-                        todo.completionDate.between(startWeek, lastWeek)
+                        todo.completionDate.between(startWeek, lastWeek),
+                        todo.todoType.eq(2)
                 ).fetchOne();
     }
 }
