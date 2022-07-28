@@ -122,8 +122,8 @@ public class TodoController {
     })
     @ApiOperation(value = "투두 조회 메소드", notes = "7일 전 까지의 사용자 정보(투두 달성률, 얻은 exp)를 조회하는 api 입니다.")
     @GetMapping("/statistics/daily")
-    public StatisticsResponseDto getStatistics(@AuthenticationPrincipal UserDetailsImpl userDetails) {
-        return statisticsService.getStatistics(userDetails);
+    public StatisticsResponseDto getStatisticsDaily(@AuthenticationPrincipal UserDetailsImpl userDetails) {
+        return statisticsService.getStatisticsDaily(userDetails);
     }
 
     //월간 통계

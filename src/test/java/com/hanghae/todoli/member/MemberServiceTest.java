@@ -6,13 +6,16 @@ import com.hanghae.todoli.exception.CustomException;
 import com.hanghae.todoli.member.dto.LoginRequestDto;
 import com.hanghae.todoli.member.dto.SignupRequestDto;
 import com.hanghae.todoli.security.jwt.JwtTokenProvider;
+import com.hanghae.todoli.utils.Validator;
 import org.apache.catalina.connector.Response;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.mockito.Spy;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -36,6 +39,9 @@ class MemberServiceTest {
     private BasicItemRegister basicItemRegister;
     @Mock
     private JwtTokenProvider jwtTokenProvider;
+    @Spy
+    @InjectMocks
+    private Validator validator;
 
     MemberService memberService;
 
@@ -78,7 +84,8 @@ class MemberServiceTest {
                 passwordEncoder,
                 memberRepository,
                 basicItemRegister,
-                jwtTokenProvider
+                jwtTokenProvider,
+                validator
         );
         this.passwordEncoder = new BCryptPasswordEncoder();
 
@@ -139,7 +146,8 @@ class MemberServiceTest {
                 passwordEncoder,
                 memberRepository,
                 basicItemRegister,
-                jwtTokenProvider
+                jwtTokenProvider,
+                validator
         );
         username = "test@naver.com";
         password = "password";
@@ -171,7 +179,8 @@ class MemberServiceTest {
                 passwordEncoder,
                 memberRepository,
                 basicItemRegister,
-                jwtTokenProvider
+                jwtTokenProvider,
+                validator
         );
         username = "test@naver.com";
         password = "wrongPassword";
@@ -199,7 +208,8 @@ class MemberServiceTest {
                 passwordEncoder,
                 memberRepository,
                 basicItemRegister,
-                jwtTokenProvider
+                jwtTokenProvider,
+                validator
         );
         username = "test123@naver.com";
         password = "password";

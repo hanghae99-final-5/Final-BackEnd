@@ -34,7 +34,7 @@ public class StatisticsService {
 
     //일간 통계
     @Transactional
-    public StatisticsResponseDto getStatistics(UserDetailsImpl userDetails) {
+    public StatisticsResponseDto getStatisticsDaily(UserDetailsImpl userDetails) {
         LocalDate lastDate = LocalDate.parse(LocalDate.now().minusDays(1)
                 .format(DateTimeFormatter.ofPattern("yyyy-MM-dd")));
         LocalDate startDate = lastDate.minusDays(6);

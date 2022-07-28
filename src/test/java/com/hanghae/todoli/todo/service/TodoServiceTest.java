@@ -13,10 +13,14 @@ import com.hanghae.todoli.todo.dto.*;
 import com.hanghae.todoli.todo.model.Todo;
 import com.hanghae.todoli.todo.repository.TodoRepository;
 import com.hanghae.todoli.todo.service.TodoService;
+import com.hanghae.todoli.utils.Validator;
 import org.junit.jupiter.api.*;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.mockito.Spy;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
@@ -39,6 +43,10 @@ class TodoServiceTest {
     private MatchingRepository matchingRepository;
     @Mock
     private AlarmRepository alarmRepository;
+
+    @Spy
+    @InjectMocks
+    Validator validator;
 
     TodoService todoService;
 
@@ -119,7 +127,8 @@ class TodoServiceTest {
                 todoRepository,
                 memberRepository,
                 matchingRepository,
-                alarmRepository
+                alarmRepository,
+                validator
         );
 
     }
@@ -184,15 +193,16 @@ class TodoServiceTest {
                     endDate,
                     difficulty,
                     todoType);
-            //when
+//            when
+
             CustomException exception1 = Assertions.assertThrows(CustomException.class,
                     () -> todoService.registerTodo(todoRegisterDto1, userDetails));
             CustomException exception2 = Assertions.assertThrows(CustomException.class,
                     () -> todoService.registerTodo(todoRegisterDto2, userDetails));
 
             //then
-            Assertions.assertEquals("Todo 내용을 입력해주세요", exception1.getErrorCode().getMessage());
-            Assertions.assertEquals("Todo 내용을 입력해주세요", exception2.getErrorCode().getMessage());
+            Assertions.assertEquals("내용을 입력해주세요", exception1.getErrorCode().getMessage());
+            Assertions.assertEquals("내용을 입력해주세요", exception2.getErrorCode().getMessage());
         }
 
         @Test
@@ -631,7 +641,7 @@ class TodoServiceTest {
             CustomException exception = Assertions.assertThrows(CustomException.class,
                     () -> todoService.todoModify(id, todoModifyDto, userDetails));
             //then
-            Assertions.assertEquals("Todo 내용을 입력해주세요", exception.getErrorCode().getMessage());
+            Assertions.assertEquals("내용을 입력해주세요", exception.getErrorCode().getMessage());
         }
     }
 
