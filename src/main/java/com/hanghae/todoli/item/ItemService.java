@@ -8,7 +8,7 @@ import com.hanghae.todoli.equipitem.EquipItemRepository;
 import com.hanghae.todoli.exception.CustomException;
 import com.hanghae.todoli.exception.ErrorCode;
 import com.hanghae.todoli.inventory.Inventory;
-import com.hanghae.todoli.inventory.InventoryRepository;
+import com.hanghae.todoli.inventory.repository.InventoryRepository;
 import com.hanghae.todoli.item.Dto.ExistItemListDto;
 import com.hanghae.todoli.item.Dto.ItemRequestDto;
 import com.hanghae.todoli.item.Dto.ItemResponseDto;
@@ -40,7 +40,10 @@ public class ItemService {
         Long memberId = userDetails.getMember().getId();
         Member member = getMember(memberId);
         Character character = member.getCharacter();
-        return existItemList(character);
+        Long id = character.getId();
+        return inventoryRepository.findTest(id);
+
+//        return existItemList(character);
     }
 
     //가지고 있는 아이템의 정보들을 리턴(가지고 있는 아이템 조회에서 쓰인다.)

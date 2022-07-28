@@ -7,7 +7,7 @@ import com.hanghae.todoli.equipitem.EquipItemRepository;
 import com.hanghae.todoli.exception.CustomException;
 import com.hanghae.todoli.exception.ErrorCode;
 import com.hanghae.todoli.inventory.Inventory;
-import com.hanghae.todoli.inventory.InventoryRepository;
+import com.hanghae.todoli.inventory.repository.InventoryRepository;
 import com.hanghae.todoli.item.Item;
 import com.hanghae.todoli.item.ItemRepository;
 import lombok.RequiredArgsConstructor;
