@@ -2,11 +2,15 @@ package com.hanghae.todoli.member;
 
 import com.hanghae.todoli.exception.CustomException;
 import com.hanghae.todoli.exception.ErrorCode;
+import com.hanghae.todoli.security.jwt.JwtTokenProvider;
+import com.hanghae.todoli.member.dto.LoginRequestDto;
+import com.hanghae.todoli.member.dto.SignupRequestDto;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import javax.servlet.http.HttpServletResponse;
 import java.util.Optional;
 
 @Service
@@ -17,10 +21,11 @@ public class MemberService {
     private final PasswordEncoder passwordEncoder;
     private final MemberRepository memberRepository;
     private final BasicItemRegister basicItemRegister;
+    private final JwtTokenProvider jwtTokenProvider;
 
     //회원가입
     @Transactional
-    public void signup(SignupRequestDto signupRequestDto) {
+    public String signup(SignupRequestDto signupRequestDto) {
         String username = signupRequestDto.getUsername();
         String nickname = signupRequestDto.getNickname();
 
@@ -28,22 +33,31 @@ public class MemberService {
 
         String password = passwordEncoder.encode(signupRequestDto.getPassword());
 
-        // TODO : 2022/07/12 refactoring - 종석
         //멤버생성과 동시에 캐릭터, 장착아이템 같이 생성, 기본아이템 제공 및 장착까지
-        basicItemRegister.basicItem(username, nickname, password);
+        Member member = basicItemRegister.basicItem(username, nickname, password);
+        memberRepository.save(member);
+
+        return "회원가입 완료";
     }
 
     @Transactional
-    public Member login(LoginRequestDto loginRequestDto) {
+    public Member login(LoginRequestDto loginRequestDto, HttpServletResponse response) {
         String username = loginRequestDto.getUsername();
-        Member Member = memberRepository.findByUsername(username).orElseThrow(
+        Member member = memberRepository.findByUsername(username).orElseThrow(
                 () -> new CustomException(ErrorCode.NOT_FOUND_MEMBER)
         );
 
-        if (!passwordEncoder.matches(loginRequestDto.getPassword(), Member.getPassword())) {
+        if (!passwordEncoder.matches(loginRequestDto.getPassword(), member.getPassword())) {
             throw new CustomException(ErrorCode.PASSWORD_NOT_SAME);
         }
-        return Member;
+
+        //토큰 생성
+
+        String token = jwtTokenProvider.createToken(member.getUsername(), member.getNickname());
+        response.addHeader("Authorization", token);
+        System.out.println(token);
+
+        return member;
     }
 
     //아이디 중복확인

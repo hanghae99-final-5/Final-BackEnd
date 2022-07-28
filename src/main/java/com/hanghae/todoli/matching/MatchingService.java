@@ -7,6 +7,7 @@ import com.hanghae.todoli.character.Dto.ThumbnailDto;
 import com.hanghae.todoli.character.Dto.ThumbnailDtoList;
 import com.hanghae.todoli.exception.CustomException;
 import com.hanghae.todoli.exception.ErrorCode;
+import com.hanghae.todoli.matching.dto.MatchingResponseDto;
 import com.hanghae.todoli.member.Member;
 import com.hanghae.todoli.member.MemberRepository;
 import com.hanghae.todoli.security.UserDetailsImpl;
@@ -75,7 +76,10 @@ public class MatchingService {
 
     //상대방 초대
     @Transactional
-    public void inviteMatching(Long memberId, UserDetailsImpl userDetails) {
+    public Alarm inviteMatching(Long memberId, UserDetailsImpl userDetails) {
+        if (userDetails.getMember().getMatchingState()) {
+            throw new CustomException(ErrorCode.MATCHED_MEMBER);
+        }
         //상대방 찾기
         Member targetMember = memberRepository.findById(memberId).orElseThrow(
                 () -> new CustomException(ErrorCode.NOT_FOUND_SEARCHED_MEMBER)
@@ -96,11 +100,16 @@ public class MatchingService {
                 .build();
 
         alarmRepository.save(alarm);
+
+        return alarm;
     }
 
     //매칭 취소
     @Transactional
     public void cancelMatching(Long memberId, UserDetailsImpl userDetails) {
+        if (!userDetails.getMember().getMatchingState()) {
+            throw new CustomException(ErrorCode.NOT_MATCHED_MEMBER);
+        }
         Long id = userDetails.getMember().getId();
         Member member = memberRepository.findById(id).orElseThrow(
                 () -> new CustomException(ErrorCode.NOT_FOUND_MEMBER)
@@ -119,13 +128,16 @@ public class MatchingService {
         member.changeMatchingState(member);
         targetMember.changeMatchingState(targetMember);
         //멤버의 투두리스트 삭제
-        todoRepository.deleteAllByWriterIdAndTodoType(member.getId(), 1);
-        todoRepository.deleteAllByWriterIdAndTodoType(targetMember.getId(), 1);
+        todoRepository.deleteAllByWriterIdAndTodoType(member.getId(), 2);
+        todoRepository.deleteAllByWriterIdAndTodoType(targetMember.getId(), 2);
     }
 
     //매칭 수락
     @Transactional
     public void acceptMatching(Long senderId, UserDetailsImpl userDetails) {
+        if (userDetails.getMember().getMatchingState()) {
+            throw new CustomException(ErrorCode.MATCHED_MEMBER);
+        }
         Long id = userDetails.getMember().getId();
         Member member = memberRepository.findById(id).orElseThrow(
                 () -> new CustomException(ErrorCode.NOT_FOUND_MEMBER));

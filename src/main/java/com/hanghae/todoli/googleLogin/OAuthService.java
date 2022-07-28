@@ -61,7 +61,8 @@ public class OAuthService {
 
                     // TODO : 2022/07/12 refactoring - 종석
                     //멤버생성과 동시에 캐릭터, 장착아이템 같이 생성
-                    basicItemRegister.basicItem(username, nickname, password);
+                    Member member = basicItemRegister.basicItem(username, nickname, password);
+                    memberRepository.save(member);
                 }
 
                 if (username != null) {

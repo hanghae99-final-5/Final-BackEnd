@@ -1,4 +1,4 @@
-package com.hanghae.todoli.matching;
+package com.hanghae.todoli.matching.dto;
 
 import com.hanghae.todoli.character.Dto.ThumbnailDto;
 import lombok.AllArgsConstructor;

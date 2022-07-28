@@ -4,15 +4,19 @@ import com.hanghae.todoli.member.Member;
 import com.hanghae.todoli.todo.dto.TodoModifyDto;
 import com.hanghae.todoli.todo.dto.TodoRegisterDto;
 import com.hanghae.todoli.utils.Timestamped;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 import javax.persistence.*;
 import java.time.LocalDate;
 
 @Getter
+@Setter
 @Entity
 @NoArgsConstructor
+@AllArgsConstructor
 public class Todo extends Timestamped {
 
     @Id
@@ -38,6 +42,11 @@ public class Todo extends Timestamped {
     // 인증 가능 날짜
     @Column
     private LocalDate confirmDate;
+
+    // 완료 날짜
+    @Column
+    private LocalDate completionDate;
+
 
     // 투두 난이도
     @Column
@@ -87,6 +96,10 @@ public class Todo extends Timestamped {
 
     public void setConfirmState(Boolean confirmState) {
         this.confirmState = confirmState;
+    }
+
+    public void setCompletionDate(LocalDate completionDate){
+        this.completionDate = completionDate;
     }
 
     public void update(Member member, TodoModifyDto registerDto) {

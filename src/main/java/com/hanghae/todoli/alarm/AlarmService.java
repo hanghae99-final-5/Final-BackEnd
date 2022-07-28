@@ -38,7 +38,15 @@ public class AlarmService {
             // TODO : 2022/07/12 refactoring - 종석
             List<ThumbnailDto> senderEquipItems = thumbnailDtoList.getThumbnailDtos(sender);
 
-            AlarmResponseDto alarmResponseDto = AlarmResponseDto.builder().alarmId(alarm.getId()).alarmState(alarm.getAlarmState()).message(alarm.getMessage()).alarmDate(alarm.getAlarmDate()).alarmType(alarm.getAlarmType()).senderId(alarm.getSenderId()).thumbnailCharImg(new CharacterImg().getThumbnailCharImg()).senderEquipItems(senderEquipItems).build();
+            AlarmResponseDto alarmResponseDto = AlarmResponseDto.builder()
+                    .alarmId(alarm.getId())
+                    .alarmState(alarm.getAlarmState())
+                    .message(alarm.getMessage())
+                    .alarmDate(alarm.getAlarmDate())
+                    .alarmType(alarm.getAlarmType())
+                    .senderId(alarm.getSenderId())
+                    .thumbnailCharImg(new CharacterImg().getThumbnailCharImg())
+                    .senderEquipItems(senderEquipItems).build();
             alarmList.add(alarmResponseDto);
         }
         return alarmList;

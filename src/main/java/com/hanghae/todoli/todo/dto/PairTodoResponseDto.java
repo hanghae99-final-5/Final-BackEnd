@@ -1,6 +1,6 @@
 package com.hanghae.todoli.todo.dto;
 
-import com.hanghae.todoli.matching.MatchingStatePartnerDto;
+import com.hanghae.todoli.matching.dto.MatchingStatePartnerDto;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 
