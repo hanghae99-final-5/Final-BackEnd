@@ -1,10 +1,7 @@
 package com.hanghae.todoli.inventory.repository;
 
-import com.hanghae.todoli.character.QCharacter;
-import com.hanghae.todoli.inventory.QInventory;
 import com.hanghae.todoli.item.Dto.ExistItemListDto;
 import com.hanghae.todoli.item.Dto.QExistItemListDto;
-import com.hanghae.todoli.item.QItem;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import lombok.RequiredArgsConstructor;
 
@@ -20,7 +17,7 @@ public class InventoryRepositoryImpl implements InventoryRepositoryCustom {
     private final JPAQueryFactory queryFactory;
 
     @Override
-    public List<ExistItemListDto> findTest(Long charId) {
+    public List<ExistItemListDto> findExistItems(Long charId) {
 
         return queryFactory
                 .select(new QExistItemListDto(

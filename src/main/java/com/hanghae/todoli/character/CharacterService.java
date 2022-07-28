@@ -4,11 +4,10 @@ import com.hanghae.todoli.character.Dto.CharResponseDto;
 import com.hanghae.todoli.character.Dto.FooterResponseDto;
 import com.hanghae.todoli.character.Dto.ThumbnailDto;
 import com.hanghae.todoli.character.Dto.ThumbnailDtoList;
+import com.hanghae.todoli.character.repository.CharacterRepository;
 import com.hanghae.todoli.equipitem.EquipItemDto;
 import com.hanghae.todoli.exception.CustomException;
 import com.hanghae.todoli.exception.ErrorCode;
-import com.hanghae.todoli.item.Item;
-import com.hanghae.todoli.item.ItemRepository;
 import com.hanghae.todoli.matching.Matching;
 import com.hanghae.todoli.matching.MatchingRepository;
 import com.hanghae.todoli.member.Member;
@@ -18,7 +17,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 
 @RequiredArgsConstructor
@@ -28,8 +27,8 @@ public class CharacterService {
 
     private final MatchingRepository matchingRepository;
     private final MemberRepository memberRepository;
-    private final ItemRepository itemRepository;
     private final ThumbnailDtoList thumbnailDtoList;
+    private final CharacterRepository characterRepository;
 
     //캐릭터 상태 조회
     public CharResponseDto getCharState(UserDetailsImpl userDetails) {
@@ -56,49 +55,6 @@ public class CharacterService {
         return getCharResponseDto(partner);
     }
 
-
-    private CharResponseDto getCharResponseDto(Member member) {
-        Character c = member.getCharacter();
-        List<EquipItemDto> memberItems = getListDtos(c);
-
-        return CharResponseDto.builder()
-                .matchingState(member.getMatchingState())
-                .level(c.getLevel())
-                .hp(c.getHp())
-                .maxHp(c.getMaxHp())
-                .exp(c.getExp())
-                .maxExp(c.getMaxExp())
-                .money(c.getMoney())
-                .charImg(c.getCharImg())
-                .equipItems(memberItems)
-                .nickname(member.getNickname())
-                .build();
-    }
-
-
-    //캐릭터가 장착한 아이템에서 필요한 정보 가져오기
-    private List<EquipItemDto> getListDtos(Character c) {
-        Long hairId = c.getEquipItem().getHairId();
-        Long accessoryId = c.getEquipItem().getAccessoryId();
-        Long clothId = c.getEquipItem().getClothId();
-
-        List<EquipItemDto> itemList = new ArrayList<>();
-
-        if (clothId != null) {
-            EquipItemDto cloth = addItem(clothId);
-            itemList.add(cloth);
-        }
-        if (hairId != null) {
-            EquipItemDto hair = addItem(hairId);
-            itemList.add(hair);
-        }
-        if (accessoryId != null) {
-            EquipItemDto accessory = addItem(accessoryId);
-            itemList.add(accessory);
-        }
-        return itemList;
-    }
-
     //푸터용 캐릭터 조회
     public FooterResponseDto getCharacterInFooter(UserDetailsImpl userDetails) {
         Long myId = userDetails.getMember().getId();
@@ -111,7 +67,6 @@ public class CharacterService {
         Member partnerInfo = memberRepository.findById(partnerId).orElseThrow(
                 () -> new CustomException(ErrorCode.NOT_FOUND_PARTNER));
 
-        // TODO : 2022/07/12 refactoring - 종석
         List<ThumbnailDto> myEquipItemList = thumbnailDtoList.getThumbnailDtos(myInfo);
         List<ThumbnailDto> partnerEquipItemList = thumbnailDtoList.getThumbnailDtos(partnerInfo);
 
@@ -125,17 +80,32 @@ public class CharacterService {
                 .partnerEquipItems(partnerEquipItemList)
                 .build();
     }
-
-    //장착된 아이템에서 원하는 정보만 가져오기
-    private EquipItemDto addItem(Long itemId) {
-        EquipItemDto itemListDto = new EquipItemDto();
-        if (itemId != null) {
-            Item item = itemRepository.findById(itemId).orElse(null);
-            itemListDto.setItemId(itemId);
-            itemListDto.setEquipImg(item.getEquipImg());    //Objects.requireNonNull(item).getEquipImg()
-            itemListDto.setCategory(item.getCategory());
-        }
-        return itemListDto;
+    private CharResponseDto getCharResponseDto(Member member) {
+        Character c = member.getCharacter();
+        List<EquipItemDto> charEquipItems = characterRepository.getEquipItems(c.getId());
+        charEquipItems.sort(new Comparator<>() {
+            @Override
+            public int compare(EquipItemDto o1, EquipItemDto o2) {
+                char c1 = o1.getCategory().toString().charAt(2);
+                char c2 = o2.getCategory().toString().charAt(2);
+                if (c1 < c2) {
+                    return 1;
+                }
+                return -1;
+            }
+        });
+        return CharResponseDto.builder()
+                .matchingState(member.getMatchingState())
+                .level(c.getLevel())
+                .hp(c.getHp())
+                .maxHp(c.getMaxHp())
+                .exp(c.getExp())
+                .maxExp(c.getMaxExp())
+                .money(c.getMoney())
+                .charImg(c.getCharImg())
+                .equipItems(charEquipItems)
+                .nickname(member.getNickname())
+                .build();
     }
 
     //matching 검사

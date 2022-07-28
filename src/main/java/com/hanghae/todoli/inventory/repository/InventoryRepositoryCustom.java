@@ -7,5 +7,5 @@ import java.util.List;
 
 public interface InventoryRepositoryCustom {
 
-    List<ExistItemListDto> findTest(@Param("charId") Long charId);
+    List<ExistItemListDto> findExistItems(@Param("charId") Long charId);
 }

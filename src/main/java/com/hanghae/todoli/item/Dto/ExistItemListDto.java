@@ -16,7 +16,6 @@ public class ExistItemListDto {
     private String viewImg;
     private Category category;
 
-
     @QueryProjection
     public ExistItemListDto(Long itemId, String name, String viewImg, Category category) {
         this.itemId = itemId;

@@ -23,19 +23,19 @@ public class AlarmService {
     private final MemberRepository memberRepository;
     private final ThumbnailDtoList thumbnailDtoList;
 
-    //전체 알람조회
+    //자신 알람조회
     public List<AlarmResponseDto> getAlarms(UserDetailsImpl userDetails) {
         Long id = userDetails.getMember().getId();
 
-        List<Alarm> alarms = alarmRepository.findAllByMemberIdOrderByIdDesc(id);  // a의 알람전체
+        List<Alarm> alarms = alarmRepository.findAllByMemberIdOrderByIdDesc(id);
 
         List<AlarmResponseDto> alarmList = new ArrayList<>();
 
         for (Alarm alarm : alarms) {
             Long senderId = alarm.getSenderId();
-            Member sender = memberRepository.findById(senderId).orElseThrow(() -> new CustomException(ErrorCode.NOT_FOUND_MEMBER));
+            Member sender = memberRepository.findById(senderId).orElseThrow(
+                    () -> new CustomException(ErrorCode.NOT_FOUND_MEMBER));
 
-            // TODO : 2022/07/12 refactoring - 종석
             List<ThumbnailDto> senderEquipItems = thumbnailDtoList.getThumbnailDtos(sender);
 
             AlarmResponseDto alarmResponseDto = AlarmResponseDto.builder()

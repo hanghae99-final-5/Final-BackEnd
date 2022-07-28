@@ -1,10 +1,8 @@
 package com.hanghae.todoli.item;
 
 import com.hanghae.todoli.character.Character;
-import com.hanghae.todoli.character.CharacterRepository;
 import com.hanghae.todoli.equipitem.EquipItem;
 import com.hanghae.todoli.equipitem.EquipItemDto;
-import com.hanghae.todoli.equipitem.EquipItemRepository;
 import com.hanghae.todoli.exception.CustomException;
 import com.hanghae.todoli.exception.ErrorCode;
 import com.hanghae.todoli.inventory.Inventory;
@@ -30,44 +28,13 @@ public class ItemService {
 
     private final ItemRepository itemRepository;
     private final InventoryRepository inventoryRepository;
-    private final CharacterRepository characterRepository;
-    private final EquipItemRepository equipItemRepository;
     private final MemberRepository memberRepository;
 
     //가지고있는 아이템들 조회
     @Transactional
     public List<ExistItemListDto> getExistItemList(UserDetailsImpl userDetails) {
         Long memberId = userDetails.getMember().getId();
-        Member member = getMember(memberId);
-        Character character = member.getCharacter();
-        Long id = character.getId();
-        return inventoryRepository.findTest(id);
-
-//        return existItemList(character);
-    }
-
-    //가지고 있는 아이템의 정보들을 리턴(가지고 있는 아이템 조회에서 쓰인다.)
-    private List<ExistItemListDto> existItemList(Character c) {
-        List<ExistItemListDto> existItemList = new ArrayList<>();
-        List<Inventory> inventory = c.getInventory();
-        for (Inventory i : inventory) {
-
-            Item item = i.getItem();
-
-            Long itemId = item.getId();
-            String name = item.getName();
-            String viewImg = item.getViewImg();
-            Category category = item.getCategory();
-
-            ExistItemListDto existItemListDto = ExistItemListDto.builder()
-                    .itemId(itemId)
-                    .name(name)
-                    .viewImg(viewImg)
-                    .category(category)
-                    .build();
-            existItemList.add(existItemListDto);
-        }
-        return existItemList;
+        return inventoryRepository.findExistItems(memberId);
     }
 
     //상점 아이템 목록 조회
@@ -81,7 +48,6 @@ public class ItemService {
         Member member = getMember(memberId);
 
         List<Inventory> getInventory = member.getCharacter().getInventory();
-
         for (Inventory inventory : getInventory) {
             Long itemId = inventory.getItem().getId();
             ExistItemListDto.ExistInventoriesDto existInventoriesDto = ExistItemListDto.ExistInventoriesDto.builder()
@@ -122,20 +88,17 @@ public class ItemService {
         if (exist == null) {
             //계산
             if (character.getMoney() >= buyItem.getPrice()) {
-                character.minMoney(buyItem.getPrice());     //charRepository에 저장해야하나???
-                characterRepository.save(character);
+                character.minMoney(buyItem.getPrice());
+
             } else {
                 throw new CustomException(ErrorCode.NOT_ENOUGH_MONEY);
             }
-
             Inventory inventory = new Inventory(buyItem, character);
             inventoryRepository.save(inventory);
 
         } else {
             throw new CustomException(ErrorCode.ALREADY_GOT_ITEM);
         }
-
-
     }
 
     //아이템 장착
@@ -164,19 +127,7 @@ public class ItemService {
                 equipItem.updateCloth(itemId);
                 break;
         }
-        equipItemRepository.save(equipItem);          //save 안해줘도 되나?
 
-        return getEquipItemDto(item);
-    }
-
-    //아이템 찾기
-    private Item findItem(Long itemId) {
-        return itemRepository.findById(itemId).orElseThrow(
-                () -> new CustomException(ErrorCode.NO_ITEM));
-    }
-
-    //장착하는 아이템에 대한 정보를 가져온다.
-    private EquipItemDto getEquipItemDto(Item item) {
         return EquipItemDto.builder()
                 .itemId(item.getId())
                 .equipImg(item.getEquipImg())
@@ -184,8 +135,7 @@ public class ItemService {
                 .build();
     }
 
-
-    // 아이템 등록
+    //아이템 등록
     @Transactional
     public void inputItem(ItemRequestDto requestDto) {
         String name = requestDto.getName();
@@ -212,5 +162,11 @@ public class ItemService {
     private Member getMember(Long memberId) {
         return memberRepository.findById(memberId).orElseThrow(
                 () -> new CustomException(ErrorCode.NOT_FOUND_MEMBER));
+    }
+
+    //아이템 찾기
+    private Item findItem(Long itemId) {
+        return itemRepository.findById(itemId).orElseThrow(
+                () -> new CustomException(ErrorCode.NO_ITEM));
     }
 }
