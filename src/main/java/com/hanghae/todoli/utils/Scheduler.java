@@ -17,7 +17,6 @@ import java.util.List;
 @Transactional  //save 해줘야 하나?
 public class Scheduler {
     private final TodoRepository todoRepository;
-
     // 초, 분, 시, 일, 월, 주 순서
     @Scheduled(cron = "0 0 0 * * *")        // *은 상관없다는 뜻 저 코드는 새벽 12시에 매번 실행
     public void updatePrice() throws InterruptedException {
@@ -41,17 +40,9 @@ public class Scheduler {
                     todo.completionState();
                 }
                 //인증상태가 false.인증을 안한 상태
-                if (!confirmState) {
+                if (!confirmState)
                     character.minHpAndLv();
-                }
             }
         }
-    }
-
-    @Scheduled(cron = "0 0 0 * * *")        // *은 상관없다는 뜻 저 코드는 새벽 12시에 매번 실행
-    public void updateRanking() throws InterruptedException {
-        System.out.println("랭킹 업데이트 실행");
-
-
     }
 }

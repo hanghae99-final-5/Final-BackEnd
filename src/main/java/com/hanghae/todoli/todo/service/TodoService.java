@@ -8,8 +8,8 @@ import com.hanghae.todoli.exception.CustomException;
 import com.hanghae.todoli.exception.ErrorCode;
 import com.hanghae.todoli.matching.Matching;
 import com.hanghae.todoli.matching.MatchingRepository;
-import com.hanghae.todoli.matching.MatchingStatePartnerDto;
-import com.hanghae.todoli.matching.MatchingStateResponseDto;
+import com.hanghae.todoli.matching.dto.MatchingStatePartnerDto;
+import com.hanghae.todoli.matching.dto.MatchingStateResponseDto;
 import com.hanghae.todoli.member.Member;
 import com.hanghae.todoli.member.MemberRepository;
 import com.hanghae.todoli.security.UserDetailsImpl;
@@ -18,13 +18,16 @@ import com.hanghae.todoli.todo.model.Todo;
 import com.hanghae.todoli.todo.repository.TodoRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
 import java.time.LocalDate;
+import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 
 @Slf4j
 @Service
@@ -62,7 +65,7 @@ public class TodoService {
 
     // 투두 등록
     @Transactional
-    public void registerTodo(TodoRegisterDto registerDto, UserDetailsImpl userDetails) {
+    public String registerTodo(TodoRegisterDto registerDto, UserDetailsImpl userDetails) {
 
         //매칭 아닐때 매칭투두 작성 에러처리
         if (!userDetails.getMember().getMatchingState() && registerDto.getTodoType() == 2) {
@@ -75,6 +78,7 @@ public class TodoService {
         // 새로운 투두
         Todo todo = new Todo(member, registerDto);
         todoRepository.save(todo);
+        return "투두 등록 성공";
     }
 
 
@@ -114,7 +118,10 @@ public class TodoService {
 //            alarm.setMessage(userDetails.getMember().getNickname() + "님이 인증하셨습니다.");
 //            alarmRepository.save(alarm);
 
-            return TodoConfirmDto.builder().todoId(todo.getId()).confirmState(todo.getConfirmState()).build();
+            return TodoConfirmDto.builder()
+                    .todoId(todo.getId())
+                    .confirmState(todo.getConfirmState())
+                    .build();
         } else {
             throw new CustomException(ErrorCode.FORBIDDEN_ACCESS);
         }
@@ -129,10 +136,15 @@ public class TodoService {
         Member member = getMember(memberId);
         if (todo.getTodoType() == 1) {
             todo.completionState();
+            //완료 날짜 삽입
+            LocalDate now = LocalDate.parse(LocalDate.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd")));
+            todo.setCompletionDate(now);
+
             return TodoCompletionDto.builder()
                     .todoId(todo.getId())
                     .completionState(todo.getCompletionState())
                     .build();
+
 
         } else if (todo.getTodoType() == 2) {
             if (!todo.getCompletionState() && todo.getConfirmState()) {
@@ -167,6 +179,10 @@ public class TodoService {
 
             calcLevelAndExp(character, exp);
 
+            //완료 날짜 삽입
+            LocalDate now = LocalDate.parse(LocalDate.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd")));
+            todo.setCompletionDate(now);
+
             return TodoCompletionDto.builder()
                     .todoId(todo.getId())
                     .completionState(todo.getCompletionState())
@@ -176,7 +192,7 @@ public class TodoService {
 
     // 투두 삭제
     @Transactional
-    public void deleteTodo(Long id, UserDetailsImpl userDetails) {
+    public String deleteTodo(Long id, UserDetailsImpl userDetails) {
         // 로그인 유저와 작성자가 일치?
         // 불일치시 메시지
         Todo todo = getTodo(id);
@@ -185,6 +201,8 @@ public class TodoService {
             throw new CustomException(ErrorCode.NOT_TODO_WRITER);
         }
         todoRepository.deleteById(id);
+
+        return "투두 삭제 성공";
     }
 
     //상대방 투두 조회
@@ -239,7 +257,7 @@ public class TodoService {
 
     // 투두 수정
     @Transactional
-    public void todoModify(Long todoId, TodoModifyDto registerDto, UserDetailsImpl userDetails) {
+    public Todo todoModify(Long todoId, TodoModifyDto registerDto, UserDetailsImpl userDetails) {
         // 투두 유무 확인
         Todo todo = getTodo(todoId);
 
@@ -261,6 +279,8 @@ public class TodoService {
 
         //투두 데이터
         todo.update(member, registerDto);
+
+        return todo;
     }
 
     // 투두 수정 조회
@@ -317,16 +337,16 @@ public class TodoService {
             throw new CustomException(ErrorCode.NO_INPUT_TODO_TYPE);
         }
         if (registerDto.getStartDate().isBefore(now)) {
-            throw new CustomException(ErrorCode.FORBIDDEN_START_DATE);
+            throw new CustomException(ErrorCode.BAD_REQUEST_START_DATE);
         }
         if (registerDto.getEndDate().isBefore(registerDto.getStartDate())) {
-            throw new CustomException(ErrorCode.FORBIDDEN_END_DATE);
+            throw new CustomException(ErrorCode.BAD_REQUEST_END_DATE);
         }
     }
 
-    private List<TodoInfoDto> getTodoInfoDtos(Long partnerId) {
+    private List<TodoInfoDto> getTodoInfoDtos(Long id) {
         List<TodoInfoDto> todoInfoDtoList = new ArrayList<>();
-        List<Todo> todos = todoRepository.findAllByWriterIdOrderByIdDesc(partnerId);
+        List<Todo> todos = todoRepository.findAllByWriterIdOrderByIdDesc(id);
         for (Todo todo : todos) {
             TodoInfoDto todoInfoDto = TodoInfoDto.builder()
                     .todoId(todo.getId())
@@ -344,5 +364,256 @@ public class TodoService {
             todoInfoDtoList.add(todoInfoDto);
         }
         return todoInfoDtoList;
+    }
+
+    //일간 통계
+    @Transactional
+    public StatisticsResponseDto getStatistics(UserDetailsImpl userDetails) {
+        LocalDate rNow = LocalDate.parse(LocalDate.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd")));
+        LocalDate now = LocalDate.parse(LocalDate.now().minusDays(1)
+                .format(DateTimeFormatter.ofPattern("yyyy-MM-dd")));
+        LocalDate start = now.minusDays(6);
+
+        Pageable pageable = PageRequest.of(0, 7, Sort.Direction.ASC, "completionDate");
+        StatisticsResponseDto responseDto = new StatisticsResponseDto();
+
+        //내 매칭상태 조회
+        Member member = getMember(userDetails.getMember().getId());
+        Boolean matchingState = member.getMatchingState();
+        responseDto.setMyMatchingState(matchingState);
+
+
+        //Map 초기화
+        Map<String, Long> myDateAndTodoCntMap = new LinkedHashMap<>();
+        Map<String, Integer> myDateAndDifSumMap = new LinkedHashMap<>();
+        Map<String, Long> partnerDateAndTodoCntMap = new LinkedHashMap<>();
+        Map<String, Integer> partnerDateAndTodoDifSumMap = new LinkedHashMap<>();
+        for (int i = 7; i >= 1; i--) {
+            LocalDate d = rNow.minusDays(i);
+            myDateAndTodoCntMap.put(String.valueOf(d), 0L);
+            myDateAndDifSumMap.put(String.valueOf(d), 0);
+            partnerDateAndTodoCntMap.put(String.valueOf(d), 0L);
+            partnerDateAndTodoDifSumMap.put(String.valueOf(d), 0);
+        }
+
+        //내 투두 갯수 및 날짜
+        List<TodoDetailsResponseDto> todoDetailsList =
+                todoRepository.findTodoDetails(start, now, userDetails.getMember().getId(), pageable);
+        for (TodoDetailsResponseDto dto : todoDetailsList) {
+            LocalDate date = dto.getDate();
+            Long cnt = dto.getCnt();
+            int exp = dto.getExp() * 5;
+
+            myDateAndTodoCntMap.put(String.valueOf(date), cnt);
+            myDateAndDifSumMap.put(String.valueOf(date), exp);
+        }
+        responseDto.setMyAchievement(myDateAndTodoCntMap);
+        responseDto.setMyExpChanges(myDateAndDifSumMap);
+
+
+        //파트너 정보
+        Matching matching = matchingRepository.getMatching(userDetails.getMember().getId()).orElse(null);
+        if (matching != null) {
+            Long searchedUserPartnerId = userDetails.equals(matching.getRequesterId())
+                    ? matching.getRespondentId() : matching.getRequesterId();
+            Member partner = memberRepository.findById(searchedUserPartnerId).orElseThrow(
+                    () -> new CustomException(ErrorCode.NOT_FOUND_PARTNER));
+            Long partnerId = partner.getId();
+
+            //파트너 투두 갯수 및 날짜
+            List<TodoDetailsResponseDto> partnerTodoDetailsList =
+                    todoRepository.findTodoDetails(start, now, partnerId, pageable);
+            for (TodoDetailsResponseDto dto : partnerTodoDetailsList) {
+                LocalDate date = dto.getDate();
+                Long cnt = dto.getCnt();
+                int exp = dto.getExp() * 5;
+
+                partnerDateAndTodoCntMap.put(String.valueOf(date), cnt);
+                partnerDateAndTodoDifSumMap.put(String.valueOf(date), exp);
+            }
+
+            responseDto.setFriendAchievement(partnerDateAndTodoCntMap);
+            responseDto.setFriendExpChanges(partnerDateAndTodoDifSumMap);
+        }
+
+        return responseDto;
+    }
+
+    //월간 통계
+    @Transactional
+    public StatisticsResponseDto getStatisticsMonthly(UserDetailsImpl userDetails) {
+
+        LocalDate startMonth = LocalDate.parse(LocalDate.now()
+                .minusMonths(7).withDayOfMonth(1)
+                .format(DateTimeFormatter.ofPattern("yyyy-MM-dd")));
+        LocalDate lastMonth = LocalDate.parse(LocalDate.now()
+                .minusMonths(1).withDayOfMonth(LocalDate.now().minusMonths(1).lengthOfMonth())
+                .format(DateTimeFormatter.ofPattern("yyyy-MM-dd")));
+
+        Pageable pageable = PageRequest.of(0, 6, Sort.Direction.ASC, "completionDate");
+        StatisticsResponseDto responseDto = new StatisticsResponseDto();
+
+        //내 매칭상태 조회
+        Member member = getMember(userDetails.getMember().getId());
+        Boolean matchingState = member.getMatchingState();
+        responseDto.setMyMatchingState(matchingState);
+
+        //Map 초기화
+        Map<String, Long> myDateAndTodoCntMap = new LinkedHashMap<>();
+        Map<String, Integer> myDateAndDifSumMap = new LinkedHashMap<>();
+        Map<String, Long> partnerDateAndTodoCntMap = new LinkedHashMap<>();
+        Map<String, Integer> partnerDateAndTodoDifSumMap = new LinkedHashMap<>();
+        for (int i = 6; i >= 1; i--) {
+            String month = LocalDate.now().minusMonths(i).format(DateTimeFormatter.ofPattern("M"));
+            myDateAndTodoCntMap.put(month, 0L);
+            myDateAndDifSumMap.put(month, 0);
+            partnerDateAndTodoCntMap.put(month, 0L);
+            partnerDateAndTodoDifSumMap.put(month, 0);
+        }
+
+        //내 투두 갯수 및 날짜
+        List<TodoDetailsResponseMonthlyDto> todoDetailsList =
+                todoRepository.findTodoDetailsMonthly(startMonth, lastMonth, userDetails.getMember().getId(), pageable);
+        for (TodoDetailsResponseMonthlyDto dto : todoDetailsList) {
+            Integer date = dto.getDate();
+            Long cnt = dto.getCnt();
+            int exp = dto.getExp() * 5;
+
+            myDateAndTodoCntMap.put(String.valueOf(date), cnt);
+            myDateAndDifSumMap.put(String.valueOf(date), exp);
+        }
+        responseDto.setMyAchievement(myDateAndTodoCntMap);
+        responseDto.setMyExpChanges(myDateAndDifSumMap);
+
+
+        //파트너 정보
+        Matching matching = matchingRepository.getMatching(userDetails.getMember().getId()).orElse(null);
+        if (matching != null) {
+            Long searchedUserPartnerId = userDetails.getMember().getId().equals(matching.getRequesterId())
+                    ? matching.getRespondentId()
+                    : matching.getRequesterId();
+            Member partner = memberRepository.findById(searchedUserPartnerId).orElseThrow(
+                    () -> new CustomException(ErrorCode.NOT_FOUND_PARTNER));
+            Long partnerId = partner.getId();
+
+            //파트너 투두 갯수 및 날짜
+            List<TodoDetailsResponseMonthlyDto> partnerTodoDetailsList =
+                    todoRepository.findTodoDetailsMonthly(startMonth, lastMonth, partnerId, pageable);
+            for (TodoDetailsResponseMonthlyDto dto : partnerTodoDetailsList) {
+                Integer date = dto.getDate();
+                Long cnt = dto.getCnt();
+                int exp = dto.getExp() * 5;
+
+                partnerDateAndTodoCntMap.put(String.valueOf(date), cnt);
+                partnerDateAndTodoDifSumMap.put(String.valueOf(date), exp);
+            }
+
+            responseDto.setFriendAchievement(partnerDateAndTodoCntMap);
+            responseDto.setFriendExpChanges(partnerDateAndTodoDifSumMap);
+        }
+
+        return responseDto;
+
+    }
+
+    //주간 통계
+    public StatisticsResponseDto getStatisticsWeekly(UserDetailsImpl userDetails) {
+
+        //4주전 날짜 계산 : 일요일 기준으로 맞춤
+        String sWeek = String.valueOf(LocalDate.now().minusWeeks(4));
+        Calendar startWeek = Calendar.getInstance();
+        String[] sDates = sWeek.split("-");
+        int sYear = Integer.parseInt(sDates[0]);
+        int sMonth = Integer.parseInt(sDates[1]);
+        int sDay = Integer.parseInt(sDates[2]);
+        startWeek.set(sYear, sMonth - 1, sDay);
+        int sWeeksBefore = startWeek.get(Calendar.DAY_OF_WEEK);
+        //일요일 구하기
+        if (sWeeksBefore != 1) {
+            startWeek.set(sYear, sMonth - 1, sDay - sWeeksBefore + 1);
+        }
+
+        //Calendar to LocalDate
+        LocalDate startWeekMon = startWeek.getTime().toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
+
+        Pageable pageable = PageRequest.of(0, 4, Sort.Direction.ASC, "completionDate");
+        StatisticsResponseDto responseDto = new StatisticsResponseDto();
+
+        //내 매칭상태 조회
+        Member member = getMember(userDetails.getMember().getId());
+        Boolean matchingState = member.getMatchingState();
+        responseDto.setMyMatchingState(matchingState);
+
+        //Map 초기화
+        Map<String, Long> myDateAndTodoCntMap = new LinkedHashMap<>();
+        Map<String, Integer> myDateAndDifSumMap = new LinkedHashMap<>();
+        Map<String, Long> partnerDateAndTodoCntMap = new LinkedHashMap<>();
+        Map<String, Integer> partnerDateAndTodoDifSumMap = new LinkedHashMap<>();
+
+        //내 투두 갯수 및 날짜
+        int j = 0;
+        while (j < 4) {
+            LocalDate start = startWeekMon.plusDays(7L * j);
+            LocalDate last = startWeekMon.plusDays((7L * (j + 1)) - 1);
+            TodoDetailsResponseWeeklyDto todoDetailsList = todoRepository.findTodoDetailsWeekly(
+                    start, last, userDetails.getMember().getId(), pageable);
+
+            Calendar cal = Calendar.getInstance();
+            Date from = Date.from(start.atStartOfDay(ZoneId.systemDefault()).toInstant());
+            cal.setTime(from);
+
+            int nW = cal.get(Calendar.WEEK_OF_MONTH);
+            int month = Integer.parseInt(String.valueOf(start).split("-")[1]);
+
+            Long cnt = todoDetailsList.getCnt();
+            int exp = todoDetailsList.getExp() * 5;
+
+            myDateAndTodoCntMap.put(month + "월 " + nW + "주차", cnt);
+            myDateAndDifSumMap.put(month + "월 " + nW + "주차", exp);
+
+            responseDto.setMyAchievement(myDateAndTodoCntMap);
+            responseDto.setMyExpChanges(myDateAndDifSumMap);
+
+            j++;
+        }
+
+        //파트너 정보
+        Matching matching = matchingRepository.getMatching(userDetails.getMember().getId()).orElse(null);
+        if (matching != null) {
+            Long searchedUserPartnerId = userDetails.getMember().getId().equals(matching.getRequesterId())
+                    ? matching.getRespondentId()
+                    : matching.getRequesterId();
+            Member partner = memberRepository.findById(searchedUserPartnerId).orElseThrow(
+                    () -> new CustomException(ErrorCode.NOT_FOUND_PARTNER));
+            Long partnerId = partner.getId();
+
+            //파트너 투두 갯수 및 날짜
+            int k = 0;
+            while (k < 4) {
+                LocalDate start = startWeekMon.plusDays(7L * k);
+                LocalDate last = startWeekMon.plusDays((7L * (k + 1)) - 1);
+                TodoDetailsResponseWeeklyDto todoDetailsList = todoRepository.findTodoDetailsWeekly(
+                        start, last, partnerId, pageable);
+
+                Calendar cal = Calendar.getInstance();
+                Date from = Date.from(start.atStartOfDay(ZoneId.systemDefault()).toInstant());
+                cal.setTime(from);
+
+                int nW = cal.get(Calendar.WEEK_OF_MONTH);
+                int month = Integer.parseInt(String.valueOf(start).split("-")[1]);
+
+                Long cnt = todoDetailsList.getCnt();
+                int exp = todoDetailsList.getExp() * 5;
+
+                partnerDateAndTodoCntMap.put(month + "월 " + nW + "주차", cnt);
+                partnerDateAndTodoDifSumMap.put(month + "월 " + nW + "주차", exp);
+
+                responseDto.setFriendAchievement(partnerDateAndTodoCntMap);
+                responseDto.setFriendExpChanges(partnerDateAndTodoDifSumMap);
+
+                k++;
+            }
+        }
+        return responseDto;
     }
 }

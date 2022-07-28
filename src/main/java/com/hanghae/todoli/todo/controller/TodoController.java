@@ -1,12 +1,11 @@
 package com.hanghae.todoli.todo.controller;
 
-
 import com.hanghae.todoli.security.UserDetailsImpl;
-import com.hanghae.todoli.todo.dto.PairTodoResponseDto;
-import com.hanghae.todoli.todo.dto.TodoModifyDto;
-import com.hanghae.todoli.todo.dto.TodoRegisterDto;
-import com.hanghae.todoli.todo.dto.TodoResponseDto;
+import com.hanghae.todoli.todo.dto.*;
 import com.hanghae.todoli.todo.service.TodoService;
+import io.swagger.annotations.ApiOperation;
+import io.swagger.annotations.ApiResponse;
+import io.swagger.annotations.ApiResponses;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -45,12 +44,24 @@ public class TodoController {
 
 
     // 투두 등록
+    @ApiResponses({
+            @ApiResponse(code = 200, message = "등록 성공"),
+            @ApiResponse(code = 400, message = "실패"),
+            @ApiResponse(code = 403, message = "Forbidden")
+    })
+    @ApiOperation(value = "투두 등록 메소드", notes = "자신이 작성한 투두를 등록하는 api 입니다.")
     @PostMapping("/todos")
     public void todoRegister(@RequestBody TodoRegisterDto registerDto, @AuthenticationPrincipal UserDetailsImpl userDetails) {
         todoService.registerTodo(registerDto, userDetails);
     }
 
     // 투두 조회
+    @ApiResponses({
+            @ApiResponse(code = 200, message = "조회 성공"),
+            @ApiResponse(code = 400, message = "실패"),
+            @ApiResponse(code = 403, message = "Forbidden")
+    })
+    @ApiOperation(value = "투두 조회 메소드", notes = "자신이 작성한 투두를 조회하는 api 입니다.")
     @GetMapping("/mytodos")
     public TodoResponseDto getMyTodos(@AuthenticationPrincipal UserDetailsImpl userDetails) {
         return todoService.getMyTodos(userDetails);
@@ -63,6 +74,12 @@ public class TodoController {
     }
 
     // 투두 수정
+    @ApiResponses({
+            @ApiResponse(code = 200, message = "수정 성공"),
+            @ApiResponse(code = 400, message = "실패"),
+            @ApiResponse(code = 403, message = "Forbidden")
+    })
+    @ApiOperation(value = "투두 수정 메소드", notes = "자신이 작성한 투두를 수정하는 api 입니다.")
     @PatchMapping(value = "/todos/{todoId}")
     public void todoModify(@PathVariable Long todoId,
                            @RequestBody TodoModifyDto registerDto,
@@ -71,6 +88,12 @@ public class TodoController {
     }
 
     //투두 인증해주기
+    @ApiResponses({
+            @ApiResponse(code = 200, message = "인증 성공"),
+            @ApiResponse(code = 400, message = "실패"),
+            @ApiResponse(code = 403, message = "Forbidden")
+    })
+    @ApiOperation(value = "투두 인증 메소드", notes = "상대방이 작성한 투두를 인증해주는 api 입니다.")
     @PatchMapping("/todos/confirm/{todoId}")
     public String confirmTodo(@PathVariable Long todoId, @AuthenticationPrincipal UserDetailsImpl userDetails) {
         todoService.confirmTodo(todoId, userDetails);
@@ -78,6 +101,12 @@ public class TodoController {
     }
 
     //투두 완료(경험치, 돈 획득)
+    @ApiResponses({
+            @ApiResponse(code = 200, message = "완료 성공"),
+            @ApiResponse(code = 400, message = "실패"),
+            @ApiResponse(code = 403, message = "Forbidden")
+    })
+    @ApiOperation(value = "투두 완료 메소드", notes = "자신이 작성한 투두를 달성시키는 api 입니다.")
     @PatchMapping("/todos/completion/{todoId}")
     public String completionTodo(@PathVariable Long todoId, @AuthenticationPrincipal UserDetailsImpl userDetails) {
         todoService.completionTodo(todoId, userDetails);
@@ -85,23 +114,44 @@ public class TodoController {
     }
 
     // 투두 삭제
+    @ApiResponses({
+            @ApiResponse(code = 200, message = "삭제 성공"),
+            @ApiResponse(code = 400, message = "실패"),
+            @ApiResponse(code = 403, message = "Forbidden")
+    })
+    @ApiOperation(value = "투두 삭제 메소드", notes = "자신이 작성한 투두를 삭제하는 api 입니다.")
     @DeleteMapping("/todos/{id}")
     public void todoDelete(@PathVariable Long id, @AuthenticationPrincipal UserDetailsImpl userDetails) {
         todoService.deleteTodo(id, userDetails);
     }
 
-    //상대방 투두 조회
-    //  TODO : 파트너 투두 조회
-    //      1. 로그인한 유저의 매칭 상태 검사
-    //      2. 매칭중이 아니라면 매칭중이지 않다는 에러 메시지
-    //      3. 매칭중이라면 매칭중인 파트너 아이디 조회
-    //      4. 투두에 저장되어있는 작정자가 파트너 아이디인 투두 조회
+    //상대방 투두조회
+    @ApiResponses({
+            @ApiResponse(code = 200, message = "조회 성공"),
+            @ApiResponse(code = 400, message = "실패"),
+            @ApiResponse(code = 403, message = "Forbidden")
+    })
+    @ApiOperation(value = "투두 조회 메소드", notes = "매칭된 상대가 작성한 투두를 조회하는 api 입니다.")
     @GetMapping("/todos/pair")
     public PairTodoResponseDto getPairTodos(@AuthenticationPrincipal UserDetailsImpl userDetails) {
         return todoService.getPairTodos(userDetails);
     }
-//    @GetMapping("/todos/pair")
-//    public TodoResponseDto getPairTodos(@PathVariable Long memberId, @AuthenticationPrincipal UserDetailsImpl userDetails) {
-//        return todoService.getPairTodos(memberId, userDetails);
-//    }
+
+    //일간 통계
+    @GetMapping("/statistics/daily")
+    public StatisticsResponseDto getStatistics(@AuthenticationPrincipal UserDetailsImpl userDetails) {
+        return todoService.getStatistics(userDetails);
+    }
+
+    //월간 통계
+    @GetMapping("/statistics/monthly")
+    public StatisticsResponseDto getStatisticsMonthly(@AuthenticationPrincipal UserDetailsImpl userDetails) {
+        return todoService.getStatisticsMonthly(userDetails);
+    }
+
+    //주간 통계
+    @GetMapping("/statistics/weekly")
+    public StatisticsResponseDto getStatisticsWeekly(@AuthenticationPrincipal UserDetailsImpl userDetails) {
+        return todoService.getStatisticsWeekly(userDetails);
+    }
 }
