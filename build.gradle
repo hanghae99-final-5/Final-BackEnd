@@ -56,7 +56,6 @@ dependencies {
 
     // Swagger
     implementation 'io.springfox:springfox-boot-starter:3.0.0'
-
     //valid
     implementation 'org.springframework.boot:spring-boot-starter-validation'
 
@@ -70,6 +69,7 @@ tasks.named('test') {
 }
 jar {
     enabled = false
+
 }
 //querydsl 추가 시작
 def querydslDir = "$buildDir/generated/querydsl"
@@ -90,3 +90,6 @@ compileQuerydsl {
     options.annotationProcessorPath = configurations.querydsl
 }
 //querydsl 추가 끝
+
+}
+
