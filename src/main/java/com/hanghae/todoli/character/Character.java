@@ -68,11 +68,7 @@ public class Character {
         this.money -= price;
     }
 
-    public void setMoney(int money) {
-        this.money += money;
-    }
-
-    public void editExp(int exp) {
+    public void calcCharExpAndLv(int exp) {
         this.exp += exp;
         if (this.exp >= 100) {
             this.level++;
@@ -89,12 +85,30 @@ public class Character {
             this.level--;
             this.hp = 100;
         }
-
         //음수 방지
         if (hp < 0) {
             hp = 0;
         }
     }
 
-
+    public void reflectTodo(int difficulty) {
+        switch (difficulty) {
+            case 1:
+                this.money += 10;
+                calcCharExpAndLv(5);
+                break;
+            case 2:
+                this.money += 20;
+                calcCharExpAndLv(10);
+                break;
+            case 3:
+                this.money += 30;
+                calcCharExpAndLv(15);
+                break;
+            case 4:
+                this.money += 40;
+                calcCharExpAndLv(20);
+                break;
+        }
+    }
 }

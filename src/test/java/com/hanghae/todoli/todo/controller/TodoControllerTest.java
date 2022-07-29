@@ -8,6 +8,7 @@ import com.hanghae.todoli.security.UserDetailsImpl;
 import com.hanghae.todoli.todo.controller.TodoController;
 import com.hanghae.todoli.todo.dto.TodoModifyDto;
 import com.hanghae.todoli.todo.dto.TodoRegisterDto;
+import com.hanghae.todoli.todo.service.StatisticsService;
 import com.hanghae.todoli.todo.service.TodoService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -47,6 +48,9 @@ class TodoControllerTest {
 
     @MockBean
     TodoService todoService;
+
+    @MockBean
+    StatisticsService statisticsService;
 
     private MockMvc mvc;
     private Principal mockPrincipal;
@@ -245,5 +249,57 @@ class TodoControllerTest {
 
         verify(todoService,times(1))
                 .getPairTodos(any(UserDetailsImpl.class));
+    }
+
+    @Test
+    @DisplayName("일간 통계")
+    void getStatisticsDaily() throws Exception {
+
+        //given
+        this.mockUserSetup(); // 로그인처리
+
+        //when - then
+        mvc.perform(get("/api/statistics/daily")
+                        .principal(mockPrincipal)
+                )
+                .andExpect(status().isOk())
+                .andDo(print());
+
+        verify(statisticsService,times(1))
+                .getStatisticsDaily(any(UserDetailsImpl.class));
+    }
+
+    @Test
+    void getStatisticsMonthly() throws Exception {
+
+        //given
+        this.mockUserSetup(); // 로그인처리
+
+        //when - then
+        mvc.perform(get("/api/statistics/monthly")
+                        .principal(mockPrincipal)
+                )
+                .andExpect(status().isOk())
+                .andDo(print());
+
+        verify(statisticsService,times(1))
+                .getStatisticsMonthly(any(UserDetailsImpl.class));
+    }
+
+    @Test
+    void getStatisticsWeekly() throws Exception {
+
+        //given
+        this.mockUserSetup(); // 로그인처리
+
+        //when - then
+        mvc.perform(get("/api/statistics/weekly")
+                        .principal(mockPrincipal)
+                )
+                .andExpect(status().isOk())
+                .andDo(print());
+
+        verify(statisticsService,times(1))
+                .getStatisticsWeekly(any(UserDetailsImpl.class));
     }
 }

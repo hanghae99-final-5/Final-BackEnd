@@ -5,6 +5,7 @@ import com.hanghae.todoli.exception.ErrorCode;
 import com.hanghae.todoli.security.jwt.JwtTokenProvider;
 import com.hanghae.todoli.member.dto.LoginRequestDto;
 import com.hanghae.todoli.member.dto.SignupRequestDto;
+import com.hanghae.todoli.utils.Validator;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -12,6 +13,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import javax.servlet.http.HttpServletResponse;
 import java.util.Optional;
+import java.util.regex.Pattern;
 
 @Service
 @RequiredArgsConstructor
@@ -22,15 +24,16 @@ public class MemberService {
     private final MemberRepository memberRepository;
     private final BasicItemRegister basicItemRegister;
     private final JwtTokenProvider jwtTokenProvider;
+    private final Validator validator;
 
     //회원가입
     @Transactional
     public String signup(SignupRequestDto signupRequestDto) {
+
+        validator.validSignup(signupRequestDto);
+
         String username = signupRequestDto.getUsername();
         String nickname = signupRequestDto.getNickname();
-
-        idCheck(username);
-
         String password = passwordEncoder.encode(signupRequestDto.getPassword());
 
         //멤버생성과 동시에 캐릭터, 장착아이템 같이 생성, 기본아이템 제공 및 장착까지
@@ -52,19 +55,10 @@ public class MemberService {
         }
 
         //토큰 생성
-
         String token = jwtTokenProvider.createToken(member.getUsername(), member.getNickname());
         response.addHeader("Authorization", token);
         System.out.println(token);
 
         return member;
-    }
-
-    //아이디 중복확인
-    private void idCheck(String username) {
-        Optional<Member> found = memberRepository.findByUsername(username);
-        if (found.isPresent()) {
-            throw new CustomException(ErrorCode.DUPLICATED_ID);
-        }
     }
 }

@@ -68,7 +68,7 @@ public class Todo extends Timestamped {
     @Column
     private Boolean completionState = false;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "MEMBER_ID")
     private Member writer;
 

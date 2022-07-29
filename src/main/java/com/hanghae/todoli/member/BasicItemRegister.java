@@ -1,13 +1,13 @@
 package com.hanghae.todoli.member;
 
 import com.hanghae.todoli.character.Character;
-import com.hanghae.todoli.character.CharacterRepository;
+import com.hanghae.todoli.character.repository.CharacterRepository;
 import com.hanghae.todoli.equipitem.EquipItem;
 import com.hanghae.todoli.equipitem.EquipItemRepository;
 import com.hanghae.todoli.exception.CustomException;
 import com.hanghae.todoli.exception.ErrorCode;
 import com.hanghae.todoli.inventory.Inventory;
-import com.hanghae.todoli.inventory.InventoryRepository;
+import com.hanghae.todoli.inventory.repository.InventoryRepository;
 import com.hanghae.todoli.item.Item;
 import com.hanghae.todoli.item.ItemRepository;
 import lombok.RequiredArgsConstructor;
@@ -16,7 +16,6 @@ import org.springframework.stereotype.Component;
 @Component
 @RequiredArgsConstructor
 public class BasicItemRegister {
-    private final MemberRepository memberRepository;
     private final CharacterRepository characterRepository;
     private final EquipItemRepository equipItemRepository;
     private final ItemRepository itemRepository;

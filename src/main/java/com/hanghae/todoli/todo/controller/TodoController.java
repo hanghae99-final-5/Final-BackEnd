@@ -2,6 +2,7 @@ package com.hanghae.todoli.todo.controller;
 
 import com.hanghae.todoli.security.UserDetailsImpl;
 import com.hanghae.todoli.todo.dto.*;
+import com.hanghae.todoli.todo.service.StatisticsService;
 import com.hanghae.todoli.todo.service.TodoService;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiResponse;
@@ -16,31 +17,8 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/api")
 @RequiredArgsConstructor
 public class TodoController {
-
-    /**
-     * 투두 등록
-     * - 로그인 중인 회원 정보 가져와서 작성자 정보에 입력
-     * - 매칭 아이디가 false면 투두 작성 불가 -> '파트너를 매칭하세요!' 메시지 return
-     * - 작성자 정보 중 매칭 번호 저장
-     * <p>
-     * 투두 조회
-     * - 투두 작성자
-     * - 작성자와 매칭중인 사용자만 볼 수 있도록
-     * - 매칭 번호가 작성자의 매칭 번호와 일치 하는지 확인
-     * <p>
-     * 투두 완료 처리
-     * -
-     * <p>
-     * 사진 등록 및 재등록
-     * - 사진 등록시 인증일 = 종료일 + 3 으로 설정
-     * <p>
-     * 투두 삭제
-     * - 투두 작성자와 로그인 유저가 일치
-     * - 일치 -> 삭제
-     * - 불일치 -> '투두 작성자가 아닙니다!'
-     */
-
     private final TodoService todoService;
+    private final StatisticsService statisticsService;
 
     // 투두 등록
     @ApiResponses({
@@ -144,8 +122,8 @@ public class TodoController {
     })
     @ApiOperation(value = "투두 조회 메소드", notes = "7일 전 까지의 사용자 정보(투두 달성률, 얻은 exp)를 조회하는 api 입니다.")
     @GetMapping("/statistics/daily")
-    public StatisticsResponseDto getStatistics(@AuthenticationPrincipal UserDetailsImpl userDetails) {
-        return todoService.getStatistics(userDetails);
+    public StatisticsResponseDto getStatisticsDaily(@AuthenticationPrincipal UserDetailsImpl userDetails) {
+        return statisticsService.getStatisticsDaily(userDetails);
     }
 
     //월간 통계
@@ -157,7 +135,7 @@ public class TodoController {
     @ApiOperation(value = "투두 조회 메소드", notes = "6개월 전 까지의 사용자 정보(투두 달성률, 얻은 exp)를 조회하는 api 입니다.")
     @GetMapping("/statistics/monthly")
     public StatisticsResponseDto getStatisticsMonthly(@AuthenticationPrincipal UserDetailsImpl userDetails) {
-        return todoService.getStatisticsMonthly(userDetails);
+        return statisticsService.getStatisticsMonthly(userDetails);
     }
 
     //주간 통계
@@ -169,6 +147,6 @@ public class TodoController {
     @ApiOperation(value = "투두 조회 메소드", notes = "5주 전 까지의 사용자 정보(투두 달성률, 얻은 exp)를 조회하는 api 입니다.")
     @GetMapping("/statistics/weekly")
     public StatisticsResponseDto getStatisticsWeekly(@AuthenticationPrincipal UserDetailsImpl userDetails) {
-        return todoService.getStatisticsWeekly(userDetails);
+        return statisticsService.getStatisticsWeekly(userDetails);
     }
 }
