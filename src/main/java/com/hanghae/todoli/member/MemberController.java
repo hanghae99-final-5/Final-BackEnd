@@ -77,7 +77,7 @@ public class MemberController {
             @ApiResponse(code = 403, message = "forbidden")
     })
     @ApiOperation(value = "OAtuh 메소드", notes = "구글 회원가입 api 입니다.")
-    @GetMapping("/api/login/oauth2/code/{socialLoginType}")
+    @GetMapping("/api/login/oauth2/code/{socialLoginType}/callback")
     public GetSocialOAuthRes callback(
             @PathVariable(name = "socialLoginType") String socialLoginPath,
             @RequestParam(name = "code") String code, HttpServletResponse response) throws IOException {
