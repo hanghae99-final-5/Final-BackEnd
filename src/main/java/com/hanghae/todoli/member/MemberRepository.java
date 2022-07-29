@@ -13,7 +13,7 @@ import java.util.Optional;
 public interface MemberRepository extends JpaRepository<Member, Long> {
 
     Optional<Member> findByUsername(String username);
-
+    Optional<Member> findByNickname(String nickname);
     //아이디 찾기
     @Query("select m.username from Member m where m.nickname = :nickname")
     String findUsername(@Param("nickname") String nickname);
