@@ -112,10 +112,4 @@ public class MemberController {
             return "비밀번호 변경이 완료되었습니다.";
 
     }
-
-
-   @ExceptionHandler(IllegalArgumentException.class)
-    public ResponseEntity<String> handleIllegalArgumentException(IllegalArgumentException e) {
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
-    }
 }

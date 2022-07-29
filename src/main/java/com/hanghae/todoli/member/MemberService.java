@@ -3,15 +3,11 @@ package com.hanghae.todoli.member;
 
 import com.hanghae.todoli.exception.CustomException;
 import com.hanghae.todoli.exception.ErrorCode;
-import com.hanghae.todoli.security.jwt.JwtTokenProvider;
 import com.hanghae.todoli.member.dto.LoginRequestDto;
 import com.hanghae.todoli.member.dto.SignupRequestDto;
-import com.hanghae.todoli.utils.Validator;
-import com.hanghae.todoli.character.Character;
-import com.hanghae.todoli.character.CharacterRepository;
-import com.hanghae.todoli.equipitem.EquipItem;
-import com.hanghae.todoli.equipitem.EquipItemRepository;
 import com.hanghae.todoli.security.UserDetailsImpl;
+import com.hanghae.todoli.security.jwt.JwtTokenProvider;
+import com.hanghae.todoli.utils.Validator;
 import lombok.RequiredArgsConstructor;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
@@ -20,16 +16,9 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-
-import javax.servlet.http.HttpServletResponse;
-
-import javax.activation.FileDataSource;
 import javax.mail.MessagingException;
-
 import javax.mail.internet.MimeMessage;
-
-import java.util.Optional;
-import java.util.regex.Pattern;
+import javax.servlet.http.HttpServletResponse;
 
 @Service
 @RequiredArgsConstructor
