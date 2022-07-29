@@ -135,6 +135,12 @@ public class MemberController {
     }
 
     //랭킹 기능
+    @ApiResponses({
+            @ApiResponse(code=201, message="변경 성공"),
+            @ApiResponse(code=400, message="실패"),
+            @ApiResponse(code=403, message="forbidden")
+    })
+    @ApiOperation(value = "랭킹표현 메소드", notes = "랭킹 5위까지 표시해 줍니다.")
     @GetMapping("/api/users/ranking")
     public List<RankingDto> updateRanking(){
         return memberService.updateRanking();
