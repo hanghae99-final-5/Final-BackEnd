@@ -19,10 +19,10 @@ public class TodoRepositoryImpl implements TodoRepositoryCustom {
 
     //completionDate 기준으로 오름차순과 limit7은 pageable을 통해 구현
     @Override
-    public List<TodoDetailsResponseDto> findTodoDetails(@Param("start") LocalDate start,
-                                                        @Param("now") LocalDate now,
-                                                        @Param("id") Long id,
-                                                        Pageable pageable) {
+    public List<TodoDetailsResponseDto> findTododetailsDaily(@Param("start") LocalDate start,
+                                                             @Param("now") LocalDate now,
+                                                             @Param("id") Long id,
+                                                             Pageable pageable) {
 
         return queryFactory
                 .select(new QTodoDetailsResponseDto(

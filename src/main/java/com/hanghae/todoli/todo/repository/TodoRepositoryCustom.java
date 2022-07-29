@@ -10,10 +10,10 @@ import java.time.LocalDate;
 import java.util.List;
 
 public interface TodoRepositoryCustom {
-    List<TodoDetailsResponseDto> findTodoDetails(@Param("start") LocalDate start,
-                                                 @Param("now") LocalDate now,
-                                                 @Param("id") Long id,
-                                                 Pageable pageable);
+    List<TodoDetailsResponseDto> findTododetailsDaily(@Param("start") LocalDate start,
+                                                      @Param("now") LocalDate now,
+                                                      @Param("id") Long id,
+                                                      Pageable pageable);
 
     List<TodoDetailsResponseMonthlyDto> findTodoDetailsMonthly(@Param("startMonth") LocalDate startMonth,
                                                                @Param("lastMonth") LocalDate lastMonth,

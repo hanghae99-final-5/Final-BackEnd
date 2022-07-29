@@ -25,7 +25,7 @@ public enum ErrorCode {
     /* validator 400 BAD_REQUEST, 403 FORBIDDEN */
     NO_INPUT_START_DATE(HttpStatus.BAD_REQUEST, "시작날짜를 선택해주세요"),
     NO_INPUT_END_DATE(HttpStatus.BAD_REQUEST, "종료날짜를 선택해주세요"),
-    NO_INPUT_CONTENT(HttpStatus.BAD_REQUEST, "Todo 내용을 입력해주세요"),
+    NO_INPUT_CONTENT(HttpStatus.BAD_REQUEST, "내용을 입력해주세요"),
     NO_INPUT_DIFFICULTY(HttpStatus.BAD_REQUEST, "난이도를 선택해주세요"),
     NO_INPUT_TODO_TYPE(HttpStatus.BAD_REQUEST, "Todo 타입을 선택해주세요"),
     BAD_REQUEST_START_DATE(HttpStatus.BAD_REQUEST, "시작날짜를 현재날짜 이후로 설정해주세요."),

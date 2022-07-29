@@ -60,7 +60,7 @@ public class MatchingService {
 
             searchedUserPartnerName = partner.getUsername();
         }
-        // TODO : 2022/07/12 refactoring - 종석
+
         List<ThumbnailDto> targetThumbnailDtos = thumbnailDtoList.getThumbnailDtos(target);
 
         return MatchingResponseDto.builder()
