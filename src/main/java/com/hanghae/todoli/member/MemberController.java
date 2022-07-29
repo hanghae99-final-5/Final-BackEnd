@@ -31,7 +31,8 @@ public class MemberController {
     //회원가입
     @ApiResponses({
             @ApiResponse(code=201, message="회원가입 성공"),
-            @ApiResponse(code=400, message="실패")
+            @ApiResponse(code=400, message="실패"),
+            @ApiResponse(code=403, message="forbidden")
     })
     @ApiOperation(value = "회원가입 메소드", notes = "회원가입 api 입니다.")
     @PostMapping("/api/users/signup")
@@ -43,7 +44,8 @@ public class MemberController {
     //로그인
     @ApiResponses({
             @ApiResponse(code=200, message="로그인 성공"),
-            @ApiResponse(code=400, message="실패")
+            @ApiResponse(code=400, message="실패"),
+            @ApiResponse(code=403, message="forbidden")
     })
     @ApiOperation(value = "로그인 메소드", notes = "성공시 jwt 토큰을 헤더에 넣어서 반환합니다.")
     @PostMapping("/api/users/login")
@@ -70,7 +72,8 @@ public class MemberController {
 
     @ApiResponses({
             @ApiResponse(code=201, message="회원가입 성공"),
-            @ApiResponse(code=400, message="실패")
+            @ApiResponse(code=400, message="실패"),
+            @ApiResponse(code=403, message="forbidden")
     })
     @ApiOperation(value = "OAtuh 메소드", notes = "구글 회원가입 api 입니다.")
     @GetMapping("/api/login/oauth2/code/{socialLoginType}")
@@ -83,6 +86,12 @@ public class MemberController {
     }
 
     //아이디 찾기
+    @ApiResponses({
+            @ApiResponse(code=201, message="찾기 성공"),
+            @ApiResponse(code=400, message="실패"),
+            @ApiResponse(code=403, message="forbidden")
+    })
+    @ApiOperation(value = "아이디 찾기 메소드", notes = "아이디 찾는 api 입니다.")
     @GetMapping("/api/users/find/username/{nickname}")
     public String findUsername(@PathVariable String nickname){
         try{
@@ -94,6 +103,12 @@ public class MemberController {
     }
 
     //비밀번호 찾기
+    @ApiResponses({
+            @ApiResponse(code=201, message="찾기 성공"),
+            @ApiResponse(code=400, message="실패"),
+            @ApiResponse(code=403, message="forbidden")
+    })
+    @ApiOperation(value = "비밀번호 찾기 메소드", notes = "비밀번호를 찾는 api 입니다.")
     @GetMapping("/api/users/find/password/{username}")
     public String findPassword(@PathVariable String username) throws MessagingException {
         try{
@@ -103,13 +118,18 @@ public class MemberController {
             return e.getMessage();
         }
     }
-
+    
     //비밀번호 변경
+    @ApiResponses({
+            @ApiResponse(code=201, message="변경 성공"),
+            @ApiResponse(code=400, message="실패"),
+            @ApiResponse(code=403, message="forbidden")
+    })
+    @ApiOperation(value = "비밀번호 변경 메소드", notes = "비밀번호 변경 api 입니다.")
     @PatchMapping("/api/users/update/password") //현재 비밀번호, 바꿀 비밀번호, 비밀번호 확인인
     public String updatePassword(@RequestBody PasswordUpdateDto updateDto, @AuthenticationPrincipal UserDetailsImpl userDetails){
 
             memberService.updatePassword(updateDto, userDetails);
             return "비밀번호 변경이 완료되었습니다.";
-
     }
 }
