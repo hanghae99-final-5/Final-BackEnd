@@ -22,6 +22,6 @@ public class CharResponseDto {
     private String charImg;
     private String nickname;
 
-    private List<EquipItemDto> equipItems;  //List<EquipItemDto> listDto
+    private List<EquipItemDto> equipItems;
 
 }

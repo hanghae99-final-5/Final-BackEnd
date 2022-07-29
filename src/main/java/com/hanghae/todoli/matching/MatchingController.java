@@ -12,6 +12,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @RestController
 @RequiredArgsConstructor
 @Slf4j
@@ -30,6 +32,12 @@ public class MatchingController {
     public MatchingResponseDto searchMember(@PathVariable String username,
                                             @AuthenticationPrincipal UserDetailsImpl userDetails) {
         return matchingService.searchMember(username, userDetails);
+    }
+
+    //사용자 검색 들어갔을 때(추천 사용자)
+    @GetMapping("/api/users/recommend")
+    public List<MatchingResponseDto> recommendMember(@AuthenticationPrincipal UserDetailsImpl userDetails){
+        return matchingService.recommendMember(userDetails);
     }
 
     //매칭 초대기능

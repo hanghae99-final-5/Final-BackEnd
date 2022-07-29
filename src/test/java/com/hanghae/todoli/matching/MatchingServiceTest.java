@@ -7,6 +7,7 @@ import com.hanghae.todoli.character.Character;
 import com.hanghae.todoli.character.CharacterImg;
 import com.hanghae.todoli.character.Dto.ThumbnailDto;
 import com.hanghae.todoli.character.Dto.ThumbnailDtoList;
+import com.hanghae.todoli.character.repository.CharacterRepository;
 import com.hanghae.todoli.equipitem.EquipItem;
 import com.hanghae.todoli.exception.CustomException;
 import com.hanghae.todoli.matching.dto.MatchingResponseDto;
@@ -40,6 +41,8 @@ class MatchingServiceTest {
     private MatchingRepository matchingRepository;
     @Mock
     private TodoRepository todoRepository;
+    @Mock
+    private CharacterRepository characterRepository;
     @Mock
     private ThumbnailDtoList thumbnailDtoList;
 
@@ -98,7 +101,9 @@ class MatchingServiceTest {
                 alarmRepository,
                 matchingRepository,
                 todoRepository,
-                thumbnailDtoList
+                thumbnailDtoList,
+                characterRepository
+
         );
 
         existMember.setId(1L);

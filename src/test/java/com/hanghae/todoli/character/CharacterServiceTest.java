@@ -3,9 +3,9 @@ package com.hanghae.todoli.character;
 import com.hanghae.todoli.character.Dto.CharResponseDto;
 import com.hanghae.todoli.character.Dto.FooterResponseDto;
 import com.hanghae.todoli.character.Dto.ThumbnailDtoList;
+import com.hanghae.todoli.character.repository.CharacterRepository;
 import com.hanghae.todoli.equipitem.EquipItem;
 import com.hanghae.todoli.exception.CustomException;
-import com.hanghae.todoli.item.ItemRepository;
 import com.hanghae.todoli.matching.Matching;
 import com.hanghae.todoli.matching.MatchingRepository;
 import com.hanghae.todoli.member.Member;
@@ -31,9 +31,9 @@ class CharacterServiceTest {
     @Mock
     private MemberRepository memberRepository;
     @Mock
-    private ItemRepository itemRepository;
-    @Mock
     private ThumbnailDtoList thumbnailDtoList;
+    @Mock
+    private CharacterRepository characterRepository;
 
     CharacterService characterService;
 
@@ -88,8 +88,8 @@ class CharacterServiceTest {
         this.characterService = new CharacterService(
                 matchingRepository,
                 memberRepository,
-                itemRepository,
-                thumbnailDtoList
+                thumbnailDtoList,
+                characterRepository
         );
 
         existMember.setId(1L);

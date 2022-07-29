@@ -44,6 +44,12 @@ public class CharacterController {
     }
 
     //푸터용 자신, 상대방 캐릭터
+    @ApiResponses({
+            @ApiResponse(code=200, message="조회 성공"),
+            @ApiResponse(code=400, message="실패"),
+            @ApiResponse(code=403, message="Forbidden")
+    })
+    @ApiOperation(value = "푸터 이미지 조회 메소드", notes = "푸터에 보여질 이미지 조회 api 입니다.")
     @GetMapping("/api/characters/footer")
     public FooterResponseDto getCharacterInFooter(@AuthenticationPrincipal UserDetailsImpl userDetails) {
         return characterService.getCharacterInFooter(userDetails);

@@ -2,13 +2,13 @@ package com.hanghae.todoli.item;
 
 import com.hanghae.todoli.character.Character;
 import com.hanghae.todoli.character.CharacterImg;
-import com.hanghae.todoli.character.CharacterRepository;
+import com.hanghae.todoli.character.repository.CharacterRepository;
 import com.hanghae.todoli.equipitem.EquipItem;
 import com.hanghae.todoli.equipitem.EquipItemDto;
 import com.hanghae.todoli.equipitem.EquipItemRepository;
 import com.hanghae.todoli.exception.CustomException;
 import com.hanghae.todoli.inventory.Inventory;
-import com.hanghae.todoli.inventory.InventoryRepository;
+import com.hanghae.todoli.inventory.repository.InventoryRepository;
 import com.hanghae.todoli.item.Dto.ExistItemListDto;
 import com.hanghae.todoli.item.Dto.ItemRequestDto;
 import com.hanghae.todoli.item.Dto.ItemResponseDto;
@@ -17,7 +17,6 @@ import com.hanghae.todoli.member.MemberRepository;
 import com.hanghae.todoli.security.UserDetailsImpl;
 import org.junit.jupiter.api.*;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.BDDMockito;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.transaction.annotation.Transactional;
@@ -38,10 +37,6 @@ class ItemServiceTest {
     private ItemRepository itemRepository;
     @Mock
     private InventoryRepository inventoryRepository;
-    @Mock
-    private CharacterRepository characterRepository;
-    @Mock
-    private EquipItemRepository equipItemRepository;
     @Mock
     private MemberRepository memberRepository;
     ItemService itemService;
@@ -90,8 +85,6 @@ class ItemServiceTest {
         this.itemService = new ItemService(
                 itemRepository,
                 inventoryRepository,
-                characterRepository,
-                equipItemRepository,
                 memberRepository
         );
         existMember.setId(1L);
@@ -108,32 +101,24 @@ class ItemServiceTest {
             //given
             Long memberId = userDetails.getMember().getId();
 
-            given(memberRepository.findById(memberId))
-                    .willReturn(Optional.ofNullable(existMember));
-
-            Inventory inventory1 = new Inventory(item1, character1);
-            Inventory inventory2 = new Inventory(item2, character1);
-            inventories1.add(inventory1);
-            inventories1.add(inventory2);
+            ExistItemListDto existItemListDto = new ExistItemListDto(
+                    1L,
+                    "blackHair",
+                    "https://twodo-li.s3.ap-northeast-2.amazonaws.com/items/testhair_view.png",
+                    Category.HAIR
+                    );
+            List<ExistItemListDto> existItemListDtoList = new ArrayList<>();
+            existItemListDtoList.add(existItemListDto);
+            given(inventoryRepository.findExistItems(memberId))
+                    .willReturn(existItemListDtoList);
 
             //when
             List<ExistItemListDto> result = itemService.getExistItemList(userDetails);
             //then
             Assertions.assertEquals(item1.getName(), result.get(0).getName());
             Assertions.assertEquals(item1.getId(), result.get(0).getItemId());
-            Assertions.assertEquals(item2.getName(), result.get(1).getName());
-            Assertions.assertEquals(item2.getId(), result.get(1).getItemId());
-        }
-
-        @Test
-        @DisplayName("가지고 있는 아이템 조회 실패 - 로그인한 유저 정보 없음")
-        void getExistItemListFail1() {
-            //given
-            //when
-            CustomException exception = assertThrows(CustomException.class,
-                    () -> itemService.getExistItemList(userDetails));
-            //then
-            Assertions.assertEquals("해당 유저 정보를 찾을 수 없습니다.", exception.getErrorCode().getMessage());
+            Assertions.assertEquals(item1.getViewImg(), result.get(0).getViewImg());
+            Assertions.assertEquals(item1.getCategory(), result.get(0).getCategory());
         }
     }
 

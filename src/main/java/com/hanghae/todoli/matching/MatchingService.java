@@ -2,22 +2,30 @@ package com.hanghae.todoli.matching;
 
 import com.hanghae.todoli.alarm.Alarm;
 import com.hanghae.todoli.alarm.AlarmRepository;
+import com.hanghae.todoli.character.Character;
 import com.hanghae.todoli.character.CharacterImg;
 import com.hanghae.todoli.character.Dto.ThumbnailDto;
 import com.hanghae.todoli.character.Dto.ThumbnailDtoList;
+import com.hanghae.todoli.character.repository.CharacterRepository;
+import com.hanghae.todoli.equipitem.EquipItem;
 import com.hanghae.todoli.exception.CustomException;
 import com.hanghae.todoli.exception.ErrorCode;
+import com.hanghae.todoli.item.Item;
+import com.hanghae.todoli.item.ItemRepository;
 import com.hanghae.todoli.matching.dto.MatchingResponseDto;
 import com.hanghae.todoli.member.Member;
 import com.hanghae.todoli.member.MemberRepository;
 import com.hanghae.todoli.security.UserDetailsImpl;
 import com.hanghae.todoli.todo.repository.TodoRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.Pattern;
 
@@ -33,6 +41,7 @@ public class MatchingService {
     private final MatchingRepository matchingRepository;
     private final TodoRepository todoRepository;
     private final ThumbnailDtoList thumbnailDtoList;
+    private final CharacterRepository characterRepository;
 
     //상대방 찾기
     @Transactional
@@ -60,7 +69,7 @@ public class MatchingService {
 
             searchedUserPartnerName = partner.getUsername();
         }
-        // TODO : 2022/07/12 refactoring - 종석
+
         List<ThumbnailDto> targetThumbnailDtos = thumbnailDtoList.getThumbnailDtos(target);
 
         return MatchingResponseDto.builder()
@@ -73,7 +82,7 @@ public class MatchingService {
                 .equipItems(targetThumbnailDtos)
                 .build();
     }
-
+    
     //상대방 초대
     @Transactional
     public Alarm inviteMatching(Long memberId, UserDetailsImpl userDetails) {
@@ -161,4 +170,36 @@ public class MatchingService {
         Matching matching = new Matching(senderId, member.getId());
         matchingRepository.save(matching);
     }
+
+    //사용자 추천
+    public List<MatchingResponseDto> recommendMember(UserDetailsImpl userDetails) {
+        Pageable pageable = PageRequest.of(0, 4);
+        Long userId = userDetails.getMember().getId();
+        Member member = memberRepository.findById(userId).orElseThrow(
+                () -> new CustomException(ErrorCode.NOT_FOUND_MEMBER)
+        );
+        Character character = member.getCharacter();
+        int level = character.getLevel();
+
+        //레벨 제한 + 나 자신 제외 + 4명 제한 + 레벨로 내림차순 ---> Member 추출
+        List<Member> recommendUser = memberRepository.findUserByLevel(pageable, level, member.getId());
+
+        List<MatchingResponseDto> matchingResponseDtoList = new ArrayList<>();
+        for(Member searchMember : recommendUser){
+            List<ThumbnailDto> thumbnailEquipItems = characterRepository.getThumbnailEquipItems(searchMember.getId());
+
+            MatchingResponseDto matchingResponseDto = MatchingResponseDto.builder()
+                    .myMatchingState(member.getMatchingState())
+                    .memberId(searchMember.getId())
+                    .nickname(searchMember.getNickname())
+                    .partnerMatchingState(searchMember.getMatchingState())
+                    .searchedUserPartner(searchMember.getUsername())
+                    .thumbnailCharImg(new CharacterImg().getThumbnailCharImg())
+                    .equipItems(thumbnailEquipItems)
+                    .build();
+            matchingResponseDtoList.add(matchingResponseDto);
+        }
+        return matchingResponseDtoList;
+    }
+
 }
