@@ -63,6 +63,10 @@ dependencies {
     // sentry
     implementation 'io.sentry:sentry-spring-boot-starter:6.3.0'
     implementation 'io.sentry:sentry-logback:6.3.0'
+
+    //email
+    implementation 'org.springframework.boot:spring-boot-starter-mail'
+
 }
 
 tasks.named('test') {

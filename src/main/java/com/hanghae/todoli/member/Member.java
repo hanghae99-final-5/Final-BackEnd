@@ -53,4 +53,8 @@ public class Member {
     public void changeMatchingState(Member member) {
         this.matchingState = !member.getMatchingState();
     }
+
+    void pwUpdate(String password){
+        this.password = password;
+    }
 }
