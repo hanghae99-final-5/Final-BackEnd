@@ -2,6 +2,7 @@ package com.hanghae.todoli.member;
 
 import com.hanghae.todoli.character.CharacterImg;
 import com.hanghae.todoli.character.Dto.ThumbnailDto;
+import com.hanghae.todoli.character.repository.CharacterRepository;
 import com.hanghae.todoli.equipitem.EquipItem;
 import com.hanghae.todoli.exception.CustomException;
 import com.hanghae.todoli.exception.ErrorCode;
@@ -39,9 +40,8 @@ public class MemberService {
     private final MemberRepository memberRepository;
     private final BasicItemRegister basicItemRegister;
     private final JwtTokenProvider jwtTokenProvider;
+    private final CharacterRepository characterRepository;
     private final Validator validator;
-
-    private final ItemRepository itemRepository;
 
     //회원가입
     @Transactional
@@ -109,11 +109,6 @@ public class MemberService {
         mimeMessageHelper.setTo(member.getUsername());
         mimeMessageHelper.setSubject("[TwoDoRi]임시 비밀번호 발급 안내");
 
-        //한 번에 여러 내용
-//        StringBuilder body = new StringBuilder();
-//        body.append("안녕하세요" + member.getNickname() + "님!\n\n\n");
-//        body.append(member.getNickname() + "님의 임시 비밀번호는" + pw + "입니다.");
-
         String content ="";
         content+= "<img src=\"https://drive.google.com/uc?id=1SGWzVrlaSnIm_V95GgBvjdI56FvLn5hH\">";
         content+= "<br>";
@@ -129,9 +124,7 @@ public class MemberService {
         content+= pw+"</strong><div><br/> ";
         content+= "</div>";
 
-        //mimeMessageHelper.addInline("zz", new FileDataSource("C://Temp/cute_cat.jpg")); -> 파일 첨부
         mimeMessageHelper.setText(content, true);
-        //mimeMessageHelper.setText(body.toString());
 
 
         javaMailSender.send(mimeMessage);
@@ -141,8 +134,6 @@ public class MemberService {
     }
 
     //비밀번호 변경
-    //변경 비밀번호 확인은 프론트단에서
-
     @Transactional
     public void updatePassword(PasswordUpdateDto updateDto, UserDetailsImpl userDetails) {
         Member member = userDetails.getMember();
@@ -172,40 +163,15 @@ public class MemberService {
             Long memberId = member.getId();
             String nickname = member.getNickname();
             String thumbnailCharImg = new CharacterImg().getThumbnailCharImg();
-            List<ThumbnailDto> thumbnailDtos = getThumbnailDtos(member);
-
+            List<ThumbnailDto> thumbnailEquipItems = characterRepository.getThumbnailEquipItems(memberId);
             RankingDto ranking = RankingDto.builder()
                     .memberId(memberId)
                     .nickname(nickname)
                     .thumbnailCharImg(thumbnailCharImg)
-                    .equipItems(thumbnailDtos)
+                    .equipItems(thumbnailEquipItems)
                     .build();
             rankingDtoList.add(ranking);
         }
         return rankingDtoList;
-    }
-    //아이템 리스트dto에 추가
-    private List<ThumbnailDto> getThumbnailDtos(Member Info) {
-        List<ThumbnailDto> myEquipItemList = new ArrayList<>();
-        EquipItem myEquipItem = Info.getCharacter().getEquipItem();
-        Long hairId = myEquipItem.getHairId();
-        Long clothId = myEquipItem.getClothId();
-        Long accessoryId = myEquipItem.getAccessoryId();
-        if (hairId != null) {
-            Item hair = itemRepository.findById(hairId).orElse(null);
-            ThumbnailDto thumbnailDto1 = new ThumbnailDto(hair.getId(),hair.getThumbnailImg(),hair.getCategory());
-            myEquipItemList.add(thumbnailDto1);
-        }
-        if (clothId != null) {
-            Item cloth = itemRepository.findById(clothId).orElse(null);
-            ThumbnailDto thumbnailDto2 = new ThumbnailDto(cloth.getId(),cloth.getThumbnailImg(),cloth.getCategory());
-            myEquipItemList.add(thumbnailDto2);
-        }
-        if (accessoryId != null) {
-            Item accessory = itemRepository.findById(accessoryId).orElse(null);
-            ThumbnailDto thumbnailDto3 = new ThumbnailDto(accessory.getId(),accessory.getThumbnailImg(),accessory.getCategory());
-            myEquipItemList.add(thumbnailDto3);
-        }
-        return myEquipItemList;
     }
 }

@@ -43,7 +43,6 @@ public class MatchingService {
     private final ThumbnailDtoList thumbnailDtoList;
 
     private final CharacterRepository characterRepository;
-    private final ItemRepository itemRepository;
 
     //상대방 찾기
     @Transactional
@@ -84,42 +83,6 @@ public class MatchingService {
                 .equipItems(targetThumbnailDtos)
                 .build();
     }
-
-    //사용자 추천
-    public List<MatchingResponseDto> recommendMember(UserDetailsImpl userDetails) {
-        Pageable pageable = PageRequest.of(0, 4);
-        Long userId = userDetails.getMember().getId();
-        Member member = memberRepository.findById(userId).orElseThrow(
-                () -> new CustomException(ErrorCode.NOT_FOUND_MEMBER)
-        );
-        Character character = member.getCharacter();
-        int level = character.getLevel();
-//        int hLevel = level + 3;
-//        int lLevel = level - 3;
-
-        //레벨 제한 + 나 자신 제외 + 4명 제한 + 레벨로 내림차순 ---> Member 추출
-        List<Member> recommendUser = memberRepository.findUserByLevel(pageable, level, member.getId());
-
-        List<MatchingResponseDto> matchingResponseDtoList = new ArrayList<>();
-        for(Member searchMember : recommendUser){
-//            if(searchMember.getMatchingState())
-//                continue;
-            List<ThumbnailDto> targetThumbnailDtos = getThumbnailDtos(searchMember);
-
-            MatchingResponseDto matchingResponseDto = MatchingResponseDto.builder()
-                    .myMatchingState(member.getMatchingState())
-                    .memberId(searchMember.getId())
-                    .nickname(searchMember.getNickname())
-                    .partnerMatchingState(searchMember.getMatchingState())
-                    .searchedUserPartner(searchMember.getUsername())
-                    .thumbnailCharImg(new CharacterImg().getThumbnailCharImg())
-                    .equipItems(targetThumbnailDtos)
-                    .build();
-            matchingResponseDtoList.add(matchingResponseDto);
-        }
-        return matchingResponseDtoList;
-    }
-    
     
     //상대방 초대
     @Transactional
@@ -209,28 +172,35 @@ public class MatchingService {
         matchingRepository.save(matching);
     }
 
-    //아이템 리스트dto에 추가
-    private List<ThumbnailDto> getThumbnailDtos(Member Info) {
-        List<ThumbnailDto> myEquipItemList = new ArrayList<>();
-        EquipItem myEquipItem = Info.getCharacter().getEquipItem();
-        Long hairId = myEquipItem.getHairId();
-        Long clothId = myEquipItem.getClothId();
-        Long accessoryId = myEquipItem.getAccessoryId();
-        if (hairId != null) {
-            Item hair = itemRepository.findById(hairId).orElse(null);
-            ThumbnailDto thumbnailDto1 = new ThumbnailDto(hair.getId(), hair.getThumbnailImg(), hair.getCategory());
-            myEquipItemList.add(thumbnailDto1);
+    //사용자 추천
+    public List<MatchingResponseDto> recommendMember(UserDetailsImpl userDetails) {
+        Pageable pageable = PageRequest.of(0, 4);
+        Long userId = userDetails.getMember().getId();
+        Member member = memberRepository.findById(userId).orElseThrow(
+                () -> new CustomException(ErrorCode.NOT_FOUND_MEMBER)
+        );
+        Character character = member.getCharacter();
+        int level = character.getLevel();
+
+        //레벨 제한 + 나 자신 제외 + 4명 제한 + 레벨로 내림차순 ---> Member 추출
+        List<Member> recommendUser = memberRepository.findUserByLevel(pageable, level, member.getId());
+
+        List<MatchingResponseDto> matchingResponseDtoList = new ArrayList<>();
+        for(Member searchMember : recommendUser){
+            List<ThumbnailDto> thumbnailEquipItems = characterRepository.getThumbnailEquipItems(searchMember.getId());
+
+            MatchingResponseDto matchingResponseDto = MatchingResponseDto.builder()
+                    .myMatchingState(member.getMatchingState())
+                    .memberId(searchMember.getId())
+                    .nickname(searchMember.getNickname())
+                    .partnerMatchingState(searchMember.getMatchingState())
+                    .searchedUserPartner(searchMember.getUsername())
+                    .thumbnailCharImg(new CharacterImg().getThumbnailCharImg())
+                    .equipItems(thumbnailEquipItems)
+                    .build();
+            matchingResponseDtoList.add(matchingResponseDto);
         }
-        if (clothId != null) {
-            Item cloth = itemRepository.findById(clothId).orElse(null);
-            ThumbnailDto thumbnailDto2 = new ThumbnailDto(cloth.getId(), cloth.getThumbnailImg(), cloth.getCategory());
-            myEquipItemList.add(thumbnailDto2);
-        }
-        if (accessoryId != null) {
-            Item accessory = itemRepository.findById(accessoryId).orElse(null);
-            ThumbnailDto thumbnailDto3 = new ThumbnailDto(accessory.getId(), accessory.getThumbnailImg(), accessory.getCategory());
-            myEquipItemList.add(thumbnailDto3);
-        }
-        return myEquipItemList;
+        return matchingResponseDtoList;
     }
+
 }
