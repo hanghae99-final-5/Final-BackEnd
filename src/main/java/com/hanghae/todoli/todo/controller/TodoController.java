@@ -137,18 +137,36 @@ public class TodoController {
     }
 
     //일간 통계
+    @ApiResponses({
+            @ApiResponse(code = 200, message = "조회 성공"),
+            @ApiResponse(code = 400, message = "실패"),
+            @ApiResponse(code = 403, message = "Forbidden")
+    })
+    @ApiOperation(value = "투두 조회 메소드", notes = "7일 전 까지의 사용자 정보(투두 달성률, 얻은 exp)를 조회하는 api 입니다.")
     @GetMapping("/statistics/daily")
     public StatisticsResponseDto getStatistics(@AuthenticationPrincipal UserDetailsImpl userDetails) {
         return todoService.getStatistics(userDetails);
     }
 
     //월간 통계
+    @ApiResponses({
+            @ApiResponse(code = 200, message = "조회 성공"),
+            @ApiResponse(code = 400, message = "실패"),
+            @ApiResponse(code = 403, message = "Forbidden")
+    })
+    @ApiOperation(value = "투두 조회 메소드", notes = "6개월 전 까지의 사용자 정보(투두 달성률, 얻은 exp)를 조회하는 api 입니다.")
     @GetMapping("/statistics/monthly")
     public StatisticsResponseDto getStatisticsMonthly(@AuthenticationPrincipal UserDetailsImpl userDetails) {
         return todoService.getStatisticsMonthly(userDetails);
     }
 
     //주간 통계
+    @ApiResponses({
+            @ApiResponse(code = 200, message = "조회 성공"),
+            @ApiResponse(code = 400, message = "실패"),
+            @ApiResponse(code = 403, message = "Forbidden")
+    })
+    @ApiOperation(value = "투두 조회 메소드", notes = "5주 전 까지의 사용자 정보(투두 달성률, 얻은 exp)를 조회하는 api 입니다.")
     @GetMapping("/statistics/weekly")
     public StatisticsResponseDto getStatisticsWeekly(@AuthenticationPrincipal UserDetailsImpl userDetails) {
         return todoService.getStatisticsWeekly(userDetails);
