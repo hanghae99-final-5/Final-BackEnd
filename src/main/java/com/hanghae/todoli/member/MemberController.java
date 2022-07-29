@@ -9,6 +9,8 @@ import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import springfox.documentation.annotations.ApiIgnore;
 
@@ -74,9 +76,29 @@ public class MemberController {
             @RequestParam(name = "code") String code, HttpServletResponse response) throws IOException {
         System.out.println(">> 소셜 로그인 API 서버로부터 받은 code :" + code);
         SocialLoginType socialLoginType = SocialLoginType.valueOf(socialLoginPath.toUpperCase());
-        GetSocialOAuthRes getSocialOAuthRes = oAuthService.oAuthLogin(socialLoginType, code);
-        String token = getSocialOAuthRes.getAuthorization();
-        response.addHeader("Authorization", token);
-        return getSocialOAuthRes;
+        return oAuthService.oAuthLogin(socialLoginType, code);
+    }
+
+    //아이디 찾기
+    @GetMapping("/api/users/find/username/{nickname}")
+    public String findUsername(@PathVariable String nickname){
+        try{
+            String username = memberService.findUsername(nickname);
+            return nickname + "님의 아이디는" + username + "입니다.";
+        }catch (IllegalArgumentException e){
+            return e.getMessage();
+        }
+    }
+
+    //비밀번호 찾기
+    @GetMapping("/api/users/find/password/{username}")
+    public String findPassword(@PathVariable String username){
+        memberService.findPassword(username);
+        return "메일을 전송하였습니다.";
+    }
+
+   @ExceptionHandler(IllegalArgumentException.class)
+    public ResponseEntity<String> handleIllegalArgumentException(IllegalArgumentException e) {
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
     }
 }

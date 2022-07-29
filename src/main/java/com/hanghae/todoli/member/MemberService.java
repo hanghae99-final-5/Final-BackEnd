@@ -61,4 +61,19 @@ public class MemberService {
 
         return member;
     }
+
+    //아이디 찾기
+    @Transactional
+    public String findUsername(String nickname) {
+        Member member = memberRepository.findByUsername(nickname).orElse(null);
+        if(member == null)
+            throw new IllegalArgumentException("회원가입한 이력이 없습니다.");
+
+        return memberRepository.findUsername(nickname);
+    }
+
+    //비밀번호 찾기
+    public void findPassword(String username) {
+        
+    }
 }
