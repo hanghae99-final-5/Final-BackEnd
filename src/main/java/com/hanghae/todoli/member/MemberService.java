@@ -1,14 +1,21 @@
 package com.hanghae.todoli.member;
 
-
+import com.hanghae.todoli.character.CharacterImg;
+import com.hanghae.todoli.character.Dto.ThumbnailDto;
+import com.hanghae.todoli.equipitem.EquipItem;
 import com.hanghae.todoli.exception.CustomException;
 import com.hanghae.todoli.exception.ErrorCode;
+import com.hanghae.todoli.item.Item;
+import com.hanghae.todoli.item.ItemRepository;
 import com.hanghae.todoli.member.dto.LoginRequestDto;
 import com.hanghae.todoli.member.dto.SignupRequestDto;
 import com.hanghae.todoli.security.UserDetailsImpl;
 import com.hanghae.todoli.security.jwt.JwtTokenProvider;
 import com.hanghae.todoli.utils.Validator;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -19,6 +26,9 @@ import org.springframework.transaction.annotation.Transactional;
 import javax.mail.MessagingException;
 import javax.mail.internet.MimeMessage;
 import javax.servlet.http.HttpServletResponse;
+import java.util.ArrayList;
+import java.util.List;
+
 
 @Service
 @RequiredArgsConstructor
@@ -30,6 +40,8 @@ public class MemberService {
     private final BasicItemRegister basicItemRegister;
     private final JwtTokenProvider jwtTokenProvider;
     private final Validator validator;
+
+    private final ItemRepository itemRepository;
 
     //회원가입
     @Transactional
@@ -147,5 +159,53 @@ public class MemberService {
         String ecPassword = passwordEncoder.encode(changePassword);
         member.pwUpdate(ecPassword);
         memberRepository.save(member);
+    }
+
+    //랭킹 업데이트
+    @Transactional
+    public List<RankingDto> updateRanking() {
+        Pageable pageable = PageRequest.of(0, 5, Sort.Direction.DESC, "level");
+        List<Member> characterRankList = memberRepository.findAllByLevelRanking(pageable);
+
+        List<RankingDto>rankingDtoList = new ArrayList<>();
+        for(Member member : characterRankList){
+            Long memberId = member.getId();
+            String nickname = member.getNickname();
+            String thumbnailCharImg = new CharacterImg().getThumbnailCharImg();
+            List<ThumbnailDto> thumbnailDtos = getThumbnailDtos(member);
+
+            RankingDto ranking = RankingDto.builder()
+                    .memberId(memberId)
+                    .nickname(nickname)
+                    .thumbnailCharImg(thumbnailCharImg)
+                    .equipItems(thumbnailDtos)
+                    .build();
+            rankingDtoList.add(ranking);
+        }
+        return rankingDtoList;
+    }
+    //아이템 리스트dto에 추가
+    private List<ThumbnailDto> getThumbnailDtos(Member Info) {
+        List<ThumbnailDto> myEquipItemList = new ArrayList<>();
+        EquipItem myEquipItem = Info.getCharacter().getEquipItem();
+        Long hairId = myEquipItem.getHairId();
+        Long clothId = myEquipItem.getClothId();
+        Long accessoryId = myEquipItem.getAccessoryId();
+        if (hairId != null) {
+            Item hair = itemRepository.findById(hairId).orElse(null);
+            ThumbnailDto thumbnailDto1 = new ThumbnailDto(hair.getId(),hair.getThumbnailImg(),hair.getCategory());
+            myEquipItemList.add(thumbnailDto1);
+        }
+        if (clothId != null) {
+            Item cloth = itemRepository.findById(clothId).orElse(null);
+            ThumbnailDto thumbnailDto2 = new ThumbnailDto(cloth.getId(),cloth.getThumbnailImg(),cloth.getCategory());
+            myEquipItemList.add(thumbnailDto2);
+        }
+        if (accessoryId != null) {
+            Item accessory = itemRepository.findById(accessoryId).orElse(null);
+            ThumbnailDto thumbnailDto3 = new ThumbnailDto(accessory.getId(),accessory.getThumbnailImg(),accessory.getCategory());
+            myEquipItemList.add(thumbnailDto3);
+        }
+        return myEquipItemList;
     }
 }
