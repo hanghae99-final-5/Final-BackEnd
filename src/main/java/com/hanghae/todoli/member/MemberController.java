@@ -19,6 +19,7 @@ import springfox.documentation.annotations.ApiIgnore;
 import javax.mail.MessagingException;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
@@ -127,9 +128,15 @@ public class MemberController {
     })
     @ApiOperation(value = "비밀번호 변경 메소드", notes = "비밀번호 변경 api 입니다.")
     @PatchMapping("/api/users/update/password") //현재 비밀번호, 바꿀 비밀번호, 비밀번호 확인인
-    public String updatePassword(@RequestBody PasswordUpdateDto updateDto, @AuthenticationPrincipal UserDetailsImpl userDetails){
+    public String updatePassword(@RequestBody PasswordUpdateDto updateDto, @AuthenticationPrincipal UserDetailsImpl userDetails) {
 
-            memberService.updatePassword(updateDto, userDetails);
-            return "비밀번호 변경이 완료되었습니다.";
+        memberService.updatePassword(updateDto, userDetails);
+        return "비밀번호 변경이 완료되었습니다.";
+    }
+
+    //랭킹 기능
+    @GetMapping("/api/users/ranking")
+    public List<RankingDto> updateRanking(){
+        return memberService.updateRanking();
     }
 }
