@@ -1,6 +1,7 @@
 package com.hanghae.todoli.member;
 
 import com.hanghae.todoli.character.Character;
+import com.hanghae.todoli.character.repository.CharacterRepository;
 import com.hanghae.todoli.equipitem.EquipItem;
 import com.hanghae.todoli.exception.CustomException;
 import com.hanghae.todoli.member.dto.LoginRequestDto;
@@ -17,6 +18,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Spy;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.test.context.support.WithMockUser;
@@ -39,6 +41,10 @@ class MemberServiceTest {
     private BasicItemRegister basicItemRegister;
     @Mock
     private JwtTokenProvider jwtTokenProvider;
+    @Mock
+    private CharacterRepository characterRepository;
+    @Mock
+    private JavaMailSender javaMailSender;
     @Spy
     @InjectMocks
     private Validator validator;
@@ -85,7 +91,10 @@ class MemberServiceTest {
                 memberRepository,
                 basicItemRegister,
                 jwtTokenProvider,
+                characterRepository,
+                javaMailSender,
                 validator
+
         );
         this.passwordEncoder = new BCryptPasswordEncoder();
 
@@ -147,6 +156,8 @@ class MemberServiceTest {
                 memberRepository,
                 basicItemRegister,
                 jwtTokenProvider,
+                characterRepository,
+                javaMailSender,
                 validator
         );
         username = "test@naver.com";
@@ -180,6 +191,8 @@ class MemberServiceTest {
                 memberRepository,
                 basicItemRegister,
                 jwtTokenProvider,
+                characterRepository,
+                javaMailSender,
                 validator
         );
         username = "test@naver.com";
@@ -198,7 +211,7 @@ class MemberServiceTest {
                 () -> memberService.login(loginRequestDto, response));
 
         //then
-        Assertions.assertEquals("비밀번호가 일치하지 않습니다.",exception.getErrorCode().getMessage());
+        Assertions.assertEquals("비밀번호를 다시 확인해 주세요.",exception.getErrorCode().getMessage());
     }
     @Test
     @DisplayName("로그인 실패 - 아이디가 존재하지 않음")
@@ -209,6 +222,8 @@ class MemberServiceTest {
                 memberRepository,
                 basicItemRegister,
                 jwtTokenProvider,
+                characterRepository,
+                javaMailSender,
                 validator
         );
         username = "test123@naver.com";

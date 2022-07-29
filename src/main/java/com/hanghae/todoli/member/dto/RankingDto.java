@@ -1,4 +1,4 @@
-package com.hanghae.todoli.member;
+package com.hanghae.todoli.member.dto;
 
 import com.hanghae.todoli.character.Dto.ThumbnailDto;
 import lombok.Builder;

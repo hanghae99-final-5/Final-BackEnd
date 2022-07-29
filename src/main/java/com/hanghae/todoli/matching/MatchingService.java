@@ -41,7 +41,6 @@ public class MatchingService {
     private final MatchingRepository matchingRepository;
     private final TodoRepository todoRepository;
     private final ThumbnailDtoList thumbnailDtoList;
-
     private final CharacterRepository characterRepository;
 
     //상대방 찾기

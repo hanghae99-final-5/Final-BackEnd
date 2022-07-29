@@ -3,12 +3,11 @@ package com.hanghae.todoli.member;
 import com.hanghae.todoli.character.CharacterImg;
 import com.hanghae.todoli.character.Dto.ThumbnailDto;
 import com.hanghae.todoli.character.repository.CharacterRepository;
-import com.hanghae.todoli.equipitem.EquipItem;
 import com.hanghae.todoli.exception.CustomException;
 import com.hanghae.todoli.exception.ErrorCode;
-import com.hanghae.todoli.item.Item;
-import com.hanghae.todoli.item.ItemRepository;
 import com.hanghae.todoli.member.dto.LoginRequestDto;
+import com.hanghae.todoli.member.dto.PasswordUpdateDto;
+import com.hanghae.todoli.member.dto.RankingDto;
 import com.hanghae.todoli.member.dto.SignupRequestDto;
 import com.hanghae.todoli.security.UserDetailsImpl;
 import com.hanghae.todoli.security.jwt.JwtTokenProvider;
@@ -41,6 +40,7 @@ public class MemberService {
     private final BasicItemRegister basicItemRegister;
     private final JwtTokenProvider jwtTokenProvider;
     private final CharacterRepository characterRepository;
+    private final JavaMailSender javaMailSender;
     private final Validator validator;
 
     //회원가입
@@ -84,18 +84,17 @@ public class MemberService {
     public String findUsername(String nickname) {
         Member member = memberRepository.findByNickname(nickname).orElse(null);
         if(member == null)
-            throw new IllegalArgumentException("회원가입한 이력이 없습니다.");
+            throw new CustomException(ErrorCode.NOT_FOUND_MEMBER);
 
         return memberRepository.findUsername(nickname);
     }
 
     //비밀번호 찾기
 
-    private final JavaMailSender javaMailSender;
     @Transactional
     public void findPassword(String username) throws MessagingException {
         Member member = memberRepository.findByUsername(username).orElseThrow(
-                () -> new IllegalArgumentException("해당 이메일이 존재하지 않습니다.")
+                () -> new CustomException(ErrorCode.NOT_FOUND_MEMBER)
         );
 
         String pw = "";
@@ -141,11 +140,11 @@ public class MemberService {
         BCryptPasswordEncoder bCryptPasswordEncoder = new BCryptPasswordEncoder();
         String curPassword = updateDto.getCurPassword();
         if(!bCryptPasswordEncoder.matches(curPassword, userDetails.getPassword()))
-            throw new IllegalArgumentException("현재 비밀번호를 잘못 입력하셨습니다.");
+            throw new CustomException(ErrorCode.PASSWORD_NOT_SAME);
 
         String changePassword = updateDto.getChangePassword();
         if(bCryptPasswordEncoder.matches(changePassword, userDetails.getPassword()))
-            throw new IllegalArgumentException("변경 비밀번호와 현재 비밀번호와 같습니다.");
+            throw new CustomException(ErrorCode.PASSWORD_NOT_SAME);
 
         String ecPassword = passwordEncoder.encode(changePassword);
         member.pwUpdate(ecPassword);

@@ -1,4 +1,4 @@
-package com.hanghae.todoli.member;
+package com.hanghae.todoli.member.dto;
 
 import lombok.Builder;
 import lombok.Data;
