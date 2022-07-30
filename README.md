@@ -23,7 +23,14 @@
 `친구와 함께 Todo를 달성하고 캐릭터와 내가 함께 성장해 나가는 재미를 느낄 수 있도록 하기 위해 기획한 서비스 입니다.`
     
 ---
+## ✨ 아키텍쳐
+<br>
 
+<a href='https://ifh.cc/v-M592Oz' target='_blank'><img src='https://ifh.cc/g/M592Oz.png' border='0'></a>
+
+---
+## 💻 ERD
+<a href='https://ifh.cc/v-ta1yHw' target='_blank'><img src='https://ifh.cc/g/ta1yHw.jpg' border='0'></a>
 **Backend Tech Stack**
 
 <img src="https://img.shields.io/badge/JAVA-007396?style=for-the-badge&logo=java&logoColor=white">  
@@ -45,12 +52,12 @@
 
 > 수정한 종류에 따라 커밋 메시지를 선택
 
-|메시지명    |설명|
-|--------|---|
-| feat   |새로운 기능 추가 관련|
-| fix    |버그 수정|
-| test   |테스트 코드, 리팩토링 테스트 코드 추가|
+| 메시지명     |설명|
+|----------|---|
+| feat     |새로운 기능 추가 관련|
+| fix      |버그 수정|
+| test     |테스트 코드, 리팩토링 테스트 코드 추가|
 | refactor |코드 리팩토링(기능향상)|
-| chore  |빌드 업무 수정, 패키지 매니저 수정|
-| docs   |문서 수정(md, git관련 파일, 이미지파일 수정)|
-| style  |코드 formatting, 세미콜론(;) 누락, 코드 변경이 없는 경우|
+| chore    |빌드 업무 수정, 패키지 매니저 수정|
+| docs     |문서 수정(md, git관련 파일, 이미지파일 수정)|
+| style    |코드 formatting, 세미콜론(;) 누락, 코드 변경이 없는 경우|
