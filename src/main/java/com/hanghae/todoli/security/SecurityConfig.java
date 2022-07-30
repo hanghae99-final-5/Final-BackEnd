@@ -16,6 +16,8 @@ import org.springframework.security.config.annotation.web.configuration.WebSecur
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.security.web.firewall.DefaultHttpFirewall;
+import org.springframework.security.web.firewall.HttpFirewall;
 
 @Configuration
 @EnableWebSecurity
@@ -37,10 +39,22 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         return super.authenticationManagerBean();
     }
 
+    @Bean
+    public HttpFirewall defaultHttpFirewall() {
+        return new DefaultHttpFirewall();
+    }
+
     // 정적 자원에 대해서는 Security 설정을 적용하지 않음.
     @Override
     public void configure(WebSecurity web) {
         web.ignoring().antMatchers("/h2-console/**");
+//        web.ignoring().mvcMatchers("/favicon-32x32.png");
+//        web.ignoring().mvcMatchers("/favicon-96x96.png");
+//        web.ignoring().mvcMatchers("/favicon-16x16.png");
+//        web.ignoring().mvcMatchers("/**/favicon-32x32.png");
+//        web.ignoring().mvcMatchers("/**/favicon-96x96.png");
+//        web.ignoring().mvcMatchers("/**/favicon-16x16.png");
+        web.httpFirewall(defaultHttpFirewall());
         web.ignoring().requestMatchers(PathRequest.toStaticResources().atCommonLocations());
     }
 
