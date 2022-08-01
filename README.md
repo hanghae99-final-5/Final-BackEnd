@@ -1,5 +1,5 @@
 # TwoDo-li
-
+<br>
 <img src="https://i.imgur.com/e0c30l9.jpg" title="ppt_title.jpg"/>
 
 ## 목차
@@ -29,9 +29,10 @@
 <br>
 <img src="https://i.imgur.com/Tnj7P0J.png" title="image (4).png"/>
 
-
 ## 💻 ERD
+<br>
 <img src="https://i.imgur.com/kEYAy3z.png" title="ErdCloud.PNG"/>
+
 
 ## 📚 Backend Tech Stack
 
@@ -80,8 +81,11 @@
 
 ---
 
-<img src="https://i.imgur.com/xUHqkRQ.png" title="123123123123.PNG"/>
+
+<img src='https://ifh.cc/g/GXCsyT.png' border='0'></a>
+<br>
 **deploy.yml**
 
-<img src="https://i.imgur.com/ZJR7iW8.png" title="234234234234.PNG"/>
+<img src='https://ifh.cc/g/552pza.png' border='0'></a>
+<br>
 **SecretKey 등록**
