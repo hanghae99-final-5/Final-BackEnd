@@ -13,7 +13,7 @@ import java.util.List;
 public interface TodoRepository extends JpaRepository<Todo, Long> , TodoRepositoryCustom{
 
     //멤버 아이디로 투두 역순 조회
-    List<Todo> findAllByWriterIdOrderByIdDesc(Long id);
+    List<Todo> findAllByWriterIdOrderByStartDateDesc(Long id);
 
     void deleteAllByWriterIdAndTodoType(Long writerId, int todoType);
     //스케쥴러 함수

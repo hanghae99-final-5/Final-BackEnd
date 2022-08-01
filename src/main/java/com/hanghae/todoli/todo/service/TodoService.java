@@ -239,7 +239,7 @@ public class TodoService {
 
     private List<TodoInfoDto> getTodoInfoDtos(Long id) {
         List<TodoInfoDto> todoInfoDtoList = new ArrayList<>();
-        List<Todo> todos = todoRepository.findAllByWriterIdOrderByIdDesc(id);
+        List<Todo> todos = todoRepository.findAllByWriterIdOrderByStartDateDesc(id);
         for (Todo todo : todos) {
             TodoInfoDto todoInfoDto = TodoInfoDto.builder()
                     .todoId(todo.getId())
