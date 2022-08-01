@@ -79,10 +79,10 @@
 
 ---
 
-<a href='https://ifh.cc/v-GXCsyT' target='_blank'><img src='https://ifh.cc/g/GXCsyT.png' border='0'></a>
+<img src='https://ifh.cc/g/GXCsyT.png' border='0'></a>
 <br>
 **deploy.yml**
 
-<a href='https://ifh.cc/v-552pza' target='_blank'><img src='https://ifh.cc/g/552pza.png' border='0'></a>
+<img src='https://ifh.cc/g/552pza.png' border='0'></a>
 <br>
 **SecretKey 등록**
