@@ -61,7 +61,7 @@ public class Character {
         this.maxExp = 100;
         this.exp = 0;
         this.level = 1;
-        this.money = 0;
+        this.money = 100;
     }
 
     public void minMoney(int price) {
