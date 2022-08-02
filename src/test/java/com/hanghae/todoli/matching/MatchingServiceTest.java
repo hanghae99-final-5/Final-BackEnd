@@ -418,7 +418,7 @@ class MatchingServiceTest {
                     () -> matchingService.cancelMatching(memberId, userDetails));
 
             //then
-            Assertions.assertEquals("자신이 매칭되어있지 않습니다.", exception.getErrorCode().getMessage());
+            Assertions.assertEquals("친구와 먼저 매칭을 먼저 해주세요.", exception.getErrorCode().getMessage());
         }
 
         @Test

@@ -171,7 +171,7 @@ class TodoServiceTest {
                     () -> todoService.registerTodo(todoRegisterDto, userDetails));
 
             //then
-            Assertions.assertEquals("자신이 매칭되어있지 않습니다.", exception.getErrorCode().getMessage());
+            Assertions.assertEquals("친구와 먼저 매칭을 먼저 해주세요.", exception.getErrorCode().getMessage());
         }
 
         @Test
@@ -535,7 +535,7 @@ class TodoServiceTest {
                     : matching.getRequesterId();
             List<Todo> list = new ArrayList<>();
             list.add(existTodo2);
-            given(todoRepository.findAllByWriterIdOrderByIdDesc(partnerId)).willReturn(list);
+            given(todoRepository.findAllByWriterIdOrderByStartDateDesc(partnerId)).willReturn(list);
 
             //when
             PairTodoResponseDto pairTodos = todoService.getPairTodos(userDetails);
@@ -560,7 +560,7 @@ class TodoServiceTest {
             given(memberRepository.findById(member.getId())).willReturn(Optional.ofNullable(existMember));
             List<Todo> list = new ArrayList<>();
             list.add(existTodo1);
-            given(todoRepository.findAllByWriterIdOrderByIdDesc(member.getId())).willReturn(list);
+            given(todoRepository.findAllByWriterIdOrderByStartDateDesc(member.getId())).willReturn(list);
 
             //when
             TodoResponseDto myTodos = todoService.getMyTodos(userDetails);

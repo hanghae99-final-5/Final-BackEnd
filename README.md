@@ -55,6 +55,7 @@
 <img src="https://img.shields.io/badge/Apache JMeter-D22128?style=for-the-badge&logo=Apache JMeter&logoColor=white">
 <img src="https://img.shields.io/badge/NGINX-009639?style=for-the-badge&logo=NGINX&logoColor=white">
 
+
 ## 🛒 커밋 종류
 
 > 수정한 종류에 따라 커밋 메시지를 선택
@@ -137,12 +138,12 @@
 
 ## 5. 🤲 멤버 소개
 
----
 
 | 이름      | 포지션        | 개인 깃허브 or 이메일          |
-|---------|------------| ------------------------------ |
+|---------|------------|------------------------------|
 | **함형준** | `BackEnd`  | https://github.com/hyeongjun-Ham |
 | **백종석** | `BackEnd`  | https://github.com/devjjongs |
 | **전성영** | `BackEnd`  | https://github.com/junsj119 |
 | **김환희** | `FrontEnd` |  |
 | **윤가람** | `Designer` |  |
+

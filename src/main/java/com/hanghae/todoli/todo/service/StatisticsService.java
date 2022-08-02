@@ -210,7 +210,7 @@ public class StatisticsService {
     public StatisticsResponseDto getStatisticsMonthly(UserDetailsImpl userDetails) {
 
         LocalDate startMonth = LocalDate.parse(LocalDate.now()
-                .minusMonths(7).withDayOfMonth(1)
+                .minusMonths(6).withDayOfMonth(1)
                 .format(DateTimeFormatter.ofPattern("yyyy-MM-dd")));
         LocalDate lastMonth = LocalDate.parse(LocalDate.now()
                 .minusMonths(1).withDayOfMonth(LocalDate.now().minusMonths(1).lengthOfMonth())

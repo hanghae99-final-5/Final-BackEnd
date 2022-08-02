@@ -7,6 +7,6 @@ import java.util.List;
 
 public interface ItemRepository extends JpaRepository<Item, Long> {
 
-    @Query("select i from Item i where i.id not in (1L,2L,3L)")
+    @Query("select i from Item i where i.id not in (1L,2L,3L) order by i.price")
     List<Item> findAllExceptBasic();
 }
