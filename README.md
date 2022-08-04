@@ -27,7 +27,23 @@
 
 # 2. 🛠 설계
 
+## 🧶 API
+<details>
+<summary><b>API</b></summary>
+<img src="https://i.imgur.com/WV8Y4q8.png" title="1.PNG"/>
+<img src="https://i.imgur.com/3IHrFq3.png" title="2.PNG"/>
+<img src="https://i.imgur.com/pOEyYSV.png" title="3.PNG"/>
+<img src="https://i.imgur.com/dskOW7M.png" title="5.PNG"/>
+<img src="https://i.imgur.com/psocRCi.png" title="6.PNG"/>
+<img src="https://i.imgur.com/8BDA9yR.png" title="7.PNG"/>
+<img src="https://i.imgur.com/SsoJNfG.png" title="8.PNG"/>
+<img src="https://i.imgur.com/qukkJey.png" title="9.PNG"/>
+<img src="https://i.imgur.com/qySmxym.png" title="10.PNG"/>
+<img src="https://i.imgur.com/irtW2Qe.png" title="11.PNG"/>
+<img src="https://i.imgur.com/l7DaEvW.png" title="12.PNG"/>
+<a href='https://ifh.cc/v-o6p08M' target='_blank'><img src='https://ifh.cc/g/o6p08M.png' border='0'></a>
 
+</details>
 
 ## ✨ 아키텍쳐
 
